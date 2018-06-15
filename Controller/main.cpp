@@ -120,7 +120,7 @@ public:
 	{
 		int16_t ticksEl = (int16_t)(sysState.sysTick - _tickLastChg); //Elapsed ticks since beginning of dim
 		int16_t delta = (((ticksEl + 1) * _fadeRate) >> 5) - ((ticksEl * _fadeRate) >> 5); //Number of steps
-		PORTC.OUTCLR = _chActMask;
+		//PORTC.OUTCLR = _chActMask;
 		for (uint8_t i = 0; i < _linkCnt; i++)
 		{
 			uint8_t s = _dir ? i : _linkCnt - i - 1; //Direction '1' means forward
@@ -445,6 +445,11 @@ ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 	rxMode = 0;
 }
 
+ISR(EDMA_CH2_vect)
+{
+	PORTC.OUTCLR = PIN4_bm | PIN5_bm | PIN6_bm | PIN7_bm;
+}
+
 inline void mcuInit()
 {
 	//Port A configuration: 0-5 analog inputs, 7 inverted output
@@ -509,17 +514,18 @@ inline void mcuInit()
 	//EDMA: 1 standard and 2 peripheral channels
 	EDMA.CTRL = EDMA_ENABLE_bm | EDMA_CHMODE_STD2_gc | EDMA_DBUFMODE_DISABLE_gc;
 	//EDMA peripheral channel 1: USARTC write transfer
-	EDMA.CH1.CTRLB = 2 << EDMA_CH_TRNINTLVL_gp; //Medium-level interrupt
+	EDMA.CH1.CTRLB = EDMA_CH_TRNINTLVL_MED_gc; //Medium-level interrupt
 	EDMA.CH1.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
 	EDMA.CH1.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_DRE_gc;
 	//EDMA standard channel 2: PORTD.OUT transfer
 	EDMA.CH2.CTRLA = EDMA_CH_SINGLE_bm;
+	EDMA.CH2.CTRLB = EDMA_CH_TRNINTLVL_LO_gc;
 	EDMA.CH2.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
-	EDMA.CH2.DESTADDRCTRL = EDMA_CH_RELOAD_NONE_gc | EDMA_CH_DESTDIR_FIXED_gc;
+	EDMA.CH2.DESTADDRCTRL = EDMA_CH_RELOAD_BURST_gc | EDMA_CH_DESTDIR_FIXED_gc;
 	EDMA.CH2.TRIGSRC = EDMA_CH_TRIGSRC_TCD5_OVF_gc;
 	EDMA.CH2.TRFCNT = 18;
-	EDMA.CH2.ADDR = (uint16_t)DSI8xFrames;
-	EDMA.CH2.DESTADDR = (uint16_t)&PORTD_OUT;
+	EDMA.CH2.ADDR = (uint16_t)&(DSI8xFrames[0]);
+	EDMA.CH2.DESTADDR = (uint16_t)&(PORTD.OUT);
 	//CRC: CRC16 mode, source IO interface
 	CRC.CTRL = CRC_SOURCE_IO_gc;
 	sei();
