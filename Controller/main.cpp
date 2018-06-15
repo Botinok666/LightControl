@@ -120,8 +120,9 @@ public:
 	{
 		int16_t ticksEl = (int16_t)(sysState.sysTick - _tickLastChg); //Elapsed ticks since beginning of dim
 		int16_t delta = (((ticksEl + 1) * _fadeRate) >> 5) - ((ticksEl * _fadeRate) >> 5); //Number of steps
-		//PORTC.OUTCLR = _chActMask;
-		for (uint8_t i = 0; i < _linkCnt; i++)
+		if (_linkNum == 2)
+			PORTC.OUTSET = PIN7_bm;
+		for (int16_t i = 0; i < _linkCnt; i++)
 		{
 			uint8_t s = _dir ? i : _linkCnt - i - 1; //Direction '1' means forward
 			uint8_t j = _link[s];
@@ -165,7 +166,7 @@ public:
 			_tickLastChg = sysState.sysTick;
 	}
 } links[4] = { LCport(0, 3, 7, 6, 5), LCport(1, 3, 4, 3, 2),
-#ifdef BOARD_A
+#ifndef BOARD_A
 LCport(2, 1, 1, 0, 0),
 #else
 LCport(2, 2, 1, 0, 0),
@@ -236,7 +237,7 @@ systemConfig EEMEM savedConfig = {
 {1,1,1,1,1,1,1,1}, {255,255,255,255,255,255,255,255},	//Min, max levels
 0, 0,	//Override level and config
 {96,96,96,160}, {28,28,28,1},	//Fade rate 2.6s, link delay 0.87s
-0, 30, 111,	//Motion sensor on time, low time, low level
+0, 30, 96,	//Motion sensor on time, low time, low level
 0, 0, 0};	//ninthLvl, rtcCorrect, CRC16
 
 void inline UCTXen()
@@ -309,7 +310,7 @@ ISR(RTC_OVF_vect)
 	}
 	DSI8xFrames[17] = 0; //DSI stop bit
 	gLevelChg = 0; //Clear flags for changed levels
-	EDMA.CH2.CTRLA |= EDMA_CH_ENABLE_bm; //Initialize EDMA transfer sequence
+	EDMA.CH2.CTRLA |= EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm; //Initialize EDMA transfer sequence
 
 	if (sysState.setLevels[8] > 0) //On/off channel processing
 		PORTA.OUTSET = PIN7_bm;
@@ -443,11 +444,13 @@ ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 {
 	UCRXen(); //Set bus in the idle state
 	rxMode = 0;
+	EDMA.CH1.CTRLB |= EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm;
 }
 
 ISR(EDMA_CH2_vect)
 {
 	PORTC.OUTCLR = PIN4_bm | PIN5_bm | PIN6_bm | PIN7_bm;
+	EDMA.CH2.CTRLB |= EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm;
 }
 
 inline void mcuInit()
@@ -509,6 +512,7 @@ inline void mcuInit()
 	TCC4.CTRLGCLR = TC4_STOP_bm;
 	//TCD5 configuration: 125kHz, 1202Hz overflow rate
 	TCD5.CTRLA = TC_CLKSEL_DIV256_gc;
+	TCD5.CTRLB = TC_WGMODE_NORMAL_gc;
 	TCD5.PERBUF = 104;
 	TCD5.CTRLGCLR = TC5_STOP_bm;
 	//EDMA: 1 standard and 2 peripheral channels
@@ -524,7 +528,7 @@ inline void mcuInit()
 	EDMA.CH2.DESTADDRCTRL = EDMA_CH_RELOAD_BURST_gc | EDMA_CH_DESTDIR_FIXED_gc;
 	EDMA.CH2.TRIGSRC = EDMA_CH_TRIGSRC_TCD5_OVF_gc;
 	EDMA.CH2.TRFCNT = 18;
-	EDMA.CH2.ADDR = (uint16_t)&(DSI8xFrames[0]);
+	EDMA.CH2.ADDR = (uint16_t)DSI8xFrames;
 	EDMA.CH2.DESTADDR = (uint16_t)&(PORTD.OUT);
 	//CRC: CRC16 mode, source IO interface
 	CRC.CTRL = CRC_SOURCE_IO_gc;
