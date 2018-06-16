@@ -121,16 +121,21 @@ public:
 	{
 		int16_t ticksEl = (int16_t)(sysState.sysTick - _tickLastChg); //Elapsed ticks since beginning of dim
 		int16_t delta = (((ticksEl + 1) * _fadeRate) >> 5) - ((ticksEl * _fadeRate) >> 5); //Number of steps
+		PORTC.OUTCLR = _chActMask;
 		for (int8_t i = 0; i < _linkCnt; i++)
 		{
 			uint8_t s = _dir ? i : _linkCnt - i - 1; //Direction '1' means forward
 			uint8_t j = _link[s];
 			int16_t tempLvl = gLevels[j];
 			tempLvl -= _lvl[s]; //Difference between actual and set levels
-			PORTC.OUTCLR = _chActMask;
 			if (tempLvl && ticksEl > i * _linkDelay)
 			{
-				if (tempLvl >= 0) //Level needs to be lowered
+				if (tempLvl < -2 || tempLvl > 2)
+				{
+					gLevelChg |= 1 << j;
+					PORTC.OUTSET = _chActMask; //Switch on activity LED
+				}
+				if (tempLvl > 0) //Level needs to be lowered
 				{
 					tempLvl -= ((tempLvl > delta) ? delta : tempLvl) - (int16_t)_lvl[s];
 					if (!tempLvl) //Actual level became zero
@@ -147,8 +152,6 @@ public:
 						_onTimeStamp = sysState.sysTick;
 				}
 				gLevels[j] = tempLvl;
-				gLevelChg |= 1 << j;
-				PORTC.OUTSET = _chActMask; //Switch on activity LED
 			}
 		}
 	}
