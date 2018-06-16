@@ -1,7 +1,7 @@
 Archive member included to satisfy reference by file (symbol)
 
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
-                              C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o (exit)
+                              C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o (exit)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_copy_data.o)
                               main.o (__do_copy_data)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
@@ -9,8 +9,8 @@ c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/..
 
 Discarded input sections
 
- .data          0x00000000        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
- .bss           0x00000000        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+ .data          0x00000000        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
+ .bss           0x00000000        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
  .text          0x00000000        0x0 main.o
  .data          0x00000000        0x0 main.o
  .bss           0x00000000        0x0 main.o
@@ -78,7 +78,7 @@ user_signatures  0x00850000         0x00000400         rw !x
 Linker script and memory map
 
 Address of section .data set to 0x800100
-LOAD C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+LOAD C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
 LOAD main.o
 START GROUP
 LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libm.a
@@ -89,7 +89,7 @@ START GROUP
 LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a
 LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libm.a
 LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a
-LOAD C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25\libattiny441.a
+LOAD C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25\libattiny441.a
 END GROUP
                 0x00002000                __TEXT_REGION_LENGTH__ = DEFINED (__TEXT_REGION_LENGTH__)?__TEXT_REGION_LENGTH__:0x2000
                 0x0000ffa0                __DATA_REGION_LENGTH__ = DEFINED (__DATA_REGION_LENGTH__)?__DATA_REGION_LENGTH__:0xffa0
@@ -191,7 +191,7 @@ END GROUP
 
 .text           0x00000000      0x24c
  *(.vectors)
- .vectors       0x00000000       0x3c C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+ .vectors       0x00000000       0x3c C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
                 0x00000000                __vector_default
                 0x00000000                __vectors
  *(.vectors)
@@ -219,13 +219,13 @@ END GROUP
  SORT(*)(.ctors)
  SORT(*)(.dtors)
  *(.init0)
- .init0         0x0000003c        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+ .init0         0x0000003c        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
                 0x0000003c                __init
  *(.init0)
  *(.init1)
  *(.init1)
  *(.init2)
- .init2         0x0000003c        0xc C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+ .init2         0x0000003c        0xc C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
  *(.init2)
  *(.init3)
  *(.init3)
@@ -244,10 +244,10 @@ END GROUP
  *(.init8)
  *(.init8)
  *(.init9)
- .init9         0x0000006e        0x4 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+ .init9         0x0000006e        0x4 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
  *(.init9)
  *(.text)
- .text          0x00000072        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+ .text          0x00000072        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
                 0x00000072                __vector_28
                 0x00000072                __vector_1
                 0x00000072                __vector_12
@@ -325,10 +325,9 @@ END GROUP
                 0x00800100                u0txBuf
  .data.u1rxBuf  0x00800102        0x2 main.o
                 0x00800102                u1rxBuf
- *(.gnu.linkonce.d*)
  *(.rodata)
  *(.rodata*)
- *(.gnu.linkonce.r*)
+ *(.gnu.linkonce.d*)
                 0x00800104                . = ALIGN (0x2)
                 0x00800104                _edata = .
                 0x00800104                PROVIDE (__data_end, .)
@@ -400,7 +399,7 @@ END GROUP
 .note.gnu.avr.deviceinfo
                 0x00000000       0x3c
  .note.gnu.avr.deviceinfo
-                0x00000000       0x3c C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+                0x00000000       0x3c C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
 
 .note.gnu.build-id
  *(.note.gnu.build-id)
@@ -427,28 +426,28 @@ END GROUP
 
 .debug_info     0x00000000      0x972
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000      0x75c C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+ .debug_info    0x00000000      0x75c C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
  .debug_info    0x0000075c      0x216 main.o
 
 .debug_abbrev   0x00000000      0x83b
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x6f6 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+ .debug_abbrev  0x00000000      0x6f6 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
  .debug_abbrev  0x000006f6      0x145 main.o
 
 .debug_line     0x00000000      0x3aa
  *(.debug_line .debug_line.* .debug_line_end)
- .debug_line    0x00000000      0x14b C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
+ .debug_line    0x00000000      0x14b C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
  .debug_line    0x0000014b      0x25f main.o
 
 .debug_frame    0x00000000       0xc4
  *(.debug_frame)
  .debug_frame   0x00000000       0xc4 main.o
 
-.debug_str      0x00000000      0x4c7
+.debug_str      0x00000000      0x4d1
  *(.debug_str)
- .debug_str     0x00000000      0x2a5 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.147/gcc/dev/attiny441/avr25/crtattiny441.o
- .debug_str     0x000002a5      0x222 main.o
-                                0x256 (size before relaxing)
+ .debug_str     0x00000000      0x2a5 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
+ .debug_str     0x000002a5      0x22c main.o
+                                0x260 (size before relaxing)
 
 .debug_loc      0x00000000      0x182
  *(.debug_loc)

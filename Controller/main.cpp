@@ -10,8 +10,8 @@
 
 volatile int16_t gLevels[9] = {0};
 volatile uint8_t gLevelChg = 0, rxMode = 0;
-volatile uint8_t DSI8xFrames[19];
-volatile uint8_t *framePtr;
+uint8_t DSI8xFrames[19];
+uint8_t *framePtr;
 
 struct systemConfig
 {
@@ -127,6 +127,7 @@ public:
 			uint8_t j = _link[s];
 			int16_t tempLvl = gLevels[j];
 			tempLvl -= _lvl[s]; //Difference between actual and set levels
+			PORTC.OUTCLR = _chActMask;
 			if (tempLvl && ticksEl > i * _linkDelay)
 			{
 				if (tempLvl >= 0) //Level needs to be lowered
@@ -141,7 +142,7 @@ public:
 				}
 				else //Level needs to be raised
 				{
-					tempLvl += ((-tempLvl < delta) ? delta : -tempLvl) + (int16_t)_lvl[s];
+					tempLvl += ((-tempLvl > delta) ? delta : -tempLvl) + (int16_t)_lvl[s];
 					if (!gLevels[j]) //Lamp has been switched on - remember ticks
 						_onTimeStamp = sysState.sysTick;
 				}
@@ -279,37 +280,35 @@ void ApplyConfig()
 
 ISR(RTC_OVF_vect)
 {
-	PORTC.OUTSET = PIN5_bm;
 	sysState.sysTick++;
 	static bool rs485busy = false;
-	int8_t i;
+	uint8_t i;
 	for (i = 0; i < 4; i++)
 		links[i].updateLevel();
 	msenCh.updateLevel();
 	for (i = 0; i < 9; i++)
 		sysState.setLevels[i] = (gLevels[i] < 1) ? 0 : (uint8_t)gLevels[i];
 	DSI8xFrames[0] = gLevelChg; //DSI start bit
-	for (i = 7; i >= 0; i--) //DSI frame bits 7-0
+	for (i = 0; i < 8; i++) //DSI frame bits 0-7
 	{
 		uint8_t tmp0 = 0, tmp1 = 0, j;
 		for (j = 0; j < 8; j++) //Levels
 		{
+			tmp1 >>= 1;
+			tmp0 >>= 1;
 			if (gLevelChg & (1 << j)) //Particular level has been changed
 			{
 				if (sysState.setLevels[j] & (1 << i)) //Set upper half-bit
-					tmp1 |= 1;
+					tmp1 |= 0x80;
 				else
-					tmp0 |= 1; //Set lower half-bit (one-zero transition)
+					tmp0 |= 0x80; //Set lower half-bit (one-zero transition)
 			}
-			tmp1 <<= 1;
-			tmp0 <<= 1;
 		}
 		j = (8 - i) << 1;
-		DSI8xFrames[j - 1] = tmp0;
-		DSI8xFrames[j] = tmp1; //Manchester coded
+		DSI8xFrames[j - 1] = tmp1;
+		DSI8xFrames[j] = tmp0; //Manchester coded
 	}
 	DSI8xFrames[17] = 0; //DSI stop bit
-	int16_t h = gLevelChg;
 	gLevelChg = 0; //Clear flags for changed levels
 	if (sysState.setLevels[8] > 0) //On/off channel processing
 		PORTA.OUTSET = PIN7_bm;
@@ -322,7 +321,7 @@ ISR(RTC_OVF_vect)
 		ADCA.CTRLA |= ADC_START_bm; //Start conversion from pin 1 (channel 1)
 	}
 
-	//int16_t h = (int8_t)sysState.sysTick;
+	int16_t h = (int8_t)sysState.sysTick;
 	TCC4.CCABUF = h * h; //This will produce slow fading of HB LED (4s up/down)
 
 	if (((uint32_t)sysState.sysTick & 0x7FFFF) == 0) //Save state to EEPROM every 4.5 hrs
@@ -343,7 +342,6 @@ ISR(RTC_OVF_vect)
 	framePtr = DSI8xFrames;
 	TCD5.INTFLAGS |= TC5_OVFIF_bm;
 	TCD5.INTCTRLA = TC_OVFINTLVL_HI_gc;
-	PORTC.OUTCLR = PIN5_bm;
 }
 
 ISR(ADCA_CH0_vect)
@@ -454,10 +452,7 @@ ISR(TCD5_OVF_vect)
 {
 	PORTD.OUT = *framePtr++;
 	if (framePtr == &DSI8xFrames[sizeof(DSI8xFrames) - 1])
-	{
-		PORTC.OUTCLR = PIN4_bm | PIN6_bm | PIN7_bm;
 		TCD5.INTCTRLA = TC_OVFINTLVL_OFF_gc;
-	}
 }
 
 inline void mcuInit()
