@@ -10,7 +10,8 @@
 
 volatile int16_t gLevels[9] = {0};
 volatile uint8_t gLevelChg = 0, rxMode = 0;
-volatile static uint8_t DSI8xFrames[18];
+volatile uint8_t DSI8xFrames[19];
+volatile uint8_t *framePtr;
 
 struct systemConfig
 {
@@ -120,8 +121,6 @@ public:
 	{
 		int16_t ticksEl = (int16_t)(sysState.sysTick - _tickLastChg); //Elapsed ticks since beginning of dim
 		int16_t delta = (((ticksEl + 1) * _fadeRate) >> 5) - ((ticksEl * _fadeRate) >> 5); //Number of steps
-		if (_linkNum == 2)
-			PORTC.OUTSET = PIN7_bm;
 		for (int8_t i = 0; i < _linkCnt; i++)
 		{
 			uint8_t s = _dir ? i : _linkCnt - i - 1; //Direction '1' means forward
@@ -242,7 +241,7 @@ systemConfig EEMEM savedConfig = {
 
 void inline UCTXen()
 {
-	PORTC.OUTSET = (1 << PIN1_bm);
+	PORTC.OUTSET = PIN1_bm;
 	_delay_us(2);
 }
 
@@ -280,6 +279,7 @@ void ApplyConfig()
 
 ISR(RTC_OVF_vect)
 {
+	PORTC.OUTSET = PIN5_bm;
 	sysState.sysTick++;
 	static bool rs485busy = false;
 	int8_t i;
@@ -309,11 +309,8 @@ ISR(RTC_OVF_vect)
 		DSI8xFrames[j] = tmp1; //Manchester coded
 	}
 	DSI8xFrames[17] = 0; //DSI stop bit
+	int16_t h = gLevelChg;
 	gLevelChg = 0; //Clear flags for changed levels
-	EDMA.CH2.CTRLA |= EDMA_CH_ENABLE_bm; //Initialize EDMA transfer sequence
-	TCD5.INTFLAGS |= TC5_OVFIF_bm;
-	TCD5.CTRLGCLR = TC5_STOP_bm;
-
 	if (sysState.setLevels[8] > 0) //On/off channel processing
 		PORTA.OUTSET = PIN7_bm;
 	else
@@ -325,7 +322,7 @@ ISR(RTC_OVF_vect)
 		ADCA.CTRLA |= ADC_START_bm; //Start conversion from pin 1 (channel 1)
 	}
 
-	int16_t h = (int8_t)sysState.sysTick;
+	//int16_t h = (int8_t)sysState.sysTick;
 	TCC4.CCABUF = h * h; //This will produce slow fading of HB LED (4s up/down)
 
 	if (((uint32_t)sysState.sysTick & 0x7FFFF) == 0) //Save state to EEPROM every 4.5 hrs
@@ -343,6 +340,10 @@ ISR(RTC_OVF_vect)
 	}
 	else
 		rs485busy = false;
+	framePtr = DSI8xFrames;
+	TCD5.INTFLAGS |= TC5_OVFIF_bm;
+	TCD5.INTCTRLA = TC_OVFINTLVL_HI_gc;
+	PORTC.OUTCLR = PIN5_bm;
 }
 
 ISR(ADCA_CH0_vect)
@@ -449,11 +450,14 @@ ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 	EDMA.CH1.CTRLB |= EDMA_CH_TRNIF_bm;
 }
 
-ISR(EDMA_CH2_vect)
+ISR(TCD5_OVF_vect)
 {
-	PORTC.OUTCLR = PIN4_bm | PIN5_bm | PIN6_bm | PIN7_bm;
-	TCD5.CTRLGSET = TC5_STOP_bm;
-	EDMA.CH2.CTRLB |= EDMA_CH_TRNIF_bm;
+	PORTD.OUT = *framePtr++;
+	if (framePtr == &DSI8xFrames[sizeof(DSI8xFrames) - 1])
+	{
+		PORTC.OUTCLR = PIN4_bm | PIN6_bm | PIN7_bm;
+		TCD5.INTCTRLA = TC_OVFINTLVL_OFF_gc;
+	}
 }
 
 inline void mcuInit()
@@ -495,7 +499,7 @@ inline void mcuInit()
 	USARTC0.CTRLC = USART_CMODE_ASYNCHRONOUS_gc | USART_SBMODE_bm | USART_CHSIZE_9BIT_gc;
 	USARTC0.BAUDCTRLA = 12;
 	USARTC0.BAUDCTRLB = 1 << USART_BSCALE_gp;
-	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_HI_gc;
+	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_MED_gc;
 	//ADC configuration: 1MHz, 15bit oversampling
 	ADCA.CTRLA = ADC_ENABLE_bm;
 	ADCA.CTRLB = ADC_CONMODE_bm | ADC_RESOLUTION_MT12BIT_gc; //Signed mode
@@ -513,25 +517,15 @@ inline void mcuInit()
 	TCC4.PERBUF = 16384;
 	TCC4.CCABUF = 0;
 	TCC4.CTRLGCLR = TC4_STOP_bm;
-	//TCD5 configuration: 125kHz, 1202Hz overflow rate
-	TCD5.CTRLA = TC_CLKSEL_DIV256_gc;
+	//TCD5 configuration: 500kHz, 1199Hz overflow rate
+	TCD5.CTRLA = TC_CLKSEL_DIV64_gc;
 	TCD5.CTRLB = TC_WGMODE_NORMAL_gc;
-	TCD5.PERBUF = 104;
+	TCD5.PERBUF = 417;
 	TCD5.CTRLGCLR = TC5_STOP_bm;
-	EVSYS.CH2MUX = EVSYS_CHMUX_TCD5_OVF_gc;
 	//EDMA peripheral channel 1: USARTC write transfer
-	EDMA.CH1.CTRLB = EDMA_CH_TRNINTLVL_MED_gc; //Medium-level interrupt
+	EDMA.CH1.CTRLB = EDMA_CH_TRNINTLVL_LO_gc; //Medium-level interrupt
 	EDMA.CH1.ADDRCTRL = EDMA_CH_RELOAD_BLOCK_gc | EDMA_CH_DIR_INC_gc;
 	EDMA.CH1.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_DRE_gc;
-	//EDMA standard channel 2: PORTD.OUT transfer
-	EDMA.CH2.ADDRCTRL = EDMA_CH_RELOAD_BLOCK_gc | EDMA_CH_DIR_INC_gc;
-	EDMA.CH2.DESTADDRCTRL = EDMA_CH_RELOAD_NONE_gc | EDMA_CH_DESTDIR_FIXED_gc;
-	EDMA.CH2.TRIGSRC = EDMA_CH_TRIGSRC_EVSYS_CH2_gc;
-	EDMA.CH2.TRFCNT = sizeof(DSI8xFrames);
-	EDMA.CH2.ADDR = (uint16_t)DSI8xFrames;
-	EDMA.CH2.DESTADDR = (uint16_t)&(PORTD.OUT);
-	EDMA.CH2.CTRLA = EDMA_CH_SINGLE_bm;
-	EDMA.CH2.CTRLB = EDMA_CH_TRNIF_bm | EDMA_CH_TRNINTLVL_LO_gc;
 	//EDMA: 1 standard and 2 peripheral channels
 	EDMA.CTRL = EDMA_ENABLE_bm | EDMA_CHMODE_STD2_gc | EDMA_DBUFMODE_DISABLE_gc;
 	//CRC: CRC16 mode, source IO interface
