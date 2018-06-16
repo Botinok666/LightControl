@@ -2,6 +2,8 @@
  * Created: 12.01.2018 11:30:55
  * Version: 1.0 */
 
+#define DSI_EDMA
+
 #include "LC.h"
 #include <avr/io.h>
 #include <avr/eeprom.h>
@@ -10,16 +12,20 @@
 
 volatile int16_t gLevels[9] = {0};
 volatile uint8_t gLevelChg = 0, rxMode = 0;
+#ifdef DSI_EDMA
+uint8_t DSI8xFrames[18];
+#else
 uint8_t DSI8xFrames[19];
 uint8_t *framePtr;
+#endif
 
 struct systemConfig
 {
 	uint8_t minLvl[8], maxLvl[8];
-	uint8_t overrideLvl, overrideCfg; //Config: bits 0-3: channel (0…8), bit 4: override (bit 5: immediate)
+	uint8_t overrideLvl, overrideCfg; //Config: bits 0-3: channel (0…8), bit 4: override
 	uint8_t fadeRate[4], linkDelay[4];
 	uint8_t msenOnTime, msenLowTime, msenLowLvl;
-	uint8_t groupConf; //bit 2: DC mode, bit 3: save to EEPROM
+	uint8_t groupConf; //bit 3: save to EEPROM
 	uint8_t rtcCorrect; //Value in ppm, sign-and-magnitude representation
 
 	uint16_t CRC16;
@@ -130,11 +136,7 @@ public:
 			tempLvl -= _lvl[s]; //Difference between actual and set levels
 			if (tempLvl && ticksEl > i * _linkDelay)
 			{
-				if (tempLvl < -2 || tempLvl > 2)
-				{
-					gLevelChg |= 1 << j;
-					PORTC.OUTSET = _chActMask; //Switch on activity LED
-				}
+				bool trfReq = -2 < tempLvl || tempLvl > 2;
 				if (tempLvl > 0) //Level needs to be lowered
 				{
 					tempLvl -= ((tempLvl > delta) ? delta : tempLvl) - (int16_t)_lvl[s];
@@ -143,15 +145,22 @@ public:
 						tempLvl -= (int16_t)_fadeRate << 2; //Subtract 4x fade steps, so off/on delay will be 4s
 						channelOT.linkOnTime[j] += (uint32_t)(sysState.sysTick - _onTimeStamp) >> 5; //Add seconds
 						channelOT.linkSwCnt[j]++; //Increment switch counter
+						trfReq = true;
 					}
 				}
 				else //Level needs to be raised
 				{
 					tempLvl += ((-tempLvl > delta) ? delta : -tempLvl) + (int16_t)_lvl[s];
+					trfReq &= tempLvl > 0;
 					if (!gLevels[j]) //Lamp has been switched on - remember ticks
 						_onTimeStamp = sysState.sysTick;
 				}
 				gLevels[j] = tempLvl;
+				if (trfReq)
+				{
+					gLevelChg |= 1 << j;
+					PORTC.OUTSET = _chActMask; //Switch on activity LED
+				}
 			}
 		}
 	}
@@ -342,9 +351,15 @@ ISR(RTC_OVF_vect)
 	}
 	else
 		rs485busy = false;
+	#ifdef DSI_EDMA
+	EDMA.CH2.CTRLA = 0;
+	while (EDMA.CH2.CTRLB & EDMA_CH_CHBUSY_bm);
+	EDMA.CH2.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
+	#else
 	framePtr = DSI8xFrames;
 	TCD5.INTFLAGS |= TC5_OVFIF_bm;
 	TCD5.INTCTRLA = TC_OVFINTLVL_HI_gc;
+	#endif
 }
 
 ISR(ADCA_CH0_vect)
@@ -451,12 +466,14 @@ ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 	EDMA.CH1.CTRLB |= EDMA_CH_TRNIF_bm;
 }
 
+#ifndef DSI_EDMA
 ISR(TCD5_OVF_vect)
 {
 	PORTD.OUT = *framePtr++;
 	if (framePtr == &DSI8xFrames[sizeof(DSI8xFrames) - 1])
 		TCD5.INTCTRLA = TC_OVFINTLVL_OFF_gc;
 }
+#endif
 
 inline void mcuInit()
 {
@@ -497,7 +514,11 @@ inline void mcuInit()
 	USARTC0.CTRLC = USART_CMODE_ASYNCHRONOUS_gc | USART_SBMODE_bm | USART_CHSIZE_9BIT_gc;
 	USARTC0.BAUDCTRLA = 12;
 	USARTC0.BAUDCTRLB = 1 << USART_BSCALE_gp;
+	#ifdef DSI_EDMA
+	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_HI_gc;
+	#else
 	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_MED_gc;
+	#endif
 	//ADC configuration: 1MHz, 15bit oversampling
 	ADCA.CTRLA = ADC_ENABLE_bm;
 	ADCA.CTRLB = ADC_CONMODE_bm | ADC_RESOLUTION_MT12BIT_gc; //Signed mode
@@ -524,8 +545,18 @@ inline void mcuInit()
 	EDMA.CH1.CTRLB = EDMA_CH_TRNINTLVL_LO_gc; //Medium-level interrupt
 	EDMA.CH1.ADDRCTRL = EDMA_CH_RELOAD_BLOCK_gc | EDMA_CH_DIR_INC_gc;
 	EDMA.CH1.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_DRE_gc;
+	#ifdef DSI_EDMA
+	//EDMA standard channel 2: PORTD.OUT write
+	EVSYS.CH2MUX = EVSYS_CHMUX_TCD5_OVF_gc;
+	EDMA.CH2.TRIGSRC = EDMA_CH_TRIGSRC_EVSYS_CH2_gc;
+	EDMA.CH2.TRFCNT = sizeof(DSI8xFrames);
+	EDMA.CH2.ADDR = (register16_t)DSI8xFrames;
+	EDMA.CH2.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
+	EDMA.CH2.DESTADDR = (register16_t)&PORTD.OUT;
+	EDMA.CH2.DESTADDRCTRL = EDMA_CH_RELOAD_NONE_gc | EDMA_CH_DIR_FIXED_gc;
+	#endif
 	//EDMA: 1 standard and 2 peripheral channels
-	EDMA.CTRL = EDMA_ENABLE_bm | EDMA_CHMODE_STD2_gc | EDMA_DBUFMODE_DISABLE_gc;
+	EDMA.CTRL = EDMA_ENABLE_bm | EDMA_CHMODE_STD2_gc | EDMA_DBUFMODE_DISABLE_gc | EDMA_PRIMODE_RR0123_gc;
 	//CRC: CRC16 mode, source IO interface
 	CRC.CTRL = CRC_SOURCE_IO_gc;
 	sei();
