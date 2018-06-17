@@ -3,6 +3,7 @@
  * Version: 1.0 */
 
 #define DSI_EDMA
+#define RXC_EDMA
 
 #include "LC.h"
 #include <avr/io.h>
@@ -11,7 +12,7 @@
 #include <string.h>
 
 volatile int16_t gLevels[9] = {0};
-volatile uint8_t gLevelChg = 0, rxMode = 0;
+volatile uint8_t gLevelChg = 0, rxMode = 0, rxMark;
 #ifdef DSI_EDMA
 uint8_t DSI8xFrames[18];
 #else
@@ -293,7 +294,7 @@ void ApplyConfig()
 ISR(RTC_OVF_vect)
 {
 	sysState.sysTick++;
-	static bool rs485busy = false;
+	static uint8_t rs485busy = 0;
 	uint8_t i;
 	for (i = 0; i < 4; i++)
 		links[i].updateLevel();
@@ -341,19 +342,25 @@ ISR(RTC_OVF_vect)
 
 	if (rxMode == SetConfig) //We are currently receiving data packet
 	{
-		if (rs485busy) //Second tick in a row detected
+		if (rs485busy == rxMark) //Second tick in a row detected
 		{
 			rxMode = 0; //Packet considered lost
 			USARTC0.CTRLB |= USART_MPCM_bm; //Set MPCM bit
+			#ifdef RXC_EDMA
+			EDMA.CH0.CTRLA = 0;
+			while (EDMA.CH0.CTRLB & EDMA_CH_CHBUSY_bm);
+			USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_HI_gc;
+			#endif
 		}
 		else
-			rs485busy = true;
+			rs485busy = rxMark;
 	}
 	else
-		rs485busy = false;
+		rs485busy = rxMark - 1;
 	#ifdef DSI_EDMA
 	EDMA.CH2.CTRLA = 0;
 	while (EDMA.CH2.CTRLB & EDMA_CH_CHBUSY_bm);
+	EDMA.CH2.TRFCNT = sizeof(DSI8xFrames);
 	EDMA.CH2.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
 	#else
 	framePtr = DSI8xFrames;
@@ -404,8 +411,10 @@ ISR(ADCA_CH0_vect)
 
 ISR(USARTC0_RXC_vect) //Data received from RS485
 {
+	#ifndef RXC_EDMA
 	static uint8_t uCnt;
 	static uint8_t *rxBuf;
+	#endif
 	uint8_t data = USARTC0.DATA;
 	if (USARTC0.CTRLB & USART_MPCM_bm) //Address listening mode
 	{
@@ -415,8 +424,15 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 			rxMode = data;
 			if (data == SetConfig)
 			{
-				uCnt = sizeof(systemConfig); //Bytes to receive
+				rxMark = (uint8_t)sysState.sysTick;
+				#ifdef RXC_EDMA
+				EDMA.CH0.TRFCNT = sizeof(systemConfig); //Bytes to receive into iobuf
+				EDMA.CH0.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
+				USARTC0.CTRLA = USART_RXCINTLVL_OFF_gc; //Disable interrupt
+				#else
+				uCnt = sizeof(systemConfig);
 				rxBuf = iobuf; //First byte address in structure
+				#endif
 			}
 			else //Data transmit request
 			{
@@ -440,12 +456,13 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 					EDMA.CH1.TRFCNT = sizeof(channelsOnTime);
 					EDMA.CH1.ADDR = (uint16_t)iobuf;
 				}
-				EDMA.CH1.CTRLA |= EDMA_CH_ENABLE_bm;
+				EDMA.CH1.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
 			}
 		}
 		else
 			rxMode = 0;
 	}
+	#ifndef RXC_EDMA
 	else if (rxMode == SetConfig)
 	{
 		*rxBuf++ = data;
@@ -457,7 +474,19 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 				ApplyConfig();
 		}
 	}
+	#endif
 }
+
+#ifdef RXC_EDMA
+ISR(EDMA_CH0_vect)
+{
+	rxMode = 0;
+	USARTC0.CTRLB |= USART_MPCM_bm; //Set MPCM bit
+	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_HI_gc;
+	if (CalculateCRC16(iobuf, sizeof(systemConfig) - 2) == ((systemConfig*)iobuf)->CRC16)
+		ApplyConfig();
+}
+#endif
 
 ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 {
@@ -541,15 +570,19 @@ inline void mcuInit()
 	TCD5.CTRLB = TC_WGMODE_NORMAL_gc;
 	TCD5.PERBUF = 417;
 	TCD5.CTRLGCLR = TC5_STOP_bm;
+	//EDMA peripheral channel 0: USARTC read transfer
+	EDMA.CH0.CTRLB = EDMA_CH_TRNINTLVL_LO_gc;
+	EDMA.CH0.ADDRCTRL = EDMA_CH_RELOAD_BLOCK_gc | EDMA_CH_DIR_INC_gc;
+	EDMA.CH0.ADDR = (register16_t)iobuf;
+	EDMA.CH0.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_RXC_gc;
 	//EDMA peripheral channel 1: USARTC write transfer
-	EDMA.CH1.CTRLB = EDMA_CH_TRNINTLVL_LO_gc; //Medium-level interrupt
+	EDMA.CH1.CTRLB = EDMA_CH_TRNINTLVL_LO_gc; //Low-level interrupt
 	EDMA.CH1.ADDRCTRL = EDMA_CH_RELOAD_BLOCK_gc | EDMA_CH_DIR_INC_gc;
 	EDMA.CH1.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_DRE_gc;
 	#ifdef DSI_EDMA
 	//EDMA standard channel 2: PORTD.OUT write
 	EVSYS.CH2MUX = EVSYS_CHMUX_TCD5_OVF_gc;
 	EDMA.CH2.TRIGSRC = EDMA_CH_TRIGSRC_EVSYS_CH2_gc;
-	EDMA.CH2.TRFCNT = sizeof(DSI8xFrames);
 	EDMA.CH2.ADDR = (register16_t)DSI8xFrames;
 	EDMA.CH2.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
 	EDMA.CH2.DESTADDR = (register16_t)&PORTD.OUT;
