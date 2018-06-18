@@ -8,9 +8,9 @@
 #include <avr/interrupt.h>
 
 uint8_t uBuf[64];
-bool u1rx = false;
-uint8_t destAddr;
-uint8_t *u1rxBuf = uBuf, *u0txBuf = uBuf;
+volatile bool u1rx = false;
+volatile uint8_t destAddr;
+volatile uint8_t *u1rxBuf = uBuf, *u0txBuf = uBuf;
 
 ISR (USART0_RX_vect) //Data from RS485
 {

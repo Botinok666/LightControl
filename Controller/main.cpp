@@ -81,6 +81,12 @@ public:
 		for (uint8_t i = 0; i < _linkCnt; i++)
 		{
 			pos = _link[i];
+			if (validConf.overrideCfg == (pos | 0x10))
+			{
+				if (_lvl[i] == gLevels[pos]) //Refresh saved ticks value only if no dimming in the process right now
+					_tickLastChg = sysState.sysTick;				
+				_lvl[i] = validConf.overrideLvl;
+			}
 			min = pos > 7 ? 4 : validConf.minLvl[pos];
 			max = pos > 7 ? 63 : validConf.maxLvl[pos];
 			_minLvl[i] = (min < 222) ? min + 1 : 223;
@@ -102,8 +108,12 @@ public:
 	void setLevel(uint8_t level) //Accepts level in the range 0…255
 	{
 		bool dimInProcess = false;
+		uint8_t oLvl = sysState.linkLevels[_linkNum];
+		int16_t tempLvl = (int16_t)oLvl - level;
+		if (-3 < tempLvl && tempLvl < 3 && ((level == 0) == (0 == oLvl)))
+			return;
 		sysState.linkLevels[_linkNum] = level;
-		
+
 		for (uint8_t i = 0; i < _linkCnt; i++)
 		{
 			dimInProcess |= (_lvl[i] != gLevels[_link[i]]);
@@ -132,7 +142,6 @@ public:
 			int16_t tempLvl = gLevels[j] - _lvl[s]; //Difference between actual and set levels
 			if (tempLvl && ticksEl >= i * _linkDelay)
 			{
-				bool trfReq = -2 > tempLvl || tempLvl > 2;
 				if (tempLvl > 0) //Level needs to be lowered
 				{
 					tempLvl -= ((tempLvl > delta) ? delta : tempLvl) - (int16_t)_lvl[s];
@@ -141,39 +150,19 @@ public:
 						tempLvl -= (int16_t)_fadeRate << 2; //Subtract 4x fade steps, so off/on delay will be 4s
 						channelOT.linkOnTime[j] += (uint32_t)(sysState.sysTick - _onTimeStamp) >> 5; //Add seconds
 						channelOT.linkSwCnt[j]++; //Increment switch counter
-						trfReq = true;
 					}
 				}
 				else //Level needs to be raised
 				{
 					tempLvl += ((-tempLvl > delta) ? delta : -tempLvl) + (int16_t)_lvl[s];
 					if (!gLevels[j] && tempLvl > 0) //Lamp has been switched on - remember ticks
-					{
 						_onTimeStamp = sysState.sysTick;
-						trfReq = true;
-					}
 				}
 				gLevels[j] = tempLvl;
-				if (trfReq)
-				{
-					gLevelChg |= 1 << j;
-					PORTC.OUTSET = _chActMask; //Switch on activity LED
-				}
+				gLevelChg |= 1 << j;
+				PORTC.OUTSET = _chActMask; //Switch on activity LED
 			}
 		}
-	}
-
-	void overrideCheck()
-	{
-		bool dimInProcess = false;
-		for (uint8_t i = 0; i < _linkCnt; i++)
-		{
-			uint8_t j = _link[i];
-			dimInProcess |= (_lvl[i] != gLevels[j]);
-			_lvl[i] = validConf.overrideLvl;
-		}
-		if (!dimInProcess) //Refresh saved ticks value only if no dimming in the process right now
-			_tickLastChg = sysState.sysTick;
 	}
 } links[4] = { LCport(0, 3, 7, 6, 5), LCport(1, 3, 4, 3, 2),
 #ifndef BOARD_A
@@ -278,10 +267,7 @@ void ApplyConfig()
 	}
 	memcpy(&validConf, iobuf, sizeof(systemConfig));
 	for (uint8_t i = 0; i < 4; i++)
-	{
 		links[i].setParams();
-		links[i].overrideCheck();
-	}
 	msenCh.setParams();
 	if (validConf.groupConf & 0x08) //Bit 3 is set: save config to EEPROM
 		eeprom_update_block(&validConf, &savedConfig, sizeof(systemConfig));
@@ -383,7 +369,6 @@ ISR(ADCA_CH0_vect)
 			sysState.linksMask |= (0x10 << sAdcCnt); //Set 'non-zero' bit
 			links[sAdcCnt].setLevel((uint8_t)result);
 		}
-
 	}
 	else if (sAdcCnt < 4)
 		sysState.linksMask &= ~(0x11 << sAdcCnt); //Clear 'valid' and 'non-zero' bits
@@ -471,9 +456,10 @@ ISR(EDMA_CH0_vect)
 {
 	rxMode = 0;
 	USARTC0.CTRLB |= USART_MPCM_bm; //Set MPCM bit
-	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_HI_gc;
+	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_MED_gc;
 	if (CalculateCRC16(iobuf, sizeof(systemConfig) - 2) == ((systemConfig*)iobuf)->CRC16)
 		ApplyConfig();
+	EDMA.CH0.CTRLB = EDMA_CH_TRNIF_bm;
 }
 #endif
 
@@ -481,7 +467,7 @@ ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 {
 	UCRXen(); //Set bus in the idle state
 	rxMode = 0;
-	EDMA.CH1.CTRLB |= EDMA_CH_TRNIF_bm;
+	EDMA.CH1.CTRLB = EDMA_CH_TRNIF_bm;
 }
 
 ISR(TCD5_OVF_vect)
@@ -529,7 +515,7 @@ inline void mcuInit()
 	//USARTC configuration: start / 9 data / 2 stop; 76.8kbps baud, multi-processor communication
 	USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm | USART_MPCM_bm;
 	USARTC0.CTRLC = USART_CMODE_ASYNCHRONOUS_gc | USART_SBMODE_bm | USART_CHSIZE_9BIT_gc;
-	USARTC0.BAUDCTRLA = 12;
+	USARTC0.BAUDCTRLA = 12 << USART_BSEL_gp;
 	USARTC0.BAUDCTRLB = 1 << USART_BSCALE_gp;
 	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_MED_gc;
 	//ADC configuration: 1MHz, 15bit oversampling

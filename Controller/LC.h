@@ -13,7 +13,7 @@
 #define LINK_VALID_MIN	5101
 #define LINK_VALID_MAX	31577
 #define LINK_ON_BARRIER	6981
-#define LINK_1PERC_CODE	(int16_t)8592
+#define LINK_1PERC_CODE	8592
 #define LINK_SCALE		84
 
 #define MSEN_VALID_MIN	20
@@ -36,6 +36,6 @@
 #define CmdUC		0x34
 #endif //BOARD_A
 
-#define UCRXen()	PORTC.OUTCLR = (1 << PIN1_bm)
+#define UCRXen()	(PORTC.OUTCLR = PIN1_bm)
 
 #endif /* LC_H_ */
