@@ -196,11 +196,11 @@ void inline U0TXen()
 	_delay_us(2);
 }
 
-uint16_t CalculateCRC16(void *arr, uint8_t count)
+uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
 	uint16_t CRC16 = 0;
-	while (--count)
+	while (--count >= 0)
 		CRC16 = _crc_xmodem_update(CRC16, *ptr++);
 	return CRC16;
 }

@@ -25,11 +25,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  10 .debug_frame  0000022c  00000000  00000000  000032c8  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    0000073e  00000000  00000000  000034f4  2**0
+ 11 .debug_str    00000734  00000000  00000000  000034f4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00000820  00000000  00000000  00003c32  2**0
+ 12 .debug_loc    00000820  00000000  00000000  00003c28  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000078  00000000  00000000  00004452  2**0
+ 13 .debug_ranges 00000078  00000000  00000000  00004448  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -707,15 +707,15 @@ ISR (ADC_vect)
  4a8:	1f 90       	pop	r1
  4aa:	18 95       	reti
 
-000004ac <_Z14CalculateCRC16Pvh>:
+000004ac <_Z14CalculateCRC16Pva>:
 
-uint16_t CalculateCRC16(void *arr, uint8_t count)
+uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
 	uint16_t CRC16 = 0;
-	while (--count)
+	while (--count >= 0)
  4ac:	61 50       	subi	r22, 0x01	; 1
- 4ae:	09 f1       	breq	.+66     	; 0x4f2 <_Z14CalculateCRC16Pvh+0x46>
+ 4ae:	0a f1       	brmi	.+66     	; 0x4f2 <_Z14CalculateCRC16Pva+0x46>
  4b0:	e8 2f       	mov	r30, r24
  4b2:	f9 2f       	mov	r31, r25
  4b4:	80 e0       	ldi	r24, 0x00	; 0
@@ -753,24 +753,24 @@ uint16_t CalculateCRC16(void *arr, uint8_t count)
  4e6:	93 27       	eor	r25, r19
  4e8:	98 27       	eor	r25, r24
  4ea:	82 2f       	mov	r24, r18
+ 4ec:	61 50       	subi	r22, 0x01	; 1
 
-uint16_t CalculateCRC16(void *arr, uint8_t count)
+uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
 	uint16_t CRC16 = 0;
-	while (--count)
- 4ec:	61 50       	subi	r22, 0x01	; 1
- 4ee:	21 f7       	brne	.-56     	; 0x4b8 <_Z14CalculateCRC16Pvh+0xc>
+	while (--count >= 0)
+ 4ee:	22 f7       	brpl	.-56     	; 0x4b8 <_Z14CalculateCRC16Pva+0xc>
  4f0:	08 95       	ret
 }
 
-uint16_t CalculateCRC16(void *arr, uint8_t count)
+uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
 	uint16_t CRC16 = 0;
  4f2:	80 e0       	ldi	r24, 0x00	; 0
  4f4:	90 e0       	ldi	r25, 0x00	; 0
-	while (--count)
+	while (--count >= 0)
 		CRC16 = _crc_xmodem_update(CRC16, *ptr++);
 	return CRC16;
 }
@@ -1278,7 +1278,7 @@ void inline mcuInit()
 	validConf.CRC16 = CalculateCRC16(&validConf, sizeof(sysConfig) - 2);
  84a:	69 e0       	ldi	r22, 0x09	; 9
  84c:	ce 01       	movw	r24, r28
- 84e:	2e de       	rcall	.-932    	; 0x4ac <_Z14CalculateCRC16Pvh>
+ 84e:	2e de       	rcall	.-932    	; 0x4ac <_Z14CalculateCRC16Pva>
  850:	9a 87       	std	Y+10, r25	; 0x0a
  852:	89 87       	std	Y+9, r24	; 0x09
 	sei();
@@ -1374,7 +1374,7 @@ void inline ResponseProcessing()
  89c:	6f e0       	ldi	r22, 0x0F	; 15
  89e:	83 e0       	ldi	r24, 0x03	; 3
  8a0:	91 e0       	ldi	r25, 0x01	; 1
- 8a2:	04 de       	rcall	.-1016   	; 0x4ac <_Z14CalculateCRC16Pvh>
+ 8a2:	04 de       	rcall	.-1016   	; 0x4ac <_Z14CalculateCRC16Pva>
  8a4:	90 93 13 01 	sts	0x0113, r25	; 0x800113 <tmpStatus+0x10>
  8a8:	80 93 12 01 	sts	0x0112, r24	; 0x800112 <tmpStatus+0xf>
 		validStatus = tmpStatus;
@@ -1422,7 +1422,7 @@ void inline ResponseProcessing()
  8f2:	69 e0       	ldi	r22, 0x09	; 9
  8f4:	85 e2       	ldi	r24, 0x25	; 37
  8f6:	91 e0       	ldi	r25, 0x01	; 1
- 8f8:	d9 dd       	rcall	.-1102   	; 0x4ac <_Z14CalculateCRC16Pvh>
+ 8f8:	d9 dd       	rcall	.-1102   	; 0x4ac <_Z14CalculateCRC16Pva>
  8fa:	20 91 2e 01 	lds	r18, 0x012E	; 0x80012e <rcvdConf+0x9>
  8fe:	30 91 2f 01 	lds	r19, 0x012F	; 0x80012f <rcvdConf+0xa>
  902:	82 17       	cp	r24, r18

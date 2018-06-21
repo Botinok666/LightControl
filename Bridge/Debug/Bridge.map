@@ -329,9 +329,10 @@ END GROUP
                 0x0080010b                u0txBuf
  .data.u1rxBuf  0x0080010d        0x2 main.o
                 0x0080010d                u1rxBuf
+ *(.gnu.linkonce.d*)
  *(.rodata)
  *(.rodata*)
- *(.gnu.linkonce.d*)
+ *(.gnu.linkonce.r*)
                 0x00800110                . = ALIGN (0x2)
  *fill*         0x0080010f        0x1 
                 0x00800110                _edata = .
@@ -448,11 +449,11 @@ END GROUP
  *(.debug_frame)
  .debug_frame   0x00000000       0xf4 main.o
 
-.debug_str      0x00000000      0x4e2
+.debug_str      0x00000000      0x4d8
  *(.debug_str)
  .debug_str     0x00000000      0x2a5 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
- .debug_str     0x000002a5      0x23d main.o
-                                0x271 (size before relaxing)
+ .debug_str     0x000002a5      0x233 main.o
+                                0x267 (size before relaxing)
 
 .debug_loc      0x00000000      0x1e5
  *(.debug_loc)

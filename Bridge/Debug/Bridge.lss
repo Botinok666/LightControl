@@ -23,11 +23,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_frame  000000f4  00000000  00000000  00001a04  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000004e2  00000000  00000000  00001af8  2**0
+ 10 .debug_str    000004d8  00000000  00000000  00001af8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000001e5  00000000  00000000  00001fda  2**0
+ 11 .debug_loc    000001e5  00000000  00000000  00001fd0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000038  00000000  00000000  000021bf  2**0
+ 12 .debug_ranges 00000038  00000000  00000000  000021b5  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -107,7 +107,7 @@ Disassembly of section .text:
 00000074 <__vector_22>:
 volatile uint8_t destAddr;
 volatile uint8_t *u1rxBuf = uBuf, *u0txBuf = uBuf;
-uint8_t tBuf[11] = {93,20,0,25,0,111,0,88,0,0x3c,0xab};
+uint8_t tBuf[11] = {93,20,0,25,0,111,0,88,0,0x81,0x38};
 
 ISR (USART0_RX_vect) //Data from RS485
 {
@@ -360,28 +360,28 @@ ISR (USART1_TX_vect)
  21a:	9f 93       	push	r25
  21c:	ef 93       	push	r30
  21e:	ff 93       	push	r31
-	UDR1 = *u0txBuf++;
+	if (*u0txBuf == tBuf[sizeof(tBuf) - 1])
  220:	e0 91 0b 01 	lds	r30, 0x010B	; 0x80010b <u0txBuf>
  224:	f0 91 0c 01 	lds	r31, 0x010C	; 0x80010c <u0txBuf+0x1>
- 228:	cf 01       	movw	r24, r30
- 22a:	01 96       	adiw	r24, 0x01	; 1
- 22c:	90 93 0c 01 	sts	0x010C, r25	; 0x80010c <u0txBuf+0x1>
- 230:	80 93 0b 01 	sts	0x010B, r24	; 0x80010b <u0txBuf>
- 234:	80 81       	ld	r24, Z
- 236:	80 93 90 00 	sts	0x0090, r24	; 0x800090 <__EEPROM_REGION_LENGTH__+0x7f0090>
-	if (*u0txBuf == tBuf[sizeof(tBuf) - 1])
- 23a:	e0 91 0b 01 	lds	r30, 0x010B	; 0x80010b <u0txBuf>
- 23e:	f0 91 0c 01 	lds	r31, 0x010C	; 0x80010c <u0txBuf+0x1>
- 242:	90 81       	ld	r25, Z
- 244:	80 91 0a 01 	lds	r24, 0x010A	; 0x80010a <__data_start+0xa>
- 248:	98 13       	cpse	r25, r24
- 24a:	05 c0       	rjmp	.+10     	; 0x256 <__vector_28+0x48>
+ 228:	90 81       	ld	r25, Z
+ 22a:	80 91 0a 01 	lds	r24, 0x010A	; 0x80010a <__data_start+0xa>
+ 22e:	98 13       	cpse	r25, r24
+ 230:	05 c0       	rjmp	.+10     	; 0x23c <__vector_28+0x2e>
 		UCSR1B &= ~(1 << TXCIE1);
- 24c:	e5 e9       	ldi	r30, 0x95	; 149
- 24e:	f0 e0       	ldi	r31, 0x00	; 0
+ 232:	e5 e9       	ldi	r30, 0x95	; 149
+ 234:	f0 e0       	ldi	r31, 0x00	; 0
+ 236:	80 81       	ld	r24, Z
+ 238:	8f 7b       	andi	r24, 0xBF	; 191
+ 23a:	80 83       	st	Z, r24
+	UDR1 = *u0txBuf++;
+ 23c:	e0 91 0b 01 	lds	r30, 0x010B	; 0x80010b <u0txBuf>
+ 240:	f0 91 0c 01 	lds	r31, 0x010C	; 0x80010c <u0txBuf+0x1>
+ 244:	cf 01       	movw	r24, r30
+ 246:	01 96       	adiw	r24, 0x01	; 1
+ 248:	90 93 0c 01 	sts	0x010C, r25	; 0x80010c <u0txBuf+0x1>
+ 24c:	80 93 0b 01 	sts	0x010B, r24	; 0x80010b <u0txBuf>
  250:	80 81       	ld	r24, Z
- 252:	8f 7b       	andi	r24, 0xBF	; 191
- 254:	80 83       	st	Z, r24
+ 252:	80 93 90 00 	sts	0x0090, r24	; 0x800090 <__EEPROM_REGION_LENGTH__+0x7f0090>
 }
  256:	ff 91       	pop	r31
  258:	ef 91       	pop	r30

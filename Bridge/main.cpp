@@ -11,7 +11,7 @@ uint8_t uBuf[64];
 volatile bool u1rx = false;
 volatile uint8_t destAddr;
 volatile uint8_t *u1rxBuf = uBuf, *u0txBuf = uBuf;
-uint8_t tBuf[11] = {93,20,0,25,0,111,0,88,0,0x3c,0xab};
+uint8_t tBuf[11] = {93,20,0,25,0,111,0,88,0,0x81,0x38};
 
 ISR (USART0_RX_vect) //Data from RS485
 {
@@ -80,9 +80,9 @@ ISR (USART1_RX_vect) //Data from RasPi
 
 ISR (USART1_TX_vect)
 {
-	UDR1 = *u0txBuf++;
 	if (*u0txBuf == tBuf[sizeof(tBuf) - 1])
 		UCSR1B &= ~(1 << TXCIE1);
+	UDR1 = *u0txBuf++;
 }
 
 ISR (TIMER0_OVF_vect) //555µs timeout

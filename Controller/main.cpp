@@ -159,8 +159,11 @@ public:
 						_onTimeStamp = sysState.sysTick;
 				}
 				gLevels[j] = tempLvl;
-				gLevelChg |= 1 << j;
-				PORTC.OUTSET = _chActMask; //Switch on activity LED
+				if (tempLvl >= 0)
+				{
+					gLevelChg |= 1 << j;
+					PORTC.OUTSET = _chActMask; //Switch on activity LED
+				}
 			}
 		}
 	}
@@ -245,11 +248,11 @@ void inline UCTXen()
 	_delay_us(2);
 }
 
-uint16_t CalculateCRC16(void *arr, uint8_t count)
+uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
 	CRC.CTRL |= CRC_RESET_RESET0_gc;
-	while (--count)
+	while (--count >= 0)
 		CRC.DATAIN = *ptr++;
 	return ((uint16_t)CRC.CHECKSUM1 << 8) | CRC.CHECKSUM0;
 }
