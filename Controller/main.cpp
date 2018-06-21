@@ -324,8 +324,8 @@ ISR(RTC_OVF_vect)
 		ADCA.CTRLA |= ADC_START_bm; //Start conversion from pin 1 (channel 1)
 	}
 
-	int16_t h = (int8_t)sysState.sysTick;
-	TCC4.CCABUF = h * h; //This will produce slow fading of HB LED (4s up/down)
+	if (!((uint8_t)sysState.sysTick & 0x1F))
+		PORTC.OUTTGL = PIN0_bm; //Heartbeat LED
 
 	if (((uint32_t)sysState.sysTick & 0x7FFFF) == 0) //Save state to EEPROM every 4.5 hrs
 		eeprom_update_block(&channelOT, &savedCOT, sizeof(channelsOnTime));
@@ -536,14 +536,6 @@ inline void mcuInit()
 	ADCA.CH0.CTRL = ADC_CH_INPUTMODE_SINGLEENDED_gc | ADC_CH_GAIN_1X_gc;
 	ADCA.CH0.INTCTRL = ADC_CH_INTMODE_COMPLETE_gc | ADC_CH_INTLVL_LO_gc;
 	ADCA.CH0.AVGCTRL = ADC_CH_SAMPNUM_16X_gc; //This will produce 15 bit result
-	//TCC4 configuration: 8MHz, dual slope 244Hz (heartbeat LED)
-	TCC4.CTRLA = TC_CLKSEL_DIV4_gc;
-	TCC4.CTRLB = TC_BYTEM_NORMAL_gc | TC_CIRCEN_DISABLE_gc | TC_WGMODE_DSTOP_gc;
-	TCC4.CTRLC = TC4_POLA_bm;
-	TCC4.CTRLE = TC_CCAMODE_COMP_gc;
-	TCC4.PERBUF = 16384;
-	TCC4.CCABUF = 0;
-	TCC4.CTRLGCLR = TC4_STOP_bm;
 	//TCD5 configuration: 500kHz, 1199Hz overflow rate
 	TCD5.CTRLA = TC_CLKSEL_DIV64_gc;
 	TCD5.CTRLB = TC_WGMODE_NORMAL_gc;
@@ -560,6 +552,11 @@ inline void mcuInit()
 	EDMA.CH1.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_DRE_gc;
 	//EDMA: 1 standard and 2 peripheral channels
 	EDMA.CTRL = EDMA_ENABLE_bm | EDMA_CHMODE_STD2_gc | EDMA_DBUFMODE_DISABLE_gc | EDMA_PRIMODE_RR0123_gc;
+	//Power reduction
+	PR.PRGEN = PR_XCL_bm | PR_EVSYS_bm;
+	PR.PRPA = PR_DAC_bm | PR_AC_bm;
+	PR.PRPC = PR_TWI_bm | PR_SPI_bm | PR_HIRES_bm | PR_TC5_bm | PR_TC4_bm;
+	PR.PRPD = PR_USART0_bm;
 	sei();
 }
 

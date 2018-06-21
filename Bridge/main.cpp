@@ -15,13 +15,7 @@ volatile uint8_t *u1rxBuf = uBuf, *u0txBuf = uBuf;
 ISR (USART0_RX_vect) //Data from RS485
 {
 	TCNT1 = 0;
-	if (UCSR0A & (1 << UPE0))
-	{
-		UDR1 = 0xFF;
-		uBuf[63] = UDR0; //Discard damaged byte
-	}
-	else
-		UDR1 = UDR0; //Retransmit received byte directly because RS485 is slower than RasPi
+	UDR1 = UDR0; //Retransmit received byte directly because RS485 is slower than RasPi
 }
 
 ISR (USART0_TX_vect) //Data into RS485
@@ -51,7 +45,7 @@ ISR (USART1_RX_vect) //Data from RasPi
 	if (!u1rx)
 	{
 		destAddr = UDR1;
-		PORTA |= (1 << PORTA3);
+		U0TXen();
 		_delay_us(2);
 		UCSR0B |= (1 << TXB80);
 		UDR0 = destAddr; //Send address over RS485
@@ -85,7 +79,7 @@ inline void mcuInit()
 	//USART 0: 76.8kbps, frame bits: start / 9 data / 2 stop, multi-processor communication
 	UBRR0 = 2; //Actual maximum transfer rate: 6400Bps
 	UCSR0B = (1 << RXCIE0) | (1 << TXCIE0) | (1 << RXEN0) | (1 << TXEN0) | (1 << UCSZ02); //Interrupts enabled
-	UCSR0C = (1 << UPM01) | (1 << USBS0) | (1 << UCSZ01) | (1 << UCSZ00);
+	UCSR0C = (1 << USBS0) | (1 << UCSZ01) | (1 << UCSZ00);
 	UCSR0A = (1 << MPCM0);
 	//USART 1: 76.8kbps, frame bits: start / 8 data / no parity / 1 stop
 	UBRR1 = 2; //Actual maximum transfer rate: 7680Bps
