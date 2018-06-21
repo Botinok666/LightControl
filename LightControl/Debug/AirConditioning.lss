@@ -25,11 +25,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  10 .debug_frame  0000022c  00000000  00000000  000032c8  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00000734  00000000  00000000  000034f4  2**0
+ 11 .debug_str    0000073e  00000000  00000000  000034f4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00000820  00000000  00000000  00003c28  2**0
+ 12 .debug_loc    00000822  00000000  00000000  00003c32  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000078  00000000  00000000  00004448  2**0
+ 13 .debug_ranges 00000078  00000000  00000000  00004454  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -712,14 +712,14 @@ ISR (ADC_vect)
 uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
-	uint16_t CRC16 = 0;
+	uint16_t CRC16 = 0xffff;
 	while (--count >= 0)
  4ac:	61 50       	subi	r22, 0x01	; 1
  4ae:	0a f1       	brmi	.+66     	; 0x4f2 <_Z14CalculateCRC16Pva+0x46>
  4b0:	e8 2f       	mov	r30, r24
  4b2:	f9 2f       	mov	r31, r25
- 4b4:	80 e0       	ldi	r24, 0x00	; 0
- 4b6:	90 e0       	ldi	r25, 0x00	; 0
+ 4b4:	8f ef       	ldi	r24, 0xFF	; 255
+ 4b6:	9f ef       	ldi	r25, 0xFF	; 255
 		CRC16 = _crc_xmodem_update(CRC16, *ptr++);
  4b8:	21 91       	ld	r18, Z+
         "eor    %B0,%A0"         "\n\t" /* ret.hi is now ready. */
@@ -758,7 +758,7 @@ uint16_t CalculateCRC16(void *arr, int8_t count)
 uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
-	uint16_t CRC16 = 0;
+	uint16_t CRC16 = 0xffff;
 	while (--count >= 0)
  4ee:	22 f7       	brpl	.-56     	; 0x4b8 <_Z14CalculateCRC16Pva+0xc>
  4f0:	08 95       	ret
@@ -767,9 +767,9 @@ uint16_t CalculateCRC16(void *arr, int8_t count)
 uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
-	uint16_t CRC16 = 0;
- 4f2:	80 e0       	ldi	r24, 0x00	; 0
- 4f4:	90 e0       	ldi	r25, 0x00	; 0
+	uint16_t CRC16 = 0xffff;
+ 4f2:	8f ef       	ldi	r24, 0xFF	; 255
+ 4f4:	9f ef       	ldi	r25, 0xFF	; 255
 	while (--count >= 0)
 		CRC16 = _crc_xmodem_update(CRC16, *ptr++);
 	return CRC16;

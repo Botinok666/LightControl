@@ -84,7 +84,7 @@ public:
 			if (validConf.overrideCfg == (pos | 0x10))
 			{
 				if (_lvl[i] == gLevels[pos]) //Refresh saved ticks value only if no dimming in the process right now
-					_tickLastChg = sysState.sysTick;				
+					_tickLastChg = sysState.sysTick;
 				_lvl[i] = validConf.overrideLvl;
 			}
 			min = pos > 7 ? 4 : validConf.minLvl[pos];
@@ -134,7 +134,8 @@ public:
 	{
 		int16_t ticksEl = (int16_t)(sysState.sysTick - _tickLastChg); //Elapsed ticks since beginning of dim
 		int16_t delta = (((ticksEl + 1) * _fadeRate) >> 5) - ((ticksEl * _fadeRate) >> 5); //Number of steps
-		PORTC.OUTCLR = _chActMask;
+		if (_chActMask != PIN4_bm)
+			PORTC.OUTCLR = _chActMask;
 		for (int8_t i = 0; i < _linkCnt; i++)
 		{
 			uint8_t s = _dir ? i : _linkCnt - i - 1; //Direction '1' means forward
@@ -162,7 +163,8 @@ public:
 				if (tempLvl >= 0)
 				{
 					gLevelChg |= 1 << j;
-					PORTC.OUTSET = _chActMask; //Switch on activity LED
+					if (_chActMask != PIN4_bm)
+						PORTC.OUTSET = _chActMask; //Switch on activity LED
 				}
 			}
 		}
@@ -251,10 +253,12 @@ void inline UCTXen()
 uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
-	CRC.CTRL |= CRC_RESET_RESET0_gc;
+	CRC.CTRL = CRC_RESET_RESET1_gc | CRC_SOURCE_IO_gc;
 	while (--count >= 0)
 		CRC.DATAIN = *ptr++;
-	return ((uint16_t)CRC.CHECKSUM1 << 8) | CRC.CHECKSUM0;
+	uint16_t result = ((uint16_t)CRC.CHECKSUM1 << 8) | CRC.CHECKSUM0;
+	CRC.CTRL = CRC_SOURCE_DISABLE_gc;
+	return result;
 }
 
 void ApplyConfig()
@@ -410,6 +414,7 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 				uCnt = sizeof(systemConfig);
 				rxBuf = iobuf; //First byte address in structure
 				#endif
+				PORTC.OUTCLR = PIN4_bm;
 			}
 			else //Data transmit request
 			{
@@ -425,6 +430,7 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 					((systemState*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(systemState) - 2);
 					EDMA.CH1.TRFCNT = sizeof(systemState);
 					EDMA.CH1.ADDR = (uint16_t)iobuf;
+					PORTC.OUTSET = PIN4_bm;
 				}
 				else //Get on time
 				{
@@ -554,8 +560,6 @@ inline void mcuInit()
 	EDMA.CH1.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_DRE_gc;
 	//EDMA: 1 standard and 2 peripheral channels
 	EDMA.CTRL = EDMA_ENABLE_bm | EDMA_CHMODE_STD2_gc | EDMA_DBUFMODE_DISABLE_gc | EDMA_PRIMODE_RR0123_gc;
-	//CRC: CRC16 mode, source IO interface
-	CRC.CTRL = CRC_SOURCE_IO_gc;
 	sei();
 }
 

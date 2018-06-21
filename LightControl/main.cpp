@@ -199,7 +199,7 @@ void inline U0TXen()
 uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
-	uint16_t CRC16 = 0;
+	uint16_t CRC16 = 0xffff;
 	while (--count >= 0)
 		CRC16 = _crc_xmodem_update(CRC16, *ptr++);
 	return CRC16;
