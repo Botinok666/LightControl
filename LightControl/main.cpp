@@ -7,9 +7,10 @@
 #include <avr/io.h>
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
+#include <string.h>
 #include <util/crc16.h>
 
-volatile bool tReq, tRdy, sRdy, amRead, dRdy = false;
+volatile bool tRdy, sRdy, amRead, dRdy = false;
 volatile uint8_t tachCnt, txCnt, rxMode = 0, cycles;
 volatile uint16_t tachPrev, adcSum;
 uint32_t tachSum;
@@ -46,6 +47,21 @@ union am2302 {
 
 sysConfig EEMEM eConf = { 0xFF, 100, 400, 40, 80, 0 };
 
+void inline U0TXen()
+{
+	PORTA |= (1 << PORTA5);
+	_delay_us(39);
+}
+
+uint16_t CalculateCRC16(void *arr, int8_t count)
+{
+	uint8_t *ptr = (uint8_t*)arr;
+	uint16_t CRC16 = 0xffff;
+	while (--count >= 0)
+		CRC16 = _crc_xmodem_update(CRC16, *ptr++);
+	return CRC16;
+}
+
 ISR (USART0_RX_vect)
 {
 	static char uCnt = 0;
@@ -68,7 +84,22 @@ ISR (USART0_RX_vect)
 				TIMSK0 |= (1 << OCIE0A); //Enable packet lost interrupt
 			}
 			else
-				tReq = true; //Data transmit request
+			{
+				U0TXen();
+				if (rxMode == GetConfig)
+				{
+					txCnt = sizeof(sysConfig) - 1; //Because one byte will be send right there
+					txBuf = (uint8_t*)&validConf;
+				}
+				else //Get status
+				{
+					tmpStatus.CRC16 = CalculateCRC16(&tmpStatus, sizeof(sysStatus) - 2);
+					memcpy(&validStatus, &tmpStatus, sizeof(sysStatus));
+					txCnt = sizeof(sysStatus) - 1;
+					txBuf = (uint8_t*)&validStatus;
+				}
+				UDR0 = *txBuf++; //Send first byte
+			}
 		}
 		else
 			rxMode = 0;
@@ -86,9 +117,9 @@ ISR (USART0_RX_vect)
 	}
 }
 
-ISR (USART0_UDRE_vect) //Transmit to RS485
+ISR (USART0_TX_vect) //Transmit to RS485
 {
-	if (--txCnt)
+	if (txCnt--)
 		UDR0 = *txBuf++; //Send next character from the given buffer
 	else
 	{
@@ -190,39 +221,6 @@ ISR (ADC_vect)
 	adcSum += ADC;
 }
 
-void inline U0TXen()
-{
-	PORTA |= (1 << PORTA5);
-	_delay_us(2);
-}
-
-uint16_t CalculateCRC16(void *arr, int8_t count)
-{
-	uint8_t *ptr = (uint8_t*)arr;
-	uint16_t CRC16 = 0xffff;
-	while (--count >= 0)
-		CRC16 = _crc_xmodem_update(CRC16, *ptr++);
-	return CRC16;
-}
-
-void inline ResponseProcessing()
-{
-	U0TXen();
-	if (rxMode == GetConfig)
-	{
-		txCnt = sizeof(sysConfig) - 1; //Because one byte will be send right there
-		txBuf = (uint8_t*)&validConf;
-	}
-	else //Get status
-	{
-		tmpStatus.CRC16 = CalculateCRC16(&tmpStatus, sizeof(sysStatus) - 2);
-		validStatus = tmpStatus;
-		txCnt = sizeof(sysStatus) - 1;
-		txBuf = (uint8_t*)&validStatus;
-	}
-	UDR0 = *txBuf++; //Send first byte
-}
-
 bool AM2302read()
 {
 	int8_t nBits;
@@ -305,8 +303,8 @@ void inline mcuInit()
 	DDRA = (1 << DDA1) | (1 << DDA3) | (1 << DDA4) | (1 << DDA5) | (1 << DDA6);
 	//USART 0: 76.8kbps, frame bits: start / 9 data / 2 stop, multi-processor communication
 	UBRR0 = 2; //Actual maximum transfer rate: 6400Bps
-	UCSR0B = (1 << RXCIE0) | (1 << UDRE0) | (1 << RXEN0) | (1 << TXEN0) | (1 << UCSZ02);
-	UCSR0C = (1 << UPM01) | (1 << USBS0) | (1 << UCSZ01) | (1 << UCSZ00);
+	UCSR0B = (1 << RXCIE0) | (1 << TXCIE0) | (1 << RXEN0) | (1 << TXEN0) | (1 << UCSZ02);
+	UCSR0C = (1 << USBS0) | (1 << UCSZ01) | (1 << UCSZ00);
 	UCSR0A = (1 << MPCM0);
 	//Timer 0: 460.8kHz clock, CTC on OCR0A
 	TCCR0A = (1 << WGM01);
@@ -345,17 +343,11 @@ int main(void)
     /* Replace with your application code */
     while (1)
     {
-		if (tReq) //Data must be sent over RS485
-		{
-			ResponseProcessing();
-			tReq = false;
-		}
-
 		if (dRdy) //Command packet acquired
 		{
 			if (CalculateCRC16(&rcvdConf, sizeof(sysConfig) - 2) == rcvdConf.CRC16) //CRC OK
 			{
-				validConf = rcvdConf;
+				memcpy(&validConf, &rcvdConf, sizeof(sysConfig));
 				eeprom_update_block(&validConf, &eConf, sizeof(sysConfig));
 			}
 			dRdy = false;

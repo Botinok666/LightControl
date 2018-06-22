@@ -14,7 +14,6 @@ volatile uint8_t *u1rxBuf = uBuf, *u0txBuf = uBuf;
 
 ISR (USART0_RX_vect) //Data from RS485
 {
-	TCNT1 = 0;
 	UDR1 = UDR0; //Retransmit received byte directly because RS485 is slower than RasPi
 }
 
@@ -29,15 +28,9 @@ ISR (USART0_TX_vect) //Data into RS485
 			U0RXen(); //Enable receiver (we will receive some data)
 	}
 	else if (u0txBuf <= u1rxBuf) //Transmit all data
-	{
 		UDR0 = *u0txBuf++;
-		TCNT1 = 0;
-	}
 	else //All data has been transmitted
-	{
-		UCSR0A = (1 << MPCM0);
 		U0RXen(); //Enable receiver (set bus into idle mode)
-	}
 }
 
 ISR (USART1_RX_vect) //Data from RasPi
@@ -80,7 +73,6 @@ inline void mcuInit()
 	UBRR0 = 2; //Actual maximum transfer rate: 6400Bps
 	UCSR0B = (1 << RXCIE0) | (1 << TXCIE0) | (1 << RXEN0) | (1 << TXEN0) | (1 << UCSZ02); //Interrupts enabled
 	UCSR0C = (1 << USBS0) | (1 << UCSZ01) | (1 << UCSZ00);
-	UCSR0A = (1 << MPCM0);
 	//USART 1: 76.8kbps, frame bits: start / 8 data / no parity / 1 stop
 	UBRR1 = 2; //Actual maximum transfer rate: 7680Bps
 	UCSR1B = (1 << RXCIE1) | (1 << RXEN1) | (1 << TXEN1); //RX interrupt enabled
@@ -95,7 +87,5 @@ int main(void)
 {
 	mcuInit();
     /* Replace with your application code */
-    while (true)
-    {
-    }
+    while (true) { }
 }

@@ -15,13 +15,19 @@ volatile uint8_t gLevelChg = 0, rxMode = 0, rxMark;
 volatile uint8_t DSI8xFrames[19];
 volatile uint8_t *framePtr;
 
+union i16i8
+{
+	uint16_t ui16;
+	uint8_t ui8[2];
+};
+
 struct systemConfig
 {
 	uint8_t minLvl[8], maxLvl[8];
-	uint8_t overrideLvl, overrideCfg; //Config: bits 0-3: channel (0…8), bit 4: override
+	uint8_t overrideLvl, overrideCfg; //Config: bits 0-7: mask for channels 0-7
 	uint8_t fadeRate[4], linkDelay[4];
 	uint8_t msenOnTime, msenLowTime, msenLowLvl;
-	uint8_t groupConf; //bit 3: save to EEPROM
+	uint8_t groupConf; //bit 2: override channel 8, bit 3: save to EEPROM
 	uint8_t rtcCorrect; //Value in ppm, sign-and-magnitude representation
 
 	uint16_t CRC16;
@@ -81,7 +87,8 @@ public:
 		for (uint8_t i = 0; i < _linkCnt; i++)
 		{
 			pos = _link[i];
-			if (validConf.overrideCfg == (pos | 0x10))
+			if ((pos < 8 && validConf.overrideCfg == (1 << pos)) || 
+				(pos == 8 && validConf.groupConf == (1 << 4)))
 			{
 				if (_lvl[i] == gLevels[pos]) //Refresh saved ticks value only if no dimming in the process right now
 					_tickLastChg = sysState.sysTick;
@@ -242,23 +249,27 @@ systemConfig EEMEM savedConfig = {
 0, 0,	//Override level and config
 {96,96,96,160}, {28,28,28,1},	//Fade rate 2.6s, link delay 0.87s
 0, 30, 96,	//Motion sensor on time, low time, low level
-0, 0, 0};	//ninthLvl, rtcCorrect, CRC16
+0, 0, 0};	//groupConfig, rtcCorrect, CRC16
 
 void inline UCTXen()
 {
 	PORTC.OUTSET = PIN1_bm;
-	_delay_us(2);
+	_delay_us(78);
 }
 
 uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
-	CRC.CTRL = CRC_RESET_RESET1_gc | CRC_SOURCE_IO_gc;
+	CRC.CTRL = CRC_RESET_RESET1_gc;
+	CRC.CTRL = CRC_SOURCE_IO_gc;
 	while (--count >= 0)
 		CRC.DATAIN = *ptr++;
-	uint16_t result = ((uint16_t)CRC.CHECKSUM1 << 8) | CRC.CHECKSUM0;
+	i16i8 result;
+	CRC.STATUS = CRC_BUSY_bm;
+	result.ui8[0] = CRC.CHECKSUM0;
+	result.ui8[1] = CRC.CHECKSUM1;
 	CRC.CTRL = CRC_SOURCE_DISABLE_gc;
-	return result;
+	return result.ui16;
 }
 
 void ApplyConfig()
@@ -414,7 +425,6 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 				uCnt = sizeof(systemConfig);
 				rxBuf = iobuf; //First byte address in structure
 				#endif
-				PORTC.OUTCLR = PIN4_bm;
 			}
 			else //Data transmit request
 			{
@@ -429,7 +439,7 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 					memcpy(iobuf, &sysState, sizeof(systemState));
 					((systemState*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(systemState) - 2);
 					EDMA.CH1.TRFCNT = sizeof(systemState);
-					EDMA.CH1.ADDR = (uint16_t)iobuf;
+					EDMA.CH1.ADDR = (register16_t)iobuf;
 					PORTC.OUTSET = PIN4_bm;
 				}
 				else //Get on time
@@ -464,11 +474,12 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 ISR(EDMA_CH0_vect)
 {
 	rxMode = 0;
-	USARTC0.CTRLB |= USART_MPCM_bm; //Set MPCM bit
+	USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm | USART_MPCM_bm; //Set MPCM bit
 	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_MED_gc;
 	if (CalculateCRC16(iobuf, sizeof(systemConfig) - 2) == ((systemConfig*)iobuf)->CRC16)
 		ApplyConfig();
-	EDMA.CH0.CTRLB = EDMA_CH_TRNIF_bm;
+	EDMA.CH0.CTRLA = 0;
+	EDMA.CH0.CTRLB = EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm | EDMA_CH_TRNINTLVL_LO_gc;
 }
 #endif
 
@@ -476,7 +487,10 @@ ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 {
 	UCRXen(); //Set bus in the idle state
 	rxMode = 0;
-	EDMA.CH1.CTRLB = EDMA_CH_TRNIF_bm;
+	USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm | USART_MPCM_bm; //Set MPCM bit
+	EDMA.CH1.CTRLA = 0;
+	EDMA.CH1.CTRLB = EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm | EDMA_CH_TRNINTLVL_LO_gc;
+	PORTC.OUTCLR = PIN4_bm;
 }
 
 ISR(TCD5_OVF_vect)
