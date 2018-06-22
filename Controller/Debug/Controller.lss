@@ -3,33 +3,33 @@ Controller.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000015a2  00000000  00000000  00000094  2**1
+  0 .text         000015a8  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00802000  00802000  0000168f  2**0
+  1 .data         00000000  00802000  00802000  00001695  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          0000016f  00802000  00802000  00001636  2**0
+  2 .bss          0000016f  00802000  00802000  0000163c  2**0
                   ALLOC
-  3 .eeprom       00000059  00810000  00810000  00001636  2**0
+  3 .eeprom       00000059  00810000  00810000  0000163c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  4 .comment      00000030  00000000  00000000  0000168f  2**0
+  4 .comment      00000030  00000000  00000000  00001695  2**0
                   CONTENTS, READONLY
-  5 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000016c0  2**2
+  5 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000016c8  2**2
                   CONTENTS, READONLY
-  6 .debug_aranges 00000110  00000000  00000000  00001700  2**3
+  6 .debug_aranges 00000110  00000000  00000000  00001708  2**3
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00004b4e  00000000  00000000  00001810  2**0
+  7 .debug_info   00004b4e  00000000  00000000  00001818  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00001f62  00000000  00000000  0000635e  2**0
+  8 .debug_abbrev 00001f62  00000000  00000000  00006366  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00000f99  00000000  00000000  000082c0  2**0
+  9 .debug_line   00000f9f  00000000  00000000  000082c8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  00000320  00000000  00000000  0000925c  2**2
+ 10 .debug_frame  00000320  00000000  00000000  00009268  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00003438  00000000  00000000  0000957c  2**0
+ 11 .debug_str    00003442  00000000  00000000  00009588  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000122e  00000000  00000000  0000c9b4  2**0
+ 12 .debug_loc    0000122e  00000000  00000000  0000c9ca  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000188  00000000  00000000  0000dbe2  2**0
+ 13 .debug_ranges 00000188  00000000  00000000  0000dbf8  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -38,8 +38,8 @@ Disassembly of section .text:
        0:	0c 94 57 00 	jmp	0xae	; 0xae <__ctors_end>
        4:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
        8:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
-       c:	0c 94 e0 08 	jmp	0x11c0	; 0x11c0 <__vector_3>
-      10:	0c 94 1d 09 	jmp	0x123a	; 0x123a <__vector_4>
+       c:	0c 94 e3 08 	jmp	0x11c6	; 0x11c6 <__vector_3>
+      10:	0c 94 20 09 	jmp	0x1240	; 0x1240 <__vector_4>
       14:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       18:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       1c:	0c 94 bf 01 	jmp	0x37e	; 0x37e <__vector_7>
@@ -71,7 +71,7 @@ Disassembly of section .text:
       84:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       88:	0c 94 a3 05 	jmp	0xb46	; 0xb46 <__vector_34>
       8c:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
-      90:	0c 94 44 09 	jmp	0x1288	; 0x1288 <__vector_36>
+      90:	0c 94 47 09 	jmp	0x128e	; 0x128e <__vector_36>
       94:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       98:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       9c:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
@@ -80,7 +80,7 @@ Disassembly of section .text:
       a8:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
 
 000000ac <__ctors_start>:
-      ac:	1a 0a       	sbc	r1, r26
+      ac:	1d 0a       	sbc	r1, r29
 
 000000ae <__ctors_end>:
       ae:	11 24       	eor	r1, r1
@@ -111,12 +111,12 @@ Disassembly of section .text:
       d0:	04 c0       	rjmp	.+8      	; 0xda <__do_global_ctors+0x10>
       d2:	21 97       	sbiw	r28, 0x01	; 1
       d4:	fe 01       	movw	r30, r28
-      d6:	0e 94 83 0a 	call	0x1506	; 0x1506 <__tablejump2__>
+      d6:	0e 94 86 0a 	call	0x150c	; 0x150c <__tablejump2__>
       da:	c6 35       	cpi	r28, 0x56	; 86
       dc:	d1 07       	cpc	r29, r17
       de:	c9 f7       	brne	.-14     	; 0xd2 <__do_global_ctors+0x8>
-      e0:	0e 94 fb 09 	call	0x13f6	; 0x13f6 <main>
-      e4:	0c 94 cf 0a 	jmp	0x159e	; 0x159e <_exit>
+      e0:	0e 94 fe 09 	call	0x13fc	; 0x13fc <main>
+      e4:	0c 94 d2 0a 	jmp	0x15a4	; 0x15a4 <_exit>
 
 000000e8 <__bad_interrupt>:
       e8:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -551,7 +551,7 @@ void ApplyConfig()
      328:	70 e0       	ldi	r23, 0x00	; 0
      32a:	84 e2       	ldi	r24, 0x24	; 36
      32c:	91 e2       	ldi	r25, 0x21	; 33
-     32e:	0e 94 8d 0a 	call	0x151a	; 0x151a <eeprom_update_block>
+     32e:	0e 94 90 0a 	call	0x1520	; 0x1520 <eeprom_update_block>
 	RTC.CALIB = validConf.rtcCorrect;
      332:	80 91 42 21 	lds	r24, 0x2142	; 0x802142 <validConf+0x1e>
      336:	80 93 06 04 	sts	0x0406, r24	; 0x800406 <__TEXT_REGION_LENGTH__+0x700406>
@@ -671,7 +671,7 @@ ISR(RTC_OVF_vect)
      3de:	86 81       	ldd	r24, Z+6	; 0x06
      3e0:	97 81       	ldd	r25, Z+7	; 0x07
      3e2:	a1 e0       	ldi	r26, 0x01	; 1
-     3e4:	0e 94 63 0a 	call	0x14c6	; 0x14c6 <__adddi3_s8>
+     3e4:	0e 94 66 0a 	call	0x14cc	; 0x14cc <__adddi3_s8>
      3e8:	20 83       	st	Z, r18
      3ea:	31 83       	std	Z+1, r19	; 0x01
      3ec:	42 83       	std	Z+2, r20	; 0x02
@@ -1698,7 +1698,7 @@ ISR(RTC_OVF_vect)
      a3c:	70 e0       	ldi	r23, 0x00	; 0
      a3e:	84 ed       	ldi	r24, 0xD4	; 212
      a40:	90 e2       	ldi	r25, 0x20	; 32
-     a42:	0e 94 8d 0a 	call	0x151a	; 0x151a <eeprom_update_block>
+     a42:	0e 94 90 0a 	call	0x1520	; 0x1520 <eeprom_update_block>
 
 	if (rxMode == SetConfig) //We are currently receiving data packet
      a46:	80 91 5b 21 	lds	r24, 0x215B	; 0x80215b <rxMode>
@@ -2101,7 +2101,7 @@ ISR(ADCA_CH0_vect)
      cd4:	91 42       	sbci	r25, 0x21	; 33
      cd6:	64 e5       	ldi	r22, 0x54	; 84
      cd8:	70 e0       	ldi	r23, 0x00	; 0
-     cda:	0e 94 4f 0a 	call	0x149e	; 0x149e <__divmodhi4>
+     cda:	0e 94 52 0a 	call	0x14a4	; 0x14a4 <__divmodhi4>
 			if (result < 5)
      cde:	65 30       	cpi	r22, 0x05	; 5
      ce0:	71 05       	cpc	r23, r1
@@ -2728,14 +2728,14 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 	if (USARTC0.CTRLB & USART_MPCM_bm) //Address listening mode
     10aa:	93 81       	ldd	r25, Z+3	; 0x03
     10ac:	91 ff       	sbrs	r25, 1
-    10ae:	75 c0       	rjmp	.+234    	; 0x119a <__vector_23+0x11c>
+    10ae:	78 c0       	rjmp	.+240    	; 0x11a0 <__vector_23+0x122>
 	{
 		if (CmdLC <= data && data <= CmdUC)
     10b0:	9f ed       	ldi	r25, 0xDF	; 223
     10b2:	98 0f       	add	r25, r24
     10b4:	94 30       	cpi	r25, 0x04	; 4
     10b6:	08 f0       	brcs	.+2      	; 0x10ba <__vector_23+0x3c>
-    10b8:	6e c0       	rjmp	.+220    	; 0x1196 <__vector_23+0x118>
+    10b8:	71 c0       	rjmp	.+226    	; 0x119c <__vector_23+0x11e>
 		{
 			USARTC0.CTRLB &= ~USART_MPCM_bm; //Clear MPCM bit
     10ba:	93 81       	ldd	r25, Z+3	; 0x03
@@ -2763,7 +2763,7 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
     10de:	80 8b       	std	Z+16, r24	; 0x10
 				USARTC0.CTRLA = USART_RXCINTLVL_OFF_gc; //Disable interrupt
     10e0:	10 92 c2 08 	sts	0x08C2, r1	; 0x8008c2 <__TEXT_REGION_LENGTH__+0x7008c2>
-    10e4:	5a c0       	rjmp	.+180    	; 0x119a <__vector_23+0x11c>
+    10e4:	5d c0       	rjmp	.+186    	; 0x11a0 <__vector_23+0x122>
 0, 30, 96,	//Motion sensor on time, low time, low level
 0, 0, 0};	//groupConfig, rtcCorrect, CRC16
 
@@ -2789,798 +2789,801 @@ void inline UCTXen()
 			else //Data transmit request
 			{
 				UCTXen();
+				USARTC0.STATUS = USART_TXCIF_bm;
+    10f8:	80 e4       	ldi	r24, 0x40	; 64
+    10fa:	80 93 c1 08 	sts	0x08C1, r24	; 0x8008c1 <__TEXT_REGION_LENGTH__+0x7008c1>
 				if (rxMode == GetConfig)
-    10f8:	80 91 5b 21 	lds	r24, 0x215B	; 0x80215b <rxMode>
-    10fc:	82 32       	cpi	r24, 0x22	; 34
-    10fe:	59 f4       	brne	.+22     	; 0x1116 <__vector_23+0x98>
+    10fe:	80 91 5b 21 	lds	r24, 0x215B	; 0x80215b <rxMode>
+    1102:	82 32       	cpi	r24, 0x22	; 34
+    1104:	59 f4       	brne	.+22     	; 0x111c <__vector_23+0x9e>
 				{
 					EDMA.CH1.TRFCNT = sizeof(systemConfig);
-    1100:	e0 e0       	ldi	r30, 0x00	; 0
-    1102:	f1 e0       	ldi	r31, 0x01	; 1
-    1104:	81 e2       	ldi	r24, 0x21	; 33
-    1106:	90 e0       	ldi	r25, 0x00	; 0
-    1108:	86 a3       	std	Z+38, r24	; 0x26
-    110a:	97 a3       	std	Z+39, r25	; 0x27
-					EDMA.CH1.ADDR = (uint16_t)&validConf;
-    110c:	84 e2       	ldi	r24, 0x24	; 36
-    110e:	91 e2       	ldi	r25, 0x21	; 33
-    1110:	80 a7       	std	Z+40, r24	; 0x28
-    1112:	91 a7       	std	Z+41, r25	; 0x29
-    1114:	3c c0       	rjmp	.+120    	; 0x118e <__vector_23+0x110>
+    1106:	e0 e0       	ldi	r30, 0x00	; 0
+    1108:	f1 e0       	ldi	r31, 0x01	; 1
+    110a:	81 e2       	ldi	r24, 0x21	; 33
+    110c:	90 e0       	ldi	r25, 0x00	; 0
+    110e:	86 a3       	std	Z+38, r24	; 0x26
+    1110:	97 a3       	std	Z+39, r25	; 0x27
+					EDMA.CH1.ADDR = (register16_t)&validConf;
+    1112:	84 e2       	ldi	r24, 0x24	; 36
+    1114:	91 e2       	ldi	r25, 0x21	; 33
+    1116:	80 a7       	std	Z+40, r24	; 0x28
+    1118:	91 a7       	std	Z+41, r25	; 0x29
+    111a:	3c c0       	rjmp	.+120    	; 0x1194 <__vector_23+0x116>
 				}
 				else if (rxMode == GetStatus) //Get state
-    1116:	80 91 5b 21 	lds	r24, 0x215B	; 0x80215b <rxMode>
-    111a:	81 32       	cpi	r24, 0x21	; 33
-    111c:	e1 f4       	brne	.+56     	; 0x1156 <__vector_23+0xd8>
+    111c:	80 91 5b 21 	lds	r24, 0x215B	; 0x80215b <rxMode>
+    1120:	81 32       	cpi	r24, 0x21	; 33
+    1122:	e1 f4       	brne	.+56     	; 0x115c <__vector_23+0xde>
 				{
 					memcpy(iobuf, &sysState, sizeof(systemState));
-    111e:	cc e9       	ldi	r28, 0x9C	; 156
-    1120:	d0 e2       	ldi	r29, 0x20	; 32
-    1122:	88 e1       	ldi	r24, 0x18	; 24
-    1124:	ec e0       	ldi	r30, 0x0C	; 12
-    1126:	f1 e2       	ldi	r31, 0x21	; 33
-    1128:	de 01       	movw	r26, r28
-    112a:	01 90       	ld	r0, Z+
-    112c:	0d 92       	st	X+, r0
-    112e:	8a 95       	dec	r24
-    1130:	e1 f7       	brne	.-8      	; 0x112a <__vector_23+0xac>
+    1124:	cc e9       	ldi	r28, 0x9C	; 156
+    1126:	d0 e2       	ldi	r29, 0x20	; 32
+    1128:	88 e1       	ldi	r24, 0x18	; 24
+    112a:	ec e0       	ldi	r30, 0x0C	; 12
+    112c:	f1 e2       	ldi	r31, 0x21	; 33
+    112e:	de 01       	movw	r26, r28
+    1130:	01 90       	ld	r0, Z+
+    1132:	0d 92       	st	X+, r0
+    1134:	8a 95       	dec	r24
+    1136:	e1 f7       	brne	.-8      	; 0x1130 <__vector_23+0xb2>
 					((systemState*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(systemState) - 2);
-    1132:	66 e1       	ldi	r22, 0x16	; 22
-    1134:	ce 01       	movw	r24, r28
-    1136:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
-    113a:	8e 8b       	std	Y+22, r24	; 0x16
-    113c:	9f 8b       	std	Y+23, r25	; 0x17
+    1138:	66 e1       	ldi	r22, 0x16	; 22
+    113a:	ce 01       	movw	r24, r28
+    113c:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
+    1140:	8e 8b       	std	Y+22, r24	; 0x16
+    1142:	9f 8b       	std	Y+23, r25	; 0x17
 					EDMA.CH1.TRFCNT = sizeof(systemState);
-    113e:	e0 e0       	ldi	r30, 0x00	; 0
-    1140:	f1 e0       	ldi	r31, 0x01	; 1
-    1142:	88 e1       	ldi	r24, 0x18	; 24
-    1144:	90 e0       	ldi	r25, 0x00	; 0
-    1146:	86 a3       	std	Z+38, r24	; 0x26
-    1148:	97 a3       	std	Z+39, r25	; 0x27
+    1144:	e0 e0       	ldi	r30, 0x00	; 0
+    1146:	f1 e0       	ldi	r31, 0x01	; 1
+    1148:	88 e1       	ldi	r24, 0x18	; 24
+    114a:	90 e0       	ldi	r25, 0x00	; 0
+    114c:	86 a3       	std	Z+38, r24	; 0x26
+    114e:	97 a3       	std	Z+39, r25	; 0x27
 					EDMA.CH1.ADDR = (register16_t)iobuf;
-    114a:	c0 a7       	std	Z+40, r28	; 0x28
-    114c:	d1 a7       	std	Z+41, r29	; 0x29
+    1150:	c0 a7       	std	Z+40, r28	; 0x28
+    1152:	d1 a7       	std	Z+41, r29	; 0x29
 					PORTC.OUTSET = PIN4_bm;
-    114e:	80 e1       	ldi	r24, 0x10	; 16
-    1150:	80 93 45 06 	sts	0x0645, r24	; 0x800645 <__TEXT_REGION_LENGTH__+0x700645>
-    1154:	1c c0       	rjmp	.+56     	; 0x118e <__vector_23+0x110>
+    1154:	80 e1       	ldi	r24, 0x10	; 16
+    1156:	80 93 45 06 	sts	0x0645, r24	; 0x800645 <__TEXT_REGION_LENGTH__+0x700645>
+    115a:	1c c0       	rjmp	.+56     	; 0x1194 <__vector_23+0x116>
 				}
 				else //Get on time
 				{
 					memcpy(iobuf, &channelOT, sizeof(channelsOnTime));
-    1156:	88 e3       	ldi	r24, 0x38	; 56
-    1158:	e4 ed       	ldi	r30, 0xD4	; 212
-    115a:	f0 e2       	ldi	r31, 0x20	; 32
-    115c:	ac e9       	ldi	r26, 0x9C	; 156
-    115e:	b0 e2       	ldi	r27, 0x20	; 32
-    1160:	01 90       	ld	r0, Z+
-    1162:	0d 92       	st	X+, r0
-    1164:	8a 95       	dec	r24
-    1166:	e1 f7       	brne	.-8      	; 0x1160 <__vector_23+0xe2>
+    115c:	88 e3       	ldi	r24, 0x38	; 56
+    115e:	e4 ed       	ldi	r30, 0xD4	; 212
+    1160:	f0 e2       	ldi	r31, 0x20	; 32
+    1162:	ac e9       	ldi	r26, 0x9C	; 156
+    1164:	b0 e2       	ldi	r27, 0x20	; 32
+    1166:	01 90       	ld	r0, Z+
+    1168:	0d 92       	st	X+, r0
+    116a:	8a 95       	dec	r24
+    116c:	e1 f7       	brne	.-8      	; 0x1166 <__vector_23+0xe8>
 					((channelsOnTime*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(channelsOnTime) - 2);
-    1168:	66 e3       	ldi	r22, 0x36	; 54
-    116a:	8c e9       	ldi	r24, 0x9C	; 156
-    116c:	90 e2       	ldi	r25, 0x20	; 32
-    116e:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
-    1172:	ac e9       	ldi	r26, 0x9C	; 156
-    1174:	b0 e2       	ldi	r27, 0x20	; 32
-    1176:	d6 96       	adiw	r26, 0x36	; 54
-    1178:	8d 93       	st	X+, r24
-    117a:	9c 93       	st	X, r25
-    117c:	d7 97       	sbiw	r26, 0x37	; 55
+    116e:	66 e3       	ldi	r22, 0x36	; 54
+    1170:	8c e9       	ldi	r24, 0x9C	; 156
+    1172:	90 e2       	ldi	r25, 0x20	; 32
+    1174:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
+    1178:	ac e9       	ldi	r26, 0x9C	; 156
+    117a:	b0 e2       	ldi	r27, 0x20	; 32
+    117c:	d6 96       	adiw	r26, 0x36	; 54
+    117e:	8d 93       	st	X+, r24
+    1180:	9c 93       	st	X, r25
+    1182:	d7 97       	sbiw	r26, 0x37	; 55
 					EDMA.CH1.TRFCNT = sizeof(channelsOnTime);
-    117e:	e0 e0       	ldi	r30, 0x00	; 0
-    1180:	f1 e0       	ldi	r31, 0x01	; 1
-    1182:	88 e3       	ldi	r24, 0x38	; 56
-    1184:	90 e0       	ldi	r25, 0x00	; 0
-    1186:	86 a3       	std	Z+38, r24	; 0x26
-    1188:	97 a3       	std	Z+39, r25	; 0x27
-					EDMA.CH1.ADDR = (uint16_t)iobuf;
-    118a:	a0 a7       	std	Z+40, r26	; 0x28
-    118c:	b1 a7       	std	Z+41, r27	; 0x29
+    1184:	e0 e0       	ldi	r30, 0x00	; 0
+    1186:	f1 e0       	ldi	r31, 0x01	; 1
+    1188:	88 e3       	ldi	r24, 0x38	; 56
+    118a:	90 e0       	ldi	r25, 0x00	; 0
+    118c:	86 a3       	std	Z+38, r24	; 0x26
+    118e:	97 a3       	std	Z+39, r25	; 0x27
+					EDMA.CH1.ADDR = (register16_t)iobuf;
+    1190:	a0 a7       	std	Z+40, r26	; 0x28
+    1192:	b1 a7       	std	Z+41, r27	; 0x29
 				}
 				EDMA.CH1.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
-    118e:	84 e8       	ldi	r24, 0x84	; 132
-    1190:	80 93 20 01 	sts	0x0120, r24	; 0x800120 <__TEXT_REGION_LENGTH__+0x700120>
-    1194:	02 c0       	rjmp	.+4      	; 0x119a <__vector_23+0x11c>
+    1194:	84 e8       	ldi	r24, 0x84	; 132
+    1196:	80 93 20 01 	sts	0x0120, r24	; 0x800120 <__TEXT_REGION_LENGTH__+0x700120>
+    119a:	02 c0       	rjmp	.+4      	; 0x11a0 <__vector_23+0x122>
 			}
 		}
 		else
 			rxMode = 0;
-    1196:	10 92 5b 21 	sts	0x215B, r1	; 0x80215b <rxMode>
+    119c:	10 92 5b 21 	sts	0x215B, r1	; 0x80215b <rxMode>
 			if (CalculateCRC16(iobuf, sizeof(systemConfig) - 2) == ((systemConfig*)iobuf)->CRC16)
 				ApplyConfig();
 		}
 	}
 	#endif
 }
-    119a:	ff 91       	pop	r31
-    119c:	ef 91       	pop	r30
-    119e:	df 91       	pop	r29
-    11a0:	cf 91       	pop	r28
-    11a2:	bf 91       	pop	r27
-    11a4:	af 91       	pop	r26
-    11a6:	9f 91       	pop	r25
-    11a8:	8f 91       	pop	r24
-    11aa:	7f 91       	pop	r23
-    11ac:	6f 91       	pop	r22
-    11ae:	5f 91       	pop	r21
-    11b0:	4f 91       	pop	r20
-    11b2:	3f 91       	pop	r19
-    11b4:	2f 91       	pop	r18
-    11b6:	0f 90       	pop	r0
-    11b8:	0f be       	out	0x3f, r0	; 63
-    11ba:	0f 90       	pop	r0
-    11bc:	1f 90       	pop	r1
-    11be:	18 95       	reti
+    11a0:	ff 91       	pop	r31
+    11a2:	ef 91       	pop	r30
+    11a4:	df 91       	pop	r29
+    11a6:	cf 91       	pop	r28
+    11a8:	bf 91       	pop	r27
+    11aa:	af 91       	pop	r26
+    11ac:	9f 91       	pop	r25
+    11ae:	8f 91       	pop	r24
+    11b0:	7f 91       	pop	r23
+    11b2:	6f 91       	pop	r22
+    11b4:	5f 91       	pop	r21
+    11b6:	4f 91       	pop	r20
+    11b8:	3f 91       	pop	r19
+    11ba:	2f 91       	pop	r18
+    11bc:	0f 90       	pop	r0
+    11be:	0f be       	out	0x3f, r0	; 63
+    11c0:	0f 90       	pop	r0
+    11c2:	1f 90       	pop	r1
+    11c4:	18 95       	reti
 
-000011c0 <__vector_3>:
+000011c6 <__vector_3>:
 
 #ifdef RXC_EDMA
 ISR(EDMA_CH0_vect)
 {
-    11c0:	1f 92       	push	r1
-    11c2:	0f 92       	push	r0
-    11c4:	0f b6       	in	r0, 0x3f	; 63
-    11c6:	0f 92       	push	r0
-    11c8:	11 24       	eor	r1, r1
-    11ca:	2f 93       	push	r18
-    11cc:	3f 93       	push	r19
-    11ce:	4f 93       	push	r20
-    11d0:	5f 93       	push	r21
-    11d2:	6f 93       	push	r22
-    11d4:	7f 93       	push	r23
-    11d6:	8f 93       	push	r24
-    11d8:	9f 93       	push	r25
-    11da:	af 93       	push	r26
-    11dc:	bf 93       	push	r27
-    11de:	ef 93       	push	r30
-    11e0:	ff 93       	push	r31
+    11c6:	1f 92       	push	r1
+    11c8:	0f 92       	push	r0
+    11ca:	0f b6       	in	r0, 0x3f	; 63
+    11cc:	0f 92       	push	r0
+    11ce:	11 24       	eor	r1, r1
+    11d0:	2f 93       	push	r18
+    11d2:	3f 93       	push	r19
+    11d4:	4f 93       	push	r20
+    11d6:	5f 93       	push	r21
+    11d8:	6f 93       	push	r22
+    11da:	7f 93       	push	r23
+    11dc:	8f 93       	push	r24
+    11de:	9f 93       	push	r25
+    11e0:	af 93       	push	r26
+    11e2:	bf 93       	push	r27
+    11e4:	ef 93       	push	r30
+    11e6:	ff 93       	push	r31
 	rxMode = 0;
-    11e2:	10 92 5b 21 	sts	0x215B, r1	; 0x80215b <rxMode>
+    11e8:	10 92 5b 21 	sts	0x215B, r1	; 0x80215b <rxMode>
 	USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm | USART_MPCM_bm; //Set MPCM bit
-    11e6:	e0 ec       	ldi	r30, 0xC0	; 192
-    11e8:	f8 e0       	ldi	r31, 0x08	; 8
-    11ea:	8a e1       	ldi	r24, 0x1A	; 26
-    11ec:	83 83       	std	Z+3, r24	; 0x03
+    11ec:	e0 ec       	ldi	r30, 0xC0	; 192
+    11ee:	f8 e0       	ldi	r31, 0x08	; 8
+    11f0:	8a e1       	ldi	r24, 0x1A	; 26
+    11f2:	83 83       	std	Z+3, r24	; 0x03
 	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_MED_gc;
-    11ee:	80 e6       	ldi	r24, 0x60	; 96
-    11f0:	82 83       	std	Z+2, r24	; 0x02
+    11f4:	80 e6       	ldi	r24, 0x60	; 96
+    11f6:	82 83       	std	Z+2, r24	; 0x02
 	if (CalculateCRC16(iobuf, sizeof(systemConfig) - 2) == ((systemConfig*)iobuf)->CRC16)
-    11f2:	6f e1       	ldi	r22, 0x1F	; 31
-    11f4:	8c e9       	ldi	r24, 0x9C	; 156
-    11f6:	90 e2       	ldi	r25, 0x20	; 32
-    11f8:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
-    11fc:	20 91 bb 20 	lds	r18, 0x20BB	; 0x8020bb <iobuf+0x1f>
-    1200:	30 91 bc 20 	lds	r19, 0x20BC	; 0x8020bc <iobuf+0x20>
-    1204:	82 17       	cp	r24, r18
-    1206:	93 07       	cpc	r25, r19
-    1208:	11 f4       	brne	.+4      	; 0x120e <__vector_3+0x4e>
+    11f8:	6f e1       	ldi	r22, 0x1F	; 31
+    11fa:	8c e9       	ldi	r24, 0x9C	; 156
+    11fc:	90 e2       	ldi	r25, 0x20	; 32
+    11fe:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
+    1202:	20 91 bb 20 	lds	r18, 0x20BB	; 0x8020bb <iobuf+0x1f>
+    1206:	30 91 bc 20 	lds	r19, 0x20BC	; 0x8020bc <iobuf+0x20>
+    120a:	82 17       	cp	r24, r18
+    120c:	93 07       	cpc	r25, r19
+    120e:	11 f4       	brne	.+4      	; 0x1214 <__vector_3+0x4e>
 		ApplyConfig();
-    120a:	0e 94 90 00 	call	0x120	; 0x120 <_Z11ApplyConfigv>
+    1210:	0e 94 90 00 	call	0x120	; 0x120 <_Z11ApplyConfigv>
 	EDMA.CH0.CTRLA = 0;
-    120e:	e0 e0       	ldi	r30, 0x00	; 0
-    1210:	f1 e0       	ldi	r31, 0x01	; 1
-    1212:	10 8a       	std	Z+16, r1	; 0x10
+    1214:	e0 e0       	ldi	r30, 0x00	; 0
+    1216:	f1 e0       	ldi	r31, 0x01	; 1
+    1218:	10 8a       	std	Z+16, r1	; 0x10
 	EDMA.CH0.CTRLB = EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm | EDMA_CH_TRNINTLVL_LO_gc;
-    1214:	81 e3       	ldi	r24, 0x31	; 49
-    1216:	81 8b       	std	Z+17, r24	; 0x11
+    121a:	81 e3       	ldi	r24, 0x31	; 49
+    121c:	81 8b       	std	Z+17, r24	; 0x11
 }
-    1218:	ff 91       	pop	r31
-    121a:	ef 91       	pop	r30
-    121c:	bf 91       	pop	r27
-    121e:	af 91       	pop	r26
-    1220:	9f 91       	pop	r25
-    1222:	8f 91       	pop	r24
-    1224:	7f 91       	pop	r23
-    1226:	6f 91       	pop	r22
-    1228:	5f 91       	pop	r21
-    122a:	4f 91       	pop	r20
-    122c:	3f 91       	pop	r19
-    122e:	2f 91       	pop	r18
-    1230:	0f 90       	pop	r0
-    1232:	0f be       	out	0x3f, r0	; 63
-    1234:	0f 90       	pop	r0
-    1236:	1f 90       	pop	r1
-    1238:	18 95       	reti
+    121e:	ff 91       	pop	r31
+    1220:	ef 91       	pop	r30
+    1222:	bf 91       	pop	r27
+    1224:	af 91       	pop	r26
+    1226:	9f 91       	pop	r25
+    1228:	8f 91       	pop	r24
+    122a:	7f 91       	pop	r23
+    122c:	6f 91       	pop	r22
+    122e:	5f 91       	pop	r21
+    1230:	4f 91       	pop	r20
+    1232:	3f 91       	pop	r19
+    1234:	2f 91       	pop	r18
+    1236:	0f 90       	pop	r0
+    1238:	0f be       	out	0x3f, r0	; 63
+    123a:	0f 90       	pop	r0
+    123c:	1f 90       	pop	r1
+    123e:	18 95       	reti
 
-0000123a <__vector_4>:
+00001240 <__vector_4>:
 #endif
 
 ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 {
-    123a:	1f 92       	push	r1
-    123c:	0f 92       	push	r0
-    123e:	0f b6       	in	r0, 0x3f	; 63
-    1240:	0f 92       	push	r0
-    1242:	11 24       	eor	r1, r1
-    1244:	8f 93       	push	r24
-    1246:	af 93       	push	r26
-    1248:	bf 93       	push	r27
-    124a:	ef 93       	push	r30
-    124c:	ff 93       	push	r31
+    1240:	1f 92       	push	r1
+    1242:	0f 92       	push	r0
+    1244:	0f b6       	in	r0, 0x3f	; 63
+    1246:	0f 92       	push	r0
+    1248:	11 24       	eor	r1, r1
+    124a:	8f 93       	push	r24
+    124c:	af 93       	push	r26
+    124e:	bf 93       	push	r27
+    1250:	ef 93       	push	r30
+    1252:	ff 93       	push	r31
 	UCRXen(); //Set bus in the idle state
-    124e:	e0 e4       	ldi	r30, 0x40	; 64
-    1250:	f6 e0       	ldi	r31, 0x06	; 6
-    1252:	82 e0       	ldi	r24, 0x02	; 2
-    1254:	86 83       	std	Z+6, r24	; 0x06
+    1254:	e0 e4       	ldi	r30, 0x40	; 64
+    1256:	f6 e0       	ldi	r31, 0x06	; 6
+    1258:	82 e0       	ldi	r24, 0x02	; 2
+    125a:	86 83       	std	Z+6, r24	; 0x06
 	rxMode = 0;
-    1256:	10 92 5b 21 	sts	0x215B, r1	; 0x80215b <rxMode>
+    125c:	10 92 5b 21 	sts	0x215B, r1	; 0x80215b <rxMode>
 	USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm | USART_MPCM_bm; //Set MPCM bit
-    125a:	8a e1       	ldi	r24, 0x1A	; 26
-    125c:	80 93 c3 08 	sts	0x08C3, r24	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
+    1260:	8a e1       	ldi	r24, 0x1A	; 26
+    1262:	80 93 c3 08 	sts	0x08C3, r24	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
 	EDMA.CH1.CTRLA = 0;
-    1260:	a0 e0       	ldi	r26, 0x00	; 0
-    1262:	b1 e0       	ldi	r27, 0x01	; 1
-    1264:	90 96       	adiw	r26, 0x20	; 32
-    1266:	1c 92       	st	X, r1
-    1268:	90 97       	sbiw	r26, 0x20	; 32
+    1266:	a0 e0       	ldi	r26, 0x00	; 0
+    1268:	b1 e0       	ldi	r27, 0x01	; 1
+    126a:	90 96       	adiw	r26, 0x20	; 32
+    126c:	1c 92       	st	X, r1
+    126e:	90 97       	sbiw	r26, 0x20	; 32
 	EDMA.CH1.CTRLB = EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm | EDMA_CH_TRNINTLVL_LO_gc;
-    126a:	81 e3       	ldi	r24, 0x31	; 49
-    126c:	91 96       	adiw	r26, 0x21	; 33
-    126e:	8c 93       	st	X, r24
+    1270:	81 e3       	ldi	r24, 0x31	; 49
+    1272:	91 96       	adiw	r26, 0x21	; 33
+    1274:	8c 93       	st	X, r24
 	PORTC.OUTCLR = PIN4_bm;
-    1270:	80 e1       	ldi	r24, 0x10	; 16
-    1272:	86 83       	std	Z+6, r24	; 0x06
+    1276:	80 e1       	ldi	r24, 0x10	; 16
+    1278:	86 83       	std	Z+6, r24	; 0x06
 }
-    1274:	ff 91       	pop	r31
-    1276:	ef 91       	pop	r30
-    1278:	bf 91       	pop	r27
-    127a:	af 91       	pop	r26
-    127c:	8f 91       	pop	r24
-    127e:	0f 90       	pop	r0
-    1280:	0f be       	out	0x3f, r0	; 63
-    1282:	0f 90       	pop	r0
-    1284:	1f 90       	pop	r1
-    1286:	18 95       	reti
+    127a:	ff 91       	pop	r31
+    127c:	ef 91       	pop	r30
+    127e:	bf 91       	pop	r27
+    1280:	af 91       	pop	r26
+    1282:	8f 91       	pop	r24
+    1284:	0f 90       	pop	r0
+    1286:	0f be       	out	0x3f, r0	; 63
+    1288:	0f 90       	pop	r0
+    128a:	1f 90       	pop	r1
+    128c:	18 95       	reti
 
-00001288 <__vector_36>:
+0000128e <__vector_36>:
 
 ISR(TCD5_OVF_vect)
 {
-    1288:	1f 92       	push	r1
-    128a:	0f 92       	push	r0
-    128c:	0f b6       	in	r0, 0x3f	; 63
-    128e:	0f 92       	push	r0
-    1290:	11 24       	eor	r1, r1
-    1292:	2f 93       	push	r18
-    1294:	8f 93       	push	r24
-    1296:	9f 93       	push	r25
-    1298:	ef 93       	push	r30
-    129a:	ff 93       	push	r31
+    128e:	1f 92       	push	r1
+    1290:	0f 92       	push	r0
+    1292:	0f b6       	in	r0, 0x3f	; 63
+    1294:	0f 92       	push	r0
+    1296:	11 24       	eor	r1, r1
+    1298:	2f 93       	push	r18
+    129a:	8f 93       	push	r24
+    129c:	9f 93       	push	r25
+    129e:	ef 93       	push	r30
+    12a0:	ff 93       	push	r31
 	PORTD.OUT = *framePtr++;
-    129c:	e0 91 45 21 	lds	r30, 0x2145	; 0x802145 <framePtr>
-    12a0:	f0 91 46 21 	lds	r31, 0x2146	; 0x802146 <framePtr+0x1>
-    12a4:	cf 01       	movw	r24, r30
-    12a6:	01 96       	adiw	r24, 0x01	; 1
-    12a8:	80 93 45 21 	sts	0x2145, r24	; 0x802145 <framePtr>
-    12ac:	90 93 46 21 	sts	0x2146, r25	; 0x802146 <framePtr+0x1>
-    12b0:	20 81       	ld	r18, Z
-    12b2:	20 93 64 06 	sts	0x0664, r18	; 0x800664 <__TEXT_REGION_LENGTH__+0x700664>
+    12a2:	e0 91 45 21 	lds	r30, 0x2145	; 0x802145 <framePtr>
+    12a6:	f0 91 46 21 	lds	r31, 0x2146	; 0x802146 <framePtr+0x1>
+    12aa:	cf 01       	movw	r24, r30
+    12ac:	01 96       	adiw	r24, 0x01	; 1
+    12ae:	80 93 45 21 	sts	0x2145, r24	; 0x802145 <framePtr>
+    12b2:	90 93 46 21 	sts	0x2146, r25	; 0x802146 <framePtr+0x1>
+    12b6:	20 81       	ld	r18, Z
+    12b8:	20 93 64 06 	sts	0x0664, r18	; 0x800664 <__TEXT_REGION_LENGTH__+0x700664>
 	if (framePtr == DSI8xFrames + sizeof(DSI8xFrames) - 1)
-    12b6:	89 55       	subi	r24, 0x59	; 89
-    12b8:	91 42       	sbci	r25, 0x21	; 33
-    12ba:	11 f4       	brne	.+4      	; 0x12c0 <__vector_36+0x38>
+    12bc:	89 55       	subi	r24, 0x59	; 89
+    12be:	91 42       	sbci	r25, 0x21	; 33
+    12c0:	11 f4       	brne	.+4      	; 0x12c6 <__vector_36+0x38>
 		TCD5.INTCTRLA = TC_OVFINTLVL_OFF_gc;
-    12bc:	10 92 46 09 	sts	0x0946, r1	; 0x800946 <__TEXT_REGION_LENGTH__+0x700946>
+    12c2:	10 92 46 09 	sts	0x0946, r1	; 0x800946 <__TEXT_REGION_LENGTH__+0x700946>
 	TCD5.INTFLAGS = TC5_OVFIF_bm;
-    12c0:	81 e0       	ldi	r24, 0x01	; 1
-    12c2:	80 93 4c 09 	sts	0x094C, r24	; 0x80094c <__TEXT_REGION_LENGTH__+0x70094c>
+    12c6:	81 e0       	ldi	r24, 0x01	; 1
+    12c8:	80 93 4c 09 	sts	0x094C, r24	; 0x80094c <__TEXT_REGION_LENGTH__+0x70094c>
 }
-    12c6:	ff 91       	pop	r31
-    12c8:	ef 91       	pop	r30
-    12ca:	9f 91       	pop	r25
-    12cc:	8f 91       	pop	r24
-    12ce:	2f 91       	pop	r18
-    12d0:	0f 90       	pop	r0
-    12d2:	0f be       	out	0x3f, r0	; 63
-    12d4:	0f 90       	pop	r0
-    12d6:	1f 90       	pop	r1
-    12d8:	18 95       	reti
+    12cc:	ff 91       	pop	r31
+    12ce:	ef 91       	pop	r30
+    12d0:	9f 91       	pop	r25
+    12d2:	8f 91       	pop	r24
+    12d4:	2f 91       	pop	r18
+    12d6:	0f 90       	pop	r0
+    12d8:	0f be       	out	0x3f, r0	; 63
+    12da:	0f 90       	pop	r0
+    12dc:	1f 90       	pop	r1
+    12de:	18 95       	reti
 
-000012da <_Z7mcuInitv>:
+000012e0 <_Z7mcuInitv>:
 
 inline void mcuInit()
 {
 	//Port A configuration: 0-5 analog inputs, 7 inverted output
 	PORTA.DIRSET = PIN7_bm;
-    12da:	e0 e0       	ldi	r30, 0x00	; 0
-    12dc:	f6 e0       	ldi	r31, 0x06	; 6
-    12de:	80 e8       	ldi	r24, 0x80	; 128
-    12e0:	81 83       	std	Z+1, r24	; 0x01
+    12e0:	e0 e0       	ldi	r30, 0x00	; 0
+    12e2:	f6 e0       	ldi	r31, 0x06	; 6
+    12e4:	80 e8       	ldi	r24, 0x80	; 128
+    12e6:	81 83       	std	Z+1, r24	; 0x01
 	PORTCFG.MPCMASK = PIN0_bm | PIN1_bm | PIN2_bm | PIN3_bm | PIN4_bm | PIN5_bm;
-    12e2:	a0 eb       	ldi	r26, 0xB0	; 176
-    12e4:	b0 e0       	ldi	r27, 0x00	; 0
-    12e6:	8f e3       	ldi	r24, 0x3F	; 63
-    12e8:	8c 93       	st	X, r24
+    12e8:	a0 eb       	ldi	r26, 0xB0	; 176
+    12ea:	b0 e0       	ldi	r27, 0x00	; 0
+    12ec:	8f e3       	ldi	r24, 0x3F	; 63
+    12ee:	8c 93       	st	X, r24
 	PORTA.PIN0CTRL = PORT_OPC_TOTEM_gc | PORT_ISC_INPUT_DISABLE_gc;
-    12ea:	87 e0       	ldi	r24, 0x07	; 7
-    12ec:	80 8b       	std	Z+16, r24	; 0x10
+    12f0:	87 e0       	ldi	r24, 0x07	; 7
+    12f2:	80 8b       	std	Z+16, r24	; 0x10
 	PORTA.PIN7CTRL = PORT_OPC_TOTEM_gc | PORT_INVEN_bm;
-    12ee:	80 e4       	ldi	r24, 0x40	; 64
-    12f0:	87 8b       	std	Z+23, r24	; 0x17
+    12f4:	80 e4       	ldi	r24, 0x40	; 64
+    12f6:	87 8b       	std	Z+23, r24	; 0x17
 	//Port C configuration: 0-1, 3-7 outputs
 	PORTC.DIRSET = PIN0_bm | PIN1_bm | PIN3_bm | PIN4_bm | PIN5_bm | PIN6_bm | PIN7_bm;
-    12f2:	8b ef       	ldi	r24, 0xFB	; 251
-    12f4:	80 93 41 06 	sts	0x0641, r24	; 0x800641 <__TEXT_REGION_LENGTH__+0x700641>
+    12f8:	8b ef       	ldi	r24, 0xFB	; 251
+    12fa:	80 93 41 06 	sts	0x0641, r24	; 0x800641 <__TEXT_REGION_LENGTH__+0x700641>
 	//Port D configuration: 0-7 inverted outputs
 	PORTD.DIRSET = PIN0_bm | PIN1_bm | PIN2_bm | PIN3_bm | PIN4_bm | PIN5_bm | PIN6_bm | PIN7_bm;
-    12f8:	e0 e6       	ldi	r30, 0x60	; 96
-    12fa:	f6 e0       	ldi	r31, 0x06	; 6
-    12fc:	8f ef       	ldi	r24, 0xFF	; 255
-    12fe:	81 83       	std	Z+1, r24	; 0x01
+    12fe:	e0 e6       	ldi	r30, 0x60	; 96
+    1300:	f6 e0       	ldi	r31, 0x06	; 6
+    1302:	8f ef       	ldi	r24, 0xFF	; 255
+    1304:	81 83       	std	Z+1, r24	; 0x01
 	PORTCFG.MPCMASK = PIN0_bm | PIN1_bm | PIN2_bm | PIN3_bm | PIN4_bm | PIN5_bm | PIN6_bm | PIN7_bm;
-    1300:	8c 93       	st	X, r24
+    1306:	8c 93       	st	X, r24
 	PORTD.PIN0CTRL = PORT_OPC_TOTEM_gc | PORT_INVEN_bm | PORT_ISC_INPUT_DISABLE_gc;
-    1302:	87 e4       	ldi	r24, 0x47	; 71
-    1304:	80 8b       	std	Z+16, r24	; 0x10
+    1308:	87 e4       	ldi	r24, 0x47	; 71
+    130a:	80 8b       	std	Z+16, r24	; 0x10
 	//Clock configuration: 32MHz RC with DFLL from XOSC 32768Hz
 	OSC.XOSCCTRL = OSC_XOSCSEL_32KHz_gc;
-    1306:	e0 e5       	ldi	r30, 0x50	; 80
-    1308:	f0 e0       	ldi	r31, 0x00	; 0
-    130a:	82 e0       	ldi	r24, 0x02	; 2
-    130c:	82 83       	std	Z+2, r24	; 0x02
+    130c:	e0 e5       	ldi	r30, 0x50	; 80
+    130e:	f0 e0       	ldi	r31, 0x00	; 0
+    1310:	82 e0       	ldi	r24, 0x02	; 2
+    1312:	82 83       	std	Z+2, r24	; 0x02
 	OSC.CTRL |= OSC_RC32MEN_bm | OSC_XOSCEN_bm;
-    130e:	80 81       	ld	r24, Z
-    1310:	8a 60       	ori	r24, 0x0A	; 10
-    1312:	80 83       	st	Z, r24
+    1314:	80 81       	ld	r24, Z
+    1316:	8a 60       	ori	r24, 0x0A	; 10
+    1318:	80 83       	st	Z, r24
 	while (!(OSC.STATUS & OSC_XOSCRDY_bm));
-    1314:	81 81       	ldd	r24, Z+1	; 0x01
-    1316:	83 ff       	sbrs	r24, 3
-    1318:	fd cf       	rjmp	.-6      	; 0x1314 <_Z7mcuInitv+0x3a>
+    131a:	81 81       	ldd	r24, Z+1	; 0x01
+    131c:	83 ff       	sbrs	r24, 3
+    131e:	fd cf       	rjmp	.-6      	; 0x131a <_Z7mcuInitv+0x3a>
 	while (!(OSC.STATUS & OSC_RC32MRDY_bm));
-    131a:	e0 e5       	ldi	r30, 0x50	; 80
-    131c:	f0 e0       	ldi	r31, 0x00	; 0
-    131e:	81 81       	ldd	r24, Z+1	; 0x01
-    1320:	81 ff       	sbrs	r24, 1
-    1322:	fd cf       	rjmp	.-6      	; 0x131e <_Z7mcuInitv+0x44>
+    1320:	e0 e5       	ldi	r30, 0x50	; 80
+    1322:	f0 e0       	ldi	r31, 0x00	; 0
+    1324:	81 81       	ldd	r24, Z+1	; 0x01
+    1326:	81 ff       	sbrs	r24, 1
+    1328:	fd cf       	rjmp	.-6      	; 0x1324 <_Z7mcuInitv+0x44>
 	OSC.DFLLCTRL = OSC_RC32MCREF_XOSC32K_gc;
-    1324:	a0 e5       	ldi	r26, 0x50	; 80
-    1326:	b0 e0       	ldi	r27, 0x00	; 0
-    1328:	82 e0       	ldi	r24, 0x02	; 2
-    132a:	16 96       	adiw	r26, 0x06	; 6
-    132c:	8c 93       	st	X, r24
-    132e:	16 97       	sbiw	r26, 0x06	; 6
+    132a:	a0 e5       	ldi	r26, 0x50	; 80
+    132c:	b0 e0       	ldi	r27, 0x00	; 0
+    132e:	82 e0       	ldi	r24, 0x02	; 2
+    1330:	16 96       	adiw	r26, 0x06	; 6
+    1332:	8c 93       	st	X, r24
+    1334:	16 97       	sbiw	r26, 0x06	; 6
 	DFLLRC32M.CTRL = DFLL_ENABLE_bm;
-    1330:	81 e0       	ldi	r24, 0x01	; 1
-    1332:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__TEXT_REGION_LENGTH__+0x700060>
+    1336:	81 e0       	ldi	r24, 0x01	; 1
+    1338:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__TEXT_REGION_LENGTH__+0x700060>
 	CCP = CCP_IOREG_gc;
-    1336:	98 ed       	ldi	r25, 0xD8	; 216
-    1338:	94 bf       	out	0x34, r25	; 52
+    133c:	98 ed       	ldi	r25, 0xD8	; 216
+    133e:	94 bf       	out	0x34, r25	; 52
 	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;
-    133a:	e0 e4       	ldi	r30, 0x40	; 64
-    133c:	f0 e0       	ldi	r31, 0x00	; 0
-    133e:	80 83       	st	Z, r24
+    1340:	e0 e4       	ldi	r30, 0x40	; 64
+    1342:	f0 e0       	ldi	r31, 0x00	; 0
+    1344:	80 83       	st	Z, r24
 	OSC.CTRL = OSC_RC32MEN_bm | OSC_XOSCEN_bm; //Disable unused clock sources
-    1340:	8a e0       	ldi	r24, 0x0A	; 10
-    1342:	8c 93       	st	X, r24
+    1346:	8a e0       	ldi	r24, 0x0A	; 10
+    1348:	8c 93       	st	X, r24
 	CLK.RTCCTRL = CLK_RTCSRC_TOSC_gc | CLK_RTCEN_bm; //1024Hz RTC clock source
-    1344:	83 e0       	ldi	r24, 0x03	; 3
-    1346:	83 83       	std	Z+3, r24	; 0x03
+    134a:	83 e0       	ldi	r24, 0x03	; 3
+    134c:	83 83       	std	Z+3, r24	; 0x03
 	while (RTC.STATUS & RTC_SYNCBUSY_bm);
-    1348:	e0 e0       	ldi	r30, 0x00	; 0
-    134a:	f4 e0       	ldi	r31, 0x04	; 4
-    134c:	81 81       	ldd	r24, Z+1	; 0x01
-    134e:	80 fd       	sbrc	r24, 0
-    1350:	fd cf       	rjmp	.-6      	; 0x134c <_Z7mcuInitv+0x72>
+    134e:	e0 e0       	ldi	r30, 0x00	; 0
+    1350:	f4 e0       	ldi	r31, 0x04	; 4
+    1352:	81 81       	ldd	r24, Z+1	; 0x01
+    1354:	80 fd       	sbrc	r24, 0
+    1356:	fd cf       	rjmp	.-6      	; 0x1352 <_Z7mcuInitv+0x72>
 	CCP = CCP_IOREG_gc;
-    1352:	88 ed       	ldi	r24, 0xD8	; 216
-    1354:	84 bf       	out	0x34, r24	; 52
+    1358:	88 ed       	ldi	r24, 0xD8	; 216
+    135a:	84 bf       	out	0x34, r24	; 52
 	CLK.LOCK = CLK_LOCK_bm; //Disable further changes in clock system
-    1356:	81 e0       	ldi	r24, 0x01	; 1
-    1358:	80 93 42 00 	sts	0x0042, r24	; 0x800042 <__TEXT_REGION_LENGTH__+0x700042>
+    135c:	81 e0       	ldi	r24, 0x01	; 1
+    135e:	80 93 42 00 	sts	0x0042, r24	; 0x800042 <__TEXT_REGION_LENGTH__+0x700042>
 	//PMIC: enable interrupts
 	PMIC.CTRL = PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
-    135c:	27 e0       	ldi	r18, 0x07	; 7
-    135e:	20 93 a2 00 	sts	0x00A2, r18	; 0x8000a2 <__TEXT_REGION_LENGTH__+0x7000a2>
+    1362:	27 e0       	ldi	r18, 0x07	; 7
+    1364:	20 93 a2 00 	sts	0x00A2, r18	; 0x8000a2 <__TEXT_REGION_LENGTH__+0x7000a2>
 	//RTC configuration: 1024 / 2 = 512Hz clock, medium level interrupt
 	RTC.PER = 16; //32 overflows per second
-    1362:	e0 e0       	ldi	r30, 0x00	; 0
-    1364:	f4 e0       	ldi	r31, 0x04	; 4
-    1366:	40 e1       	ldi	r20, 0x10	; 16
-    1368:	50 e0       	ldi	r21, 0x00	; 0
-    136a:	42 87       	std	Z+10, r20	; 0x0a
-    136c:	53 87       	std	Z+11, r21	; 0x0b
+    1368:	e0 e0       	ldi	r30, 0x00	; 0
+    136a:	f4 e0       	ldi	r31, 0x04	; 4
+    136c:	40 e1       	ldi	r20, 0x10	; 16
+    136e:	50 e0       	ldi	r21, 0x00	; 0
+    1370:	42 87       	std	Z+10, r20	; 0x0a
+    1372:	53 87       	std	Z+11, r21	; 0x0b
 	RTC.INTCTRL = RTC_OVFINTLVL_MED_gc;
-    136e:	92 e0       	ldi	r25, 0x02	; 2
-    1370:	92 83       	std	Z+2, r25	; 0x02
+    1374:	92 e0       	ldi	r25, 0x02	; 2
+    1376:	92 83       	std	Z+2, r25	; 0x02
 	RTC.CTRL = RTC_PRESCALER_DIV2_gc;
-    1372:	90 83       	st	Z, r25
+    1378:	90 83       	st	Z, r25
 	RTC.CNT = 0;
-    1374:	10 86       	std	Z+8, r1	; 0x08
-    1376:	11 86       	std	Z+9, r1	; 0x09
+    137a:	10 86       	std	Z+8, r1	; 0x08
+    137c:	11 86       	std	Z+9, r1	; 0x09
 	//USARTC configuration: start / 9 data / 2 stop; 76.8kbps baud, multi-processor communication
 	USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm | USART_MPCM_bm;
-    1378:	e0 ec       	ldi	r30, 0xC0	; 192
-    137a:	f8 e0       	ldi	r31, 0x08	; 8
-    137c:	9a e1       	ldi	r25, 0x1A	; 26
-    137e:	93 83       	std	Z+3, r25	; 0x03
+    137e:	e0 ec       	ldi	r30, 0xC0	; 192
+    1380:	f8 e0       	ldi	r31, 0x08	; 8
+    1382:	9a e1       	ldi	r25, 0x1A	; 26
+    1384:	93 83       	std	Z+3, r25	; 0x03
 	USARTC0.CTRLC = USART_CMODE_ASYNCHRONOUS_gc | USART_SBMODE_bm | USART_CHSIZE_9BIT_gc;
-    1380:	9f e0       	ldi	r25, 0x0F	; 15
-    1382:	94 83       	std	Z+4, r25	; 0x04
+    1386:	9f e0       	ldi	r25, 0x0F	; 15
+    1388:	94 83       	std	Z+4, r25	; 0x04
 	USARTC0.BAUDCTRLA = 12 << USART_BSEL_gp;
-    1384:	9c e0       	ldi	r25, 0x0C	; 12
-    1386:	96 83       	std	Z+6, r25	; 0x06
+    138a:	9c e0       	ldi	r25, 0x0C	; 12
+    138c:	96 83       	std	Z+6, r25	; 0x06
 	USARTC0.BAUDCTRLB = 1 << USART_BSCALE_gp;
-    1388:	90 e1       	ldi	r25, 0x10	; 16
-    138a:	97 83       	std	Z+7, r25	; 0x07
+    138e:	90 e1       	ldi	r25, 0x10	; 16
+    1390:	97 83       	std	Z+7, r25	; 0x07
 	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_MED_gc;
-    138c:	30 e6       	ldi	r19, 0x60	; 96
-    138e:	32 83       	std	Z+2, r19	; 0x02
+    1392:	30 e6       	ldi	r19, 0x60	; 96
+    1394:	32 83       	std	Z+2, r19	; 0x02
 	//ADC configuration: 1MHz, 15bit oversampling
 	ADCA.CTRLA = ADC_ENABLE_bm;
-    1390:	e0 e0       	ldi	r30, 0x00	; 0
-    1392:	f2 e0       	ldi	r31, 0x02	; 2
-    1394:	80 83       	st	Z, r24
+    1396:	e0 e0       	ldi	r30, 0x00	; 0
+    1398:	f2 e0       	ldi	r31, 0x02	; 2
+    139a:	80 83       	st	Z, r24
 	ADCA.CTRLB = ADC_CONMODE_bm | ADC_RESOLUTION_MT12BIT_gc; //Signed mode
-    1396:	32 e1       	ldi	r19, 0x12	; 18
-    1398:	31 83       	std	Z+1, r19	; 0x01
+    139c:	32 e1       	ldi	r19, 0x12	; 18
+    139e:	31 83       	std	Z+1, r19	; 0x01
 	ADCA.REFCTRL = ADC_REFSEL_AREFA_gc;
-    139a:	30 e2       	ldi	r19, 0x20	; 32
-    139c:	32 83       	std	Z+2, r19	; 0x02
+    13a0:	30 e2       	ldi	r19, 0x20	; 32
+    13a2:	32 83       	std	Z+2, r19	; 0x02
 	ADCA.PRESCALER = ADC_PRESCALER_DIV32_gc;
-    139e:	43 e0       	ldi	r20, 0x03	; 3
-    13a0:	44 83       	std	Z+4, r20	; 0x04
+    13a4:	43 e0       	ldi	r20, 0x03	; 3
+    13a6:	44 83       	std	Z+4, r20	; 0x04
 	ADCA.SAMPCTRL = 7 << ADC_SAMPVAL_gp;
-    13a2:	20 87       	std	Z+8, r18	; 0x08
+    13a8:	20 87       	std	Z+8, r18	; 0x08
 	ADCA.CH0.CTRL = ADC_CH_INPUTMODE_SINGLEENDED_gc | ADC_CH_GAIN_1X_gc;
-    13a4:	80 a3       	std	Z+32, r24	; 0x20
+    13aa:	80 a3       	std	Z+32, r24	; 0x20
 	ADCA.CH0.INTCTRL = ADC_CH_INTMODE_COMPLETE_gc | ADC_CH_INTLVL_LO_gc;
-    13a6:	82 a3       	std	Z+34, r24	; 0x22
+    13ac:	82 a3       	std	Z+34, r24	; 0x22
 	ADCA.CH0.AVGCTRL = ADC_CH_SAMPNUM_16X_gc; //This will produce 15 bit result
-    13a8:	24 e0       	ldi	r18, 0x04	; 4
-    13aa:	24 a7       	std	Z+44, r18	; 0x2c
+    13ae:	24 e0       	ldi	r18, 0x04	; 4
+    13b0:	24 a7       	std	Z+44, r18	; 0x2c
 	//TCD5 configuration: 500kHz, 1199Hz overflow rate
 	TCD5.CTRLA = TC_CLKSEL_DIV64_gc;
-    13ac:	e0 e4       	ldi	r30, 0x40	; 64
-    13ae:	f9 e0       	ldi	r31, 0x09	; 9
-    13b0:	25 e0       	ldi	r18, 0x05	; 5
-    13b2:	20 83       	st	Z, r18
+    13b2:	e0 e4       	ldi	r30, 0x40	; 64
+    13b4:	f9 e0       	ldi	r31, 0x09	; 9
+    13b6:	25 e0       	ldi	r18, 0x05	; 5
+    13b8:	20 83       	st	Z, r18
 	TCD5.CTRLB = TC_WGMODE_NORMAL_gc;
-    13b4:	11 82       	std	Z+1, r1	; 0x01
+    13ba:	11 82       	std	Z+1, r1	; 0x01
 	TCD5.PERBUF = 417;
-    13b6:	41 ea       	ldi	r20, 0xA1	; 161
-    13b8:	51 e0       	ldi	r21, 0x01	; 1
-    13ba:	46 ab       	std	Z+54, r20	; 0x36
-    13bc:	57 ab       	std	Z+55, r21	; 0x37
+    13bc:	41 ea       	ldi	r20, 0xA1	; 161
+    13be:	51 e0       	ldi	r21, 0x01	; 1
+    13c0:	46 ab       	std	Z+54, r20	; 0x36
+    13c2:	57 ab       	std	Z+55, r21	; 0x37
 	TCD5.CTRLGCLR = TC5_STOP_bm;
-    13be:	30 87       	std	Z+8, r19	; 0x08
+    13c4:	30 87       	std	Z+8, r19	; 0x08
 	//EDMA peripheral channel 0: USARTC read transfer
 	EDMA.CH0.CTRLB = EDMA_CH_TRNINTLVL_LO_gc;
-    13c0:	e0 e0       	ldi	r30, 0x00	; 0
-    13c2:	f1 e0       	ldi	r31, 0x01	; 1
-    13c4:	81 8b       	std	Z+17, r24	; 0x11
-	EDMA.CH0.ADDRCTRL = EDMA_CH_RELOAD_BLOCK_gc | EDMA_CH_DIR_INC_gc;
-    13c6:	31 e1       	ldi	r19, 0x11	; 17
-    13c8:	32 8b       	std	Z+18, r19	; 0x12
+    13c6:	e0 e0       	ldi	r30, 0x00	; 0
+    13c8:	f1 e0       	ldi	r31, 0x01	; 1
+    13ca:	81 8b       	std	Z+17, r24	; 0x11
+	EDMA.CH0.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
+    13cc:	31 e3       	ldi	r19, 0x31	; 49
+    13ce:	32 8b       	std	Z+18, r19	; 0x12
 	EDMA.CH0.ADDR = (register16_t)iobuf;
-    13ca:	4c e9       	ldi	r20, 0x9C	; 156
-    13cc:	50 e2       	ldi	r21, 0x20	; 32
-    13ce:	40 8f       	std	Z+24, r20	; 0x18
-    13d0:	51 8f       	std	Z+25, r21	; 0x19
+    13d0:	4c e9       	ldi	r20, 0x9C	; 156
+    13d2:	50 e2       	ldi	r21, 0x20	; 32
+    13d4:	40 8f       	std	Z+24, r20	; 0x18
+    13d6:	51 8f       	std	Z+25, r21	; 0x19
 	EDMA.CH0.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_RXC_gc;
-    13d2:	4c e4       	ldi	r20, 0x4C	; 76
-    13d4:	44 8b       	std	Z+20, r20	; 0x14
+    13d8:	4c e4       	ldi	r20, 0x4C	; 76
+    13da:	44 8b       	std	Z+20, r20	; 0x14
 	//EDMA peripheral channel 1: USARTC write transfer
 	EDMA.CH1.CTRLB = EDMA_CH_TRNINTLVL_LO_gc; //Low-level interrupt
-    13d6:	81 a3       	std	Z+33, r24	; 0x21
-	EDMA.CH1.ADDRCTRL = EDMA_CH_RELOAD_BLOCK_gc | EDMA_CH_DIR_INC_gc;
-    13d8:	32 a3       	std	Z+34, r19	; 0x22
+    13dc:	81 a3       	std	Z+33, r24	; 0x21
+	EDMA.CH1.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
+    13de:	32 a3       	std	Z+34, r19	; 0x22
 	EDMA.CH1.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_DRE_gc;
-    13da:	8d e4       	ldi	r24, 0x4D	; 77
-    13dc:	84 a3       	std	Z+36, r24	; 0x24
+    13e0:	8d e4       	ldi	r24, 0x4D	; 77
+    13e2:	84 a3       	std	Z+36, r24	; 0x24
 	//EDMA: 1 standard and 2 peripheral channels
 	EDMA.CTRL = EDMA_ENABLE_bm | EDMA_CHMODE_STD2_gc | EDMA_DBUFMODE_DISABLE_gc | EDMA_PRIMODE_RR0123_gc;
-    13de:	80 ea       	ldi	r24, 0xA0	; 160
-    13e0:	80 83       	st	Z, r24
+    13e4:	80 ea       	ldi	r24, 0xA0	; 160
+    13e6:	80 83       	st	Z, r24
 	//Power reduction
 	PR.PRGEN = PR_XCL_bm | PR_EVSYS_bm;
-    13e2:	e0 e7       	ldi	r30, 0x70	; 112
-    13e4:	f0 e0       	ldi	r31, 0x00	; 0
-    13e6:	82 e8       	ldi	r24, 0x82	; 130
-    13e8:	80 83       	st	Z, r24
+    13e8:	e0 e7       	ldi	r30, 0x70	; 112
+    13ea:	f0 e0       	ldi	r31, 0x00	; 0
+    13ec:	82 e8       	ldi	r24, 0x82	; 130
+    13ee:	80 83       	st	Z, r24
 	PR.PRPA = PR_DAC_bm | PR_AC_bm;
-    13ea:	21 83       	std	Z+1, r18	; 0x01
+    13f0:	21 83       	std	Z+1, r18	; 0x01
 	PR.PRPC = PR_TWI_bm | PR_SPI_bm | PR_HIRES_bm | PR_TC5_bm | PR_TC4_bm;
-    13ec:	8f e4       	ldi	r24, 0x4F	; 79
-    13ee:	83 83       	std	Z+3, r24	; 0x03
+    13f2:	8f e4       	ldi	r24, 0x4F	; 79
+    13f4:	83 83       	std	Z+3, r24	; 0x03
 	PR.PRPD = PR_USART0_bm;
-    13f0:	94 83       	std	Z+4, r25	; 0x04
+    13f6:	94 83       	std	Z+4, r25	; 0x04
 	sei();
-    13f2:	78 94       	sei
-    13f4:	08 95       	ret
+    13f8:	78 94       	sei
+    13fa:	08 95       	ret
 
-000013f6 <main>:
+000013fc <main>:
 }
 
 int main(void)
 {
 	mcuInit();
-    13f6:	0e 94 6d 09 	call	0x12da	; 0x12da <_Z7mcuInitv>
+    13fc:	0e 94 70 09 	call	0x12e0	; 0x12e0 <_Z7mcuInitv>
 	eeprom_read_block(&channelOT, &savedCOT, sizeof(channelsOnTime));
-    13fa:	48 e3       	ldi	r20, 0x38	; 56
-    13fc:	50 e0       	ldi	r21, 0x00	; 0
-    13fe:	61 e2       	ldi	r22, 0x21	; 33
-    1400:	70 e0       	ldi	r23, 0x00	; 0
-    1402:	84 ed       	ldi	r24, 0xD4	; 212
-    1404:	90 e2       	ldi	r25, 0x20	; 32
-    1406:	0e 94 89 0a 	call	0x1512	; 0x1512 <eeprom_read_block>
+    1400:	48 e3       	ldi	r20, 0x38	; 56
+    1402:	50 e0       	ldi	r21, 0x00	; 0
+    1404:	61 e2       	ldi	r22, 0x21	; 33
+    1406:	70 e0       	ldi	r23, 0x00	; 0
+    1408:	84 ed       	ldi	r24, 0xD4	; 212
+    140a:	90 e2       	ldi	r25, 0x20	; 32
+    140c:	0e 94 8c 0a 	call	0x1518	; 0x1518 <eeprom_read_block>
 	eeprom_read_block(iobuf, &savedConfig, sizeof(systemConfig) - 2);
-    140a:	4f e1       	ldi	r20, 0x1F	; 31
-    140c:	50 e0       	ldi	r21, 0x00	; 0
-    140e:	60 e0       	ldi	r22, 0x00	; 0
-    1410:	70 e0       	ldi	r23, 0x00	; 0
-    1412:	8c e9       	ldi	r24, 0x9C	; 156
-    1414:	90 e2       	ldi	r25, 0x20	; 32
-    1416:	0e 94 89 0a 	call	0x1512	; 0x1512 <eeprom_read_block>
+    1410:	4f e1       	ldi	r20, 0x1F	; 31
+    1412:	50 e0       	ldi	r21, 0x00	; 0
+    1414:	60 e0       	ldi	r22, 0x00	; 0
+    1416:	70 e0       	ldi	r23, 0x00	; 0
+    1418:	8c e9       	ldi	r24, 0x9C	; 156
+    141a:	90 e2       	ldi	r25, 0x20	; 32
+    141c:	0e 94 8c 0a 	call	0x1518	; 0x1518 <eeprom_read_block>
 	((systemConfig*)iobuf)->overrideCfg = ((systemConfig*)iobuf)->groupConf = 0; //Ignore saved overrides
-    141a:	cc e9       	ldi	r28, 0x9C	; 156
-    141c:	d0 e2       	ldi	r29, 0x20	; 32
-    141e:	1d 8e       	std	Y+29, r1	; 0x1d
-    1420:	19 8a       	std	Y+17, r1	; 0x11
+    1420:	cc e9       	ldi	r28, 0x9C	; 156
+    1422:	d0 e2       	ldi	r29, 0x20	; 32
+    1424:	1d 8e       	std	Y+29, r1	; 0x1d
+    1426:	19 8a       	std	Y+17, r1	; 0x11
 	((systemConfig*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(systemConfig) - 2);
-    1422:	6f e1       	ldi	r22, 0x1F	; 31
-    1424:	ce 01       	movw	r24, r28
-    1426:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
-    142a:	8f 8f       	std	Y+31, r24	; 0x1f
-    142c:	98 a3       	std	Y+32, r25	; 0x20
+    1428:	6f e1       	ldi	r22, 0x1F	; 31
+    142a:	ce 01       	movw	r24, r28
+    142c:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
+    1430:	8f 8f       	std	Y+31, r24	; 0x1f
+    1432:	98 a3       	std	Y+32, r25	; 0x20
 	ApplyConfig();
-    142e:	0e 94 90 00 	call	0x120	; 0x120 <_Z11ApplyConfigv>
-    1432:	ff cf       	rjmp	.-2      	; 0x1432 <main+0x3c>
+    1434:	0e 94 90 00 	call	0x120	; 0x120 <_Z11ApplyConfigv>
+    1438:	ff cf       	rjmp	.-2      	; 0x1438 <main+0x3c>
 
-00001434 <_GLOBAL__sub_I_gLevels>:
+0000143a <_GLOBAL__sub_I_gLevels>:
 	uint64_t _tickLastChg, _onTimeStamp;
 
 public:
 	LCport(uint8_t num, uint8_t count, uint8_t posA, uint8_t posB, uint8_t posC)
 	{
 		_linkCnt = count;
-    1434:	e0 e1       	ldi	r30, 0x10	; 16
-    1436:	f0 e2       	ldi	r31, 0x20	; 32
-    1438:	93 e0       	ldi	r25, 0x03	; 3
-    143a:	91 83       	std	Z+1, r25	; 0x01
+    143a:	e0 e1       	ldi	r30, 0x10	; 16
+    143c:	f0 e2       	ldi	r31, 0x20	; 32
+    143e:	93 e0       	ldi	r25, 0x03	; 3
+    1440:	91 83       	std	Z+1, r25	; 0x01
 		_link[0] = posA;
-    143c:	87 e0       	ldi	r24, 0x07	; 7
-    143e:	83 83       	std	Z+3, r24	; 0x03
+    1442:	87 e0       	ldi	r24, 0x07	; 7
+    1444:	83 83       	std	Z+3, r24	; 0x03
 		_link[1] = posB;
-    1440:	86 e0       	ldi	r24, 0x06	; 6
-    1442:	84 83       	std	Z+4, r24	; 0x04
+    1446:	86 e0       	ldi	r24, 0x06	; 6
+    1448:	84 83       	std	Z+4, r24	; 0x04
 		_link[2] = posC;
-    1444:	85 e0       	ldi	r24, 0x05	; 5
-    1446:	85 83       	std	Z+5, r24	; 0x05
+    144a:	85 e0       	ldi	r24, 0x05	; 5
+    144c:	85 83       	std	Z+5, r24	; 0x05
 		_linkNum = num;
-    1448:	12 82       	std	Z+2, r1	; 0x02
+    144e:	12 82       	std	Z+2, r1	; 0x02
 		_chActMask = 0x10 << num;
-    144a:	80 e1       	ldi	r24, 0x10	; 16
-    144c:	82 8b       	std	Z+18, r24	; 0x12
+    1450:	80 e1       	ldi	r24, 0x10	; 16
+    1452:	82 8b       	std	Z+18, r24	; 0x12
 	uint64_t _tickLastChg, _onTimeStamp;
 
 public:
 	LCport(uint8_t num, uint8_t count, uint8_t posA, uint8_t posB, uint8_t posC)
 	{
 		_linkCnt = count;
-    144e:	94 a3       	std	Z+36, r25	; 0x24
+    1454:	94 a3       	std	Z+36, r25	; 0x24
 		_link[0] = posA;
-    1450:	84 e0       	ldi	r24, 0x04	; 4
-    1452:	86 a3       	std	Z+38, r24	; 0x26
+    1456:	84 e0       	ldi	r24, 0x04	; 4
+    1458:	86 a3       	std	Z+38, r24	; 0x26
 		_link[1] = posB;
-    1454:	97 a3       	std	Z+39, r25	; 0x27
+    145a:	97 a3       	std	Z+39, r25	; 0x27
 		_link[2] = posC;
-    1456:	82 e0       	ldi	r24, 0x02	; 2
-    1458:	80 a7       	std	Z+40, r24	; 0x28
+    145c:	82 e0       	ldi	r24, 0x02	; 2
+    145e:	80 a7       	std	Z+40, r24	; 0x28
 		_linkNum = num;
-    145a:	21 e0       	ldi	r18, 0x01	; 1
-    145c:	25 a3       	std	Z+37, r18	; 0x25
+    1460:	21 e0       	ldi	r18, 0x01	; 1
+    1462:	25 a3       	std	Z+37, r18	; 0x25
 		_chActMask = 0x10 << num;
-    145e:	30 e2       	ldi	r19, 0x20	; 32
-    1460:	35 ab       	std	Z+53, r19	; 0x35
+    1464:	30 e2       	ldi	r19, 0x20	; 32
+    1466:	35 ab       	std	Z+53, r19	; 0x35
 	uint64_t _tickLastChg, _onTimeStamp;
 
 public:
 	LCport(uint8_t num, uint8_t count, uint8_t posA, uint8_t posB, uint8_t posC)
 	{
 		_linkCnt = count;
-    1462:	80 93 57 20 	sts	0x2057, r24	; 0x802057 <links+0x47>
+    1468:	80 93 57 20 	sts	0x2057, r24	; 0x802057 <links+0x47>
 		_link[0] = posA;
-    1466:	20 93 59 20 	sts	0x2059, r18	; 0x802059 <links+0x49>
+    146c:	20 93 59 20 	sts	0x2059, r18	; 0x802059 <links+0x49>
 		_link[1] = posB;
-    146a:	10 92 5a 20 	sts	0x205A, r1	; 0x80205a <links+0x4a>
+    1470:	10 92 5a 20 	sts	0x205A, r1	; 0x80205a <links+0x4a>
 		_link[2] = posC;
-    146e:	10 92 5b 20 	sts	0x205B, r1	; 0x80205b <links+0x4b>
+    1474:	10 92 5b 20 	sts	0x205B, r1	; 0x80205b <links+0x4b>
 		_linkNum = num;
-    1472:	80 93 58 20 	sts	0x2058, r24	; 0x802058 <links+0x48>
+    1478:	80 93 58 20 	sts	0x2058, r24	; 0x802058 <links+0x48>
 		_chActMask = 0x10 << num;
-    1476:	30 e4       	ldi	r19, 0x40	; 64
-    1478:	30 93 68 20 	sts	0x2068, r19	; 0x802068 <links+0x58>
+    147c:	30 e4       	ldi	r19, 0x40	; 64
+    147e:	30 93 68 20 	sts	0x2068, r19	; 0x802068 <links+0x58>
 	uint64_t _tickLastChg, _onTimeStamp;
 
 public:
 	LCport(uint8_t num, uint8_t count, uint8_t posA, uint8_t posB, uint8_t posC)
 	{
 		_linkCnt = count;
-    147c:	20 93 7a 20 	sts	0x207A, r18	; 0x80207a <links+0x6a>
+    1482:	20 93 7a 20 	sts	0x207A, r18	; 0x80207a <links+0x6a>
 		_link[0] = posA;
-    1480:	28 e0       	ldi	r18, 0x08	; 8
-    1482:	20 93 7c 20 	sts	0x207C, r18	; 0x80207c <links+0x6c>
+    1486:	28 e0       	ldi	r18, 0x08	; 8
+    1488:	20 93 7c 20 	sts	0x207C, r18	; 0x80207c <links+0x6c>
 		_link[1] = posB;
-    1486:	10 92 7d 20 	sts	0x207D, r1	; 0x80207d <links+0x6d>
+    148c:	10 92 7d 20 	sts	0x207D, r1	; 0x80207d <links+0x6d>
 		_link[2] = posC;
-    148a:	10 92 7e 20 	sts	0x207E, r1	; 0x80207e <links+0x6e>
+    1490:	10 92 7e 20 	sts	0x207E, r1	; 0x80207e <links+0x6e>
 		_linkNum = num;
-    148e:	90 93 7b 20 	sts	0x207B, r25	; 0x80207b <links+0x6b>
+    1494:	90 93 7b 20 	sts	0x207B, r25	; 0x80207b <links+0x6b>
 		_chActMask = 0x10 << num;
-    1492:	90 e8       	ldi	r25, 0x80	; 128
-    1494:	90 93 8b 20 	sts	0x208B, r25	; 0x80208b <links+0x7b>
+    1498:	90 e8       	ldi	r25, 0x80	; 128
+    149a:	90 93 8b 20 	sts	0x208B, r25	; 0x80208b <links+0x7b>
 	uint8_t _onTime, _fTime;
 	uint64_t _onTimeStamp;
 public:
 	Msen(uint8_t actLink)
 	{
 		_linkNum = actLink;
-    1498:	80 93 04 20 	sts	0x2004, r24	; 0x802004 <msenCh+0x2>
-    149c:	08 95       	ret
+    149e:	80 93 04 20 	sts	0x2004, r24	; 0x802004 <msenCh+0x2>
+    14a2:	08 95       	ret
 
-0000149e <__divmodhi4>:
-    149e:	97 fb       	bst	r25, 7
-    14a0:	07 2e       	mov	r0, r23
-    14a2:	16 f4       	brtc	.+4      	; 0x14a8 <__divmodhi4+0xa>
-    14a4:	00 94       	com	r0
-    14a6:	07 d0       	rcall	.+14     	; 0x14b6 <__divmodhi4_neg1>
-    14a8:	77 fd       	sbrc	r23, 7
-    14aa:	09 d0       	rcall	.+18     	; 0x14be <__divmodhi4_neg2>
-    14ac:	0e 94 6f 0a 	call	0x14de	; 0x14de <__udivmodhi4>
-    14b0:	07 fc       	sbrc	r0, 7
-    14b2:	05 d0       	rcall	.+10     	; 0x14be <__divmodhi4_neg2>
-    14b4:	3e f4       	brtc	.+14     	; 0x14c4 <__divmodhi4_exit>
+000014a4 <__divmodhi4>:
+    14a4:	97 fb       	bst	r25, 7
+    14a6:	07 2e       	mov	r0, r23
+    14a8:	16 f4       	brtc	.+4      	; 0x14ae <__divmodhi4+0xa>
+    14aa:	00 94       	com	r0
+    14ac:	07 d0       	rcall	.+14     	; 0x14bc <__divmodhi4_neg1>
+    14ae:	77 fd       	sbrc	r23, 7
+    14b0:	09 d0       	rcall	.+18     	; 0x14c4 <__divmodhi4_neg2>
+    14b2:	0e 94 72 0a 	call	0x14e4	; 0x14e4 <__udivmodhi4>
+    14b6:	07 fc       	sbrc	r0, 7
+    14b8:	05 d0       	rcall	.+10     	; 0x14c4 <__divmodhi4_neg2>
+    14ba:	3e f4       	brtc	.+14     	; 0x14ca <__divmodhi4_exit>
 
-000014b6 <__divmodhi4_neg1>:
-    14b6:	90 95       	com	r25
-    14b8:	81 95       	neg	r24
-    14ba:	9f 4f       	sbci	r25, 0xFF	; 255
-    14bc:	08 95       	ret
+000014bc <__divmodhi4_neg1>:
+    14bc:	90 95       	com	r25
+    14be:	81 95       	neg	r24
+    14c0:	9f 4f       	sbci	r25, 0xFF	; 255
+    14c2:	08 95       	ret
 
-000014be <__divmodhi4_neg2>:
-    14be:	70 95       	com	r23
-    14c0:	61 95       	neg	r22
-    14c2:	7f 4f       	sbci	r23, 0xFF	; 255
+000014c4 <__divmodhi4_neg2>:
+    14c4:	70 95       	com	r23
+    14c6:	61 95       	neg	r22
+    14c8:	7f 4f       	sbci	r23, 0xFF	; 255
 
-000014c4 <__divmodhi4_exit>:
-    14c4:	08 95       	ret
+000014ca <__divmodhi4_exit>:
+    14ca:	08 95       	ret
 
-000014c6 <__adddi3_s8>:
-    14c6:	00 24       	eor	r0, r0
-    14c8:	a7 fd       	sbrc	r26, 7
-    14ca:	00 94       	com	r0
-    14cc:	2a 0f       	add	r18, r26
-    14ce:	30 1d       	adc	r19, r0
-    14d0:	40 1d       	adc	r20, r0
-    14d2:	50 1d       	adc	r21, r0
-    14d4:	60 1d       	adc	r22, r0
-    14d6:	70 1d       	adc	r23, r0
-    14d8:	80 1d       	adc	r24, r0
-    14da:	90 1d       	adc	r25, r0
-    14dc:	08 95       	ret
+000014cc <__adddi3_s8>:
+    14cc:	00 24       	eor	r0, r0
+    14ce:	a7 fd       	sbrc	r26, 7
+    14d0:	00 94       	com	r0
+    14d2:	2a 0f       	add	r18, r26
+    14d4:	30 1d       	adc	r19, r0
+    14d6:	40 1d       	adc	r20, r0
+    14d8:	50 1d       	adc	r21, r0
+    14da:	60 1d       	adc	r22, r0
+    14dc:	70 1d       	adc	r23, r0
+    14de:	80 1d       	adc	r24, r0
+    14e0:	90 1d       	adc	r25, r0
+    14e2:	08 95       	ret
 
-000014de <__udivmodhi4>:
-    14de:	aa 1b       	sub	r26, r26
-    14e0:	bb 1b       	sub	r27, r27
-    14e2:	51 e1       	ldi	r21, 0x11	; 17
-    14e4:	07 c0       	rjmp	.+14     	; 0x14f4 <__udivmodhi4_ep>
+000014e4 <__udivmodhi4>:
+    14e4:	aa 1b       	sub	r26, r26
+    14e6:	bb 1b       	sub	r27, r27
+    14e8:	51 e1       	ldi	r21, 0x11	; 17
+    14ea:	07 c0       	rjmp	.+14     	; 0x14fa <__udivmodhi4_ep>
 
-000014e6 <__udivmodhi4_loop>:
-    14e6:	aa 1f       	adc	r26, r26
-    14e8:	bb 1f       	adc	r27, r27
-    14ea:	a6 17       	cp	r26, r22
-    14ec:	b7 07       	cpc	r27, r23
-    14ee:	10 f0       	brcs	.+4      	; 0x14f4 <__udivmodhi4_ep>
-    14f0:	a6 1b       	sub	r26, r22
-    14f2:	b7 0b       	sbc	r27, r23
+000014ec <__udivmodhi4_loop>:
+    14ec:	aa 1f       	adc	r26, r26
+    14ee:	bb 1f       	adc	r27, r27
+    14f0:	a6 17       	cp	r26, r22
+    14f2:	b7 07       	cpc	r27, r23
+    14f4:	10 f0       	brcs	.+4      	; 0x14fa <__udivmodhi4_ep>
+    14f6:	a6 1b       	sub	r26, r22
+    14f8:	b7 0b       	sbc	r27, r23
 
-000014f4 <__udivmodhi4_ep>:
-    14f4:	88 1f       	adc	r24, r24
-    14f6:	99 1f       	adc	r25, r25
-    14f8:	5a 95       	dec	r21
-    14fa:	a9 f7       	brne	.-22     	; 0x14e6 <__udivmodhi4_loop>
-    14fc:	80 95       	com	r24
-    14fe:	90 95       	com	r25
-    1500:	bc 01       	movw	r22, r24
-    1502:	cd 01       	movw	r24, r26
-    1504:	08 95       	ret
+000014fa <__udivmodhi4_ep>:
+    14fa:	88 1f       	adc	r24, r24
+    14fc:	99 1f       	adc	r25, r25
+    14fe:	5a 95       	dec	r21
+    1500:	a9 f7       	brne	.-22     	; 0x14ec <__udivmodhi4_loop>
+    1502:	80 95       	com	r24
+    1504:	90 95       	com	r25
+    1506:	bc 01       	movw	r22, r24
+    1508:	cd 01       	movw	r24, r26
+    150a:	08 95       	ret
 
-00001506 <__tablejump2__>:
-    1506:	ee 0f       	add	r30, r30
-    1508:	ff 1f       	adc	r31, r31
-    150a:	05 90       	lpm	r0, Z+
-    150c:	f4 91       	lpm	r31, Z
-    150e:	e0 2d       	mov	r30, r0
-    1510:	09 94       	ijmp
+0000150c <__tablejump2__>:
+    150c:	ee 0f       	add	r30, r30
+    150e:	ff 1f       	adc	r31, r31
+    1510:	05 90       	lpm	r0, Z+
+    1512:	f4 91       	lpm	r31, Z
+    1514:	e0 2d       	mov	r30, r0
+    1516:	09 94       	ijmp
 
-00001512 <eeprom_read_block>:
-    1512:	60 50       	subi	r22, 0x00	; 0
-    1514:	70 4f       	sbci	r23, 0xF0	; 240
-    1516:	0c 94 c6 0a 	jmp	0x158c	; 0x158c <memcpy>
+00001518 <eeprom_read_block>:
+    1518:	60 50       	subi	r22, 0x00	; 0
+    151a:	70 4f       	sbci	r23, 0xF0	; 240
+    151c:	0c 94 c9 0a 	jmp	0x1592	; 0x1592 <memcpy>
 
-0000151a <eeprom_update_block>:
-    151a:	dc 01       	movw	r26, r24
-    151c:	a4 0f       	add	r26, r20
-    151e:	b5 1f       	adc	r27, r21
-    1520:	41 50       	subi	r20, 0x01	; 1
-    1522:	50 40       	sbci	r21, 0x00	; 0
-    1524:	48 f0       	brcs	.+18     	; 0x1538 <eeprom_update_block+0x1e>
-    1526:	cb 01       	movw	r24, r22
-    1528:	84 0f       	add	r24, r20
-    152a:	95 1f       	adc	r25, r21
-    152c:	2e 91       	ld	r18, -X
-    152e:	0e 94 9e 0a 	call	0x153c	; 0x153c <eeprom_update_r18>
-    1532:	41 50       	subi	r20, 0x01	; 1
-    1534:	50 40       	sbci	r21, 0x00	; 0
-    1536:	d0 f7       	brcc	.-12     	; 0x152c <eeprom_update_block+0x12>
-    1538:	08 95       	ret
+00001520 <eeprom_update_block>:
+    1520:	dc 01       	movw	r26, r24
+    1522:	a4 0f       	add	r26, r20
+    1524:	b5 1f       	adc	r27, r21
+    1526:	41 50       	subi	r20, 0x01	; 1
+    1528:	50 40       	sbci	r21, 0x00	; 0
+    152a:	48 f0       	brcs	.+18     	; 0x153e <eeprom_update_block+0x1e>
+    152c:	cb 01       	movw	r24, r22
+    152e:	84 0f       	add	r24, r20
+    1530:	95 1f       	adc	r25, r21
+    1532:	2e 91       	ld	r18, -X
+    1534:	0e 94 a1 0a 	call	0x1542	; 0x1542 <eeprom_update_r18>
+    1538:	41 50       	subi	r20, 0x01	; 1
+    153a:	50 40       	sbci	r21, 0x00	; 0
+    153c:	d0 f7       	brcc	.-12     	; 0x1532 <eeprom_update_block+0x12>
+    153e:	08 95       	ret
 
-0000153a <eeprom_update_byte>:
-    153a:	26 2f       	mov	r18, r22
+00001540 <eeprom_update_byte>:
+    1540:	26 2f       	mov	r18, r22
 
-0000153c <eeprom_update_r18>:
-    153c:	0e 94 c2 0a 	call	0x1584	; 0x1584 <eeprom_mapen>
-    1540:	00 80       	ld	r0, Z
-    1542:	02 16       	cp	r0, r18
-    1544:	19 f0       	breq	.+6      	; 0x154c <eeprom_update_r18+0x10>
-    1546:	0e 94 a9 0a 	call	0x1552	; 0x1552 <eeprom_write_r18>
-    154a:	01 97       	sbiw	r24, 0x01	; 1
-    154c:	01 97       	sbiw	r24, 0x01	; 1
-    154e:	08 95       	ret
+00001542 <eeprom_update_r18>:
+    1542:	0e 94 c5 0a 	call	0x158a	; 0x158a <eeprom_mapen>
+    1546:	00 80       	ld	r0, Z
+    1548:	02 16       	cp	r0, r18
+    154a:	19 f0       	breq	.+6      	; 0x1552 <eeprom_update_r18+0x10>
+    154c:	0e 94 ac 0a 	call	0x1558	; 0x1558 <eeprom_write_r18>
+    1550:	01 97       	sbiw	r24, 0x01	; 1
+    1552:	01 97       	sbiw	r24, 0x01	; 1
+    1554:	08 95       	ret
 
-00001550 <eeprom_write_byte>:
-    1550:	26 2f       	mov	r18, r22
+00001556 <eeprom_write_byte>:
+    1556:	26 2f       	mov	r18, r22
 
-00001552 <eeprom_write_r18>:
-    1552:	af 93       	push	r26
-    1554:	bf 93       	push	r27
-    1556:	e0 ec       	ldi	r30, 0xC0	; 192
-    1558:	f1 e0       	ldi	r31, 0x01	; 1
-    155a:	37 85       	ldd	r19, Z+15	; 0x0f
-    155c:	37 fd       	sbrc	r19, 7
-    155e:	fd cf       	rjmp	.-6      	; 0x155a <eeprom_write_r18+0x8>
-    1560:	dc 01       	movw	r26, r24
-    1562:	a0 50       	subi	r26, 0x00	; 0
-    1564:	b0 4f       	sbci	r27, 0xF0	; 240
-    1566:	2c 93       	st	X, r18
-    1568:	25 e3       	ldi	r18, 0x35	; 53
-    156a:	22 87       	std	Z+10, r18	; 0x0a
-    156c:	28 ed       	ldi	r18, 0xD8	; 216
-    156e:	31 e0       	ldi	r19, 0x01	; 1
-    1570:	24 bf       	out	0x34, r18	; 52
-    1572:	33 87       	std	Z+11, r19	; 0x0b
-    1574:	01 96       	adiw	r24, 0x01	; 1
-    1576:	bf 91       	pop	r27
-    1578:	af 91       	pop	r26
-    157a:	08 95       	ret
+00001558 <eeprom_write_r18>:
+    1558:	af 93       	push	r26
+    155a:	bf 93       	push	r27
+    155c:	e0 ec       	ldi	r30, 0xC0	; 192
+    155e:	f1 e0       	ldi	r31, 0x01	; 1
+    1560:	37 85       	ldd	r19, Z+15	; 0x0f
+    1562:	37 fd       	sbrc	r19, 7
+    1564:	fd cf       	rjmp	.-6      	; 0x1560 <eeprom_write_r18+0x8>
+    1566:	dc 01       	movw	r26, r24
+    1568:	a0 50       	subi	r26, 0x00	; 0
+    156a:	b0 4f       	sbci	r27, 0xF0	; 240
+    156c:	2c 93       	st	X, r18
+    156e:	25 e3       	ldi	r18, 0x35	; 53
+    1570:	22 87       	std	Z+10, r18	; 0x0a
+    1572:	28 ed       	ldi	r18, 0xD8	; 216
+    1574:	31 e0       	ldi	r19, 0x01	; 1
+    1576:	24 bf       	out	0x34, r18	; 52
+    1578:	33 87       	std	Z+11, r19	; 0x0b
+    157a:	01 96       	adiw	r24, 0x01	; 1
+    157c:	bf 91       	pop	r27
+    157e:	af 91       	pop	r26
+    1580:	08 95       	ret
 
-0000157c <eeprom_read_byte>:
-    157c:	03 d0       	rcall	.+6      	; 0x1584 <eeprom_mapen>
-    157e:	80 81       	ld	r24, Z
-    1580:	99 27       	eor	r25, r25
-    1582:	08 95       	ret
+00001582 <eeprom_read_byte>:
+    1582:	03 d0       	rcall	.+6      	; 0x158a <eeprom_mapen>
+    1584:	80 81       	ld	r24, Z
+    1586:	99 27       	eor	r25, r25
+    1588:	08 95       	ret
 
-00001584 <eeprom_mapen>:
-    1584:	fc 01       	movw	r30, r24
-    1586:	e0 50       	subi	r30, 0x00	; 0
-    1588:	f0 4f       	sbci	r31, 0xF0	; 240
-    158a:	08 95       	ret
+0000158a <eeprom_mapen>:
+    158a:	fc 01       	movw	r30, r24
+    158c:	e0 50       	subi	r30, 0x00	; 0
+    158e:	f0 4f       	sbci	r31, 0xF0	; 240
+    1590:	08 95       	ret
 
-0000158c <memcpy>:
-    158c:	fb 01       	movw	r30, r22
-    158e:	dc 01       	movw	r26, r24
-    1590:	02 c0       	rjmp	.+4      	; 0x1596 <memcpy+0xa>
-    1592:	01 90       	ld	r0, Z+
-    1594:	0d 92       	st	X+, r0
-    1596:	41 50       	subi	r20, 0x01	; 1
-    1598:	50 40       	sbci	r21, 0x00	; 0
-    159a:	d8 f7       	brcc	.-10     	; 0x1592 <memcpy+0x6>
-    159c:	08 95       	ret
+00001592 <memcpy>:
+    1592:	fb 01       	movw	r30, r22
+    1594:	dc 01       	movw	r26, r24
+    1596:	02 c0       	rjmp	.+4      	; 0x159c <memcpy+0xa>
+    1598:	01 90       	ld	r0, Z+
+    159a:	0d 92       	st	X+, r0
+    159c:	41 50       	subi	r20, 0x01	; 1
+    159e:	50 40       	sbci	r21, 0x00	; 0
+    15a0:	d8 f7       	brcc	.-10     	; 0x1598 <memcpy+0x6>
+    15a2:	08 95       	ret
 
-0000159e <_exit>:
-    159e:	f8 94       	cli
+000015a4 <_exit>:
+    15a4:	f8 94       	cli
 
-000015a0 <__stop_program>:
-    15a0:	ff cf       	rjmp	.-2      	; 0x15a0 <__stop_program>
+000015a6 <__stop_program>:
+    15a6:	ff cf       	rjmp	.-2      	; 0x15a6 <__stop_program>

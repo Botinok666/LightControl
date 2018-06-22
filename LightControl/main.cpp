@@ -221,11 +221,12 @@ ISR (ADC_vect)
 	adcSum += ADC;
 }
 
-bool AM2302read()
+uint8_t AM2302read()
 {
 	int8_t nBits;
+	PORTB &= ~(1 << PORTB2);
 	DOPullLow();
-	_delay_ms(2);
+	_delay_ms(2.5);
 	DORelease();
 	TCNT0 = 0;
 	TIFR0 |= (1 << OCF0A);
@@ -234,10 +235,12 @@ bool AM2302read()
 	{
 		TCNT0 = 0;
 		while (~(PINB & (1 << PINB2)) && ~(TIFR0 & (1 << OCF0A))); //Wait for high level
+		TCNT0 = 0;
 		while ((PINB & (1 << PINB2)) && ~(TIFR0 & (1 << OCF0A))); //Wait for low level
-		if (TIFR0 & (1 << OCF0A)) //Sensor not responded
-			return false;
-		int8_t tmp = TCNT0 < 45 ? 0 : 1; //Less than 98µs - 0
+		if (TIFR0 & (1 << OCF0A)) //Sensor is not responded at some point
+			return 1;
+		if (nBits < 0) continue;
+		int8_t tmp = TCNT0 < 22 ? 0 : 1; //High level for less than 48µs - 0
 		if (nBits < 16)
 			AM2302data.frame.RH = (AM2302data.frame.RH << 1) | tmp;
 		else if (nBits < 32)
@@ -249,7 +252,7 @@ bool AM2302read()
 	for (nBits = 0; nBits < 4; nBits++)
 		cSum += AM2302data.arr[nBits];
 	if (cSum != AM2302data.frame.checksum)
-		return false;
+		return 2;
 	if (AM2302data.frame.T < 0)
 		AM2302data.frame.T = ~(AM2302data.frame.T & 0x7FFF) + 1;
 	if (cycles == 3)
@@ -264,7 +267,7 @@ bool AM2302read()
 		sRdy = true;
 	}
 	amRead = false;
-	return true;
+	return 0;
 }
 
 void FanRegulation()
@@ -310,7 +313,7 @@ void inline mcuInit()
 	TCCR0A = (1 << WGM01);
 	TCCR0B = (1 << CS01); //1 tick = 2.17µs
 	OCR0A = 0xFE;
-	OCR0B = (sizeof(sysStatus) > sizeof(sysConfig) ? sizeof(sysStatus) : sizeof(sysConfig)) * 234 / 69;
+	OCR0B = (sizeof(sysStatus) > sizeof(sysConfig) ? sizeof(sysStatus) : sizeof(sysConfig)) * 234 / 69; //Equals 57
 	//Timer 1: 460.8kHz clock, input capture on leading edge, noise filtering, OVF interrupt
 	//If fan is running for 4 poles, minimum measurable speed is 211rpm
 	TCCR1B = (1 << ICNC1) | (1 << ICES1) | (1 << CS11);
@@ -372,18 +375,19 @@ int main(void)
 
 		if (amRead && !rxMode) //Read data from AM2302
 		{
-			if (!AM2302read() && readTries++ > 3)
+			uint8_t result = AM2302read();
+			if (readTries++ > 3 && result)
 			{
 				readTries = 0;
 				amRead = false;
 				if (cycles == 3) //Set special values to indicate an error on that channel
 				{
-					tmpStatus.insideRH = 0;
+					tmpStatus.insideRH = (result == 2) ? 43 : 0;
 					tmpStatus.insideT = 850;
 				}
 				else
 				{
-					tmpStatus.outsideRH = 0;
+					tmpStatus.outsideRH = (result == 2) ? 43 : 0;
 					tmpStatus.outsideT = 850;
 				}
 			}

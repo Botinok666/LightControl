@@ -429,10 +429,11 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 			else //Data transmit request
 			{
 				UCTXen();
+				USARTC0.STATUS = USART_TXCIF_bm;
 				if (rxMode == GetConfig)
 				{
 					EDMA.CH1.TRFCNT = sizeof(systemConfig);
-					EDMA.CH1.ADDR = (uint16_t)&validConf;
+					EDMA.CH1.ADDR = (register16_t)&validConf;
 				}
 				else if (rxMode == GetStatus) //Get state
 				{
@@ -447,7 +448,7 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 					memcpy(iobuf, &channelOT, sizeof(channelsOnTime));
 					((channelsOnTime*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(channelsOnTime) - 2);
 					EDMA.CH1.TRFCNT = sizeof(channelsOnTime);
-					EDMA.CH1.ADDR = (uint16_t)iobuf;
+					EDMA.CH1.ADDR = (register16_t)iobuf;
 				}
 				EDMA.CH1.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
 			}
@@ -557,12 +558,12 @@ inline void mcuInit()
 	TCD5.CTRLGCLR = TC5_STOP_bm;
 	//EDMA peripheral channel 0: USARTC read transfer
 	EDMA.CH0.CTRLB = EDMA_CH_TRNINTLVL_LO_gc;
-	EDMA.CH0.ADDRCTRL = EDMA_CH_RELOAD_BLOCK_gc | EDMA_CH_DIR_INC_gc;
+	EDMA.CH0.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
 	EDMA.CH0.ADDR = (register16_t)iobuf;
 	EDMA.CH0.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_RXC_gc;
 	//EDMA peripheral channel 1: USARTC write transfer
 	EDMA.CH1.CTRLB = EDMA_CH_TRNINTLVL_LO_gc; //Low-level interrupt
-	EDMA.CH1.ADDRCTRL = EDMA_CH_RELOAD_BLOCK_gc | EDMA_CH_DIR_INC_gc;
+	EDMA.CH1.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
 	EDMA.CH1.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_DRE_gc;
 	//EDMA: 1 standard and 2 peripheral channels
 	EDMA.CTRL = EDMA_ENABLE_bm | EDMA_CHMODE_STD2_gc | EDMA_DBUFMODE_DISABLE_gc | EDMA_PRIMODE_RR0123_gc;
