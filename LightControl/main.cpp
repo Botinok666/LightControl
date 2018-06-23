@@ -1,6 +1,6 @@
 /* Air conditioning Mk1
  * Created: 24.11.2017 19:17:15
- * Version: 1.1
+ * Version: 1.2
  * Programmed version: 1.1	*/
 
 #include "AC.h"
@@ -10,9 +10,8 @@
 #include <string.h>
 #include <util/crc16.h>
 
-volatile bool tRdy, sRdy, amRead, dRdy = false;
 volatile uint8_t tachCnt, txCnt, rxMode = 0, cycles;
-volatile uint16_t tachPrev, adcSum;
+volatile uint16_t tachPrev, adcSum, eeSave = 0;
 uint32_t tachSum;
 uint8_t *txBuf;
 
@@ -62,6 +61,35 @@ uint16_t CalculateCRC16(void *arr, int8_t count)
 	return CRC16;
 }
 
+void FanRegulation()
+{
+	//Upper bounds for regulation
+	int16_t dT = tmpStatus.insideT - tmpStatus.outsideT - validConf.minDeltaT;
+	int16_t dRH = tmpStatus.insideRH - tmpStatus.outsideRH - validConf.minDeltaRH;
+	int16_t A = (FanMax - FanMin) * dT / validConf.dDeltaT;
+	int16_t B = (FanMax - FanMin) * dRH / validConf.dDeltaRH;
+	if (B > A)
+		A = B;
+	A += FanMin;
+	if (A > tmpStatus.fanLevel) //At least one of upper bounds is above
+	{
+		//tmpStatus.fanLevel = A > FanMax ? FanMax : A; //Increase level
+	}
+	else
+	{
+		//Lower bounds for regulation
+		dT -= validConf.minDeltaT >> 3;
+		dRH -= validConf.minDeltaRH >> 3;
+		A = (FanMax - FanMin) * dT / validConf.dDeltaT;
+		B = (FanMax - FanMin) * dRH / validConf.dDeltaRH;
+		if (B > A)
+			A = B;
+		A += FanMin;
+		//if (A < tmpStatus.fanLevel) //Both lower bounds are below
+		//	tmpStatus.fanLevel = A > FanMin ? A : 0; //Decrease level
+	}
+}
+
 ISR (USART0_RX_vect)
 {
 	static char uCnt = 0;
@@ -79,7 +107,6 @@ ISR (USART0_RX_vect)
 				rxBuf = (uint8_t*)&rcvdConf; //First byte address in structure
 				TCNT0 = 0;
 				TCCR0B = (1 << CS02); //14.4kHz clock
-				//OCR0A = OCR0B; //Load cycles count
 				TIFR0 = (1 << OCF0B); //Clear interrupt flag
 				TIMSK0 = (1 << OCIE0B); //Enable packet lost interrupt
 			}
@@ -109,10 +136,10 @@ ISR (USART0_RX_vect)
 		*rxBuf++ = data;
 		if (--uCnt == 0) //Packet received
 		{
-			dRdy = true;
 			TIMSK0 = 0; //Disable packet lost interrupt
 			TCCR0B = (1 << CS01); //460.8kHz clock
-			//OCR0A = 0xFE;
+			if (CalculateCRC16(&rcvdConf, sizeof(sysConfig) - 2) == rcvdConf.CRC16) //CRC OK
+				memcpy(&validConf, &rcvdConf, sizeof(sysConfig));
 		}
 	}
 }
@@ -133,15 +160,19 @@ ISR (TIMER0_COMPB_vect) //Packet lost interrupt
 {
 	TIMSK0 = 0; //Disable packet lost interrupt
 	TCCR0B = (1 << CS01); //460.8kHz clock
-	//OCR0A = 0xFE;
 	UCSR0A = (1 << MPCM0);
 	rxMode = 0;
 }
 
 ISR (TIMER1_OVF_vect) //Occurs every 142.2ms
 {
-	if (++cycles > 15)
+	if (cycles++ >= 15)
+	{
 		cycles = 0;
+		eeSave += 8;
+		if (eeSave == 0)
+			eeprom_update_block(&validConf, &eConf, sizeof(sysConfig));
+	}
 	switch (cycles)
 	{
 		case 0:
@@ -150,21 +181,18 @@ ISR (TIMER1_OVF_vect) //Occurs every 142.2ms
 		tachCnt = 0;
 		tachSum = 0;
 		TIMSK1 |= (1 << ICIE1);
-		break;
-
-		case 2:
-		case 10:
-		TIMSK1 &= ~(1 << ICIE1);
-		if (tachCnt < 2)
-			tmpStatus.rpmFront = 0;
-		else
-			tRdy = true;
-		break;
+	break;
 
 		case 3:
 		case 15:
-		amRead = true;
-		break;
+		PORTB &= ~(1 << PORTB2);
+		DDRB |= (1 << DDB2); //Interface pulled low
+		_delay_ms(1.666);
+		DDRB &= ~(1 << DDB2); //Interface released
+		PCMSK1 = (1 << PCINT10);
+		GIFR = (1 << PCIF1);
+		GIMSK = (1 << PCIE1);
+	break;
 
 		case 4:
 		case 12:
@@ -172,18 +200,31 @@ ISR (TIMER1_OVF_vect) //Occurs every 142.2ms
 		tachCnt = 0;
 		tachSum = 0;
 		TIMSK1 |= (1 << ICIE1);
-		break;
+	break;
 
+		case 2:
 		case 6:
+		case 10:
 		case 14:
 		TIMSK1 &= ~(1 << ICIE1);
-		if (tachCnt < 2)
-			tmpStatus.rpmRear = 0;
+		if (cycles == 2 || cycles == 10)
+			tmpStatus.rpmFront = 0;
 		else
-			tRdy = true;
-		tmpStatus.currentDraw = (adcSum << 3) / Idiv_x1mA;
-		adcSum = 0;
-		break;
+		{
+			tmpStatus.rpmRear = 0;
+			tmpStatus.currentDraw = (adcSum << 3) / Idiv_x1mA;
+			adcSum = 0;
+		}
+		if (tachCnt > 1)
+		{
+			uint32_t temp = (F_CPU / 8) * 30 * (tachCnt - 1);
+			temp /= tachSum;
+			if (cycles < 10)
+				tmpStatus.rpmFront = temp;
+			else
+				tmpStatus.rpmRear = temp;
+		}
+	break;
 	}
 	ADCSRA |= (1 << ADSC);
 	uint8_t level = validConf.fanLevelOverride < FanMax ?
@@ -203,6 +244,60 @@ ISR (TIMER1_OVF_vect) //Occurs every 142.2ms
 	OCR2BL = ICR2L - OCR2AL;
 }
 
+ISR (PCINT1_vect)
+{
+	GIMSK = 0;
+	_delay_us(80);
+	//Check start condition 2
+	tmpStatus.fanLevel = 1;
+	if(!(PINB & (1 << PINB2)))
+		return;
+	_delay_us(80);
+	//read the data
+	for (uint8_t j = 0; j < 5; j++) //read 5 byte
+	{
+		uint8_t result = 0;
+		for (uint8_t i = 0; i < 8; i++) //read every bit
+		{
+			uint8_t timeoutcounter = 0;
+			while (!(PINB & (1 << PINB2))) //wait for an high input
+			{
+				_delay_us(10);
+				if (++timeoutcounter > 5) //timeout
+					return;
+			}
+			_delay_us(30);
+			if (PINB & (1 << PINB2)) //if input is high after 30 us, get result
+				result |= (1 << (7 - i));
+			timeoutcounter = 0;
+			while (PINB & (1 << PINB2)) //wait until input get low (non blocking)
+			{
+				_delay_us(10);
+				if (++timeoutcounter > 5) //timeout
+					return;
+			}
+		}
+		AM2302data.arr[j] = result;
+	}
+	tmpStatus.fanLevel = 2;
+	if ((uint8_t)(AM2302data.arr[0] + AM2302data.arr[1] + AM2302data.arr[2] + AM2302data.arr[3]) != AM2302data.arr[4])
+		return;
+	if (AM2302data.frame.T < 0)
+		AM2302data.frame.T = ~(AM2302data.frame.T & 0x7FFF) + 1;
+	if (cycles == 3)
+	{
+		tmpStatus.insideRH = AM2302data.frame.RH;
+		tmpStatus.insideT = AM2302data.frame.T;
+	}
+	else
+	{
+		tmpStatus.outsideRH = AM2302data.frame.RH;
+		tmpStatus.outsideT = AM2302data.frame.T;
+		FanRegulation();
+	}
+	tmpStatus.fanLevel = 3;
+}
+
 ISR (TIMER1_CAPT_vect)
 {
 	if (tachCnt++ > 0)
@@ -213,10 +308,7 @@ ISR (TIMER1_CAPT_vect)
 			tachSum += ICR1 - tachPrev;
 	}
 	if (tachCnt > 7)
-	{
-		tRdy = true;
 		TIMSK1 &= ~(1 << ICIE1);
-	}
 	tachPrev = ICR1;
 }
 
@@ -225,99 +317,6 @@ ISR (ADC_vect)
 	adcSum += ADC;
 }
 
-uint8_t AM2302read()
-{
-	int8_t nBits, cntp = 6;
-	uint8_t *part = (uint8_t*)&tmpStatus.insideRH;
-	DOPullLow();
-	TCCR0B = (1 << CS01) | (1 << CS00); //F_CPU / 64
-	TCNT0 = 0;
-	TIFR0 = (1 << TOV0);
-	*part++ = TCCR0B;
-	while (0 == (TIFR0 & (1 << TOV0)));
-	*part++ = TIFR0;
-	PORTB &= ~(1 << PORTB2);
-	//_delay_ms(5);
-	DORelease();
-	//TCNT0 = 0;
-	TIFR0 = (1 << TOV0);
-	while (PINB & (1 << PINB2)) //Wait for low response
-		if (TIFR0 & (1 << TOV0))
-			break;
-	if (cntp--)
-		*part++ = TCNT0 + 3;
-	TCCR0B = (1 << CS01); //F_CPU / 8
-	for (nBits = -1; nBits < 40; nBits++)
-	{
-		TCNT0 = 0;
-		while (~(PINB & (1 << PINB2))) //Wait for high response
-			if (TIFR0 & (1 << TOV0))
-				break;
-		if (cntp--)
-			*part++ = TCNT0 + 3;
-		TCNT0 = 0;
-		while (PINB & (1 << PINB2)) //Wait for low response
-			if (TIFR0 & (1 << TOV0))
-				break;
-		if (cntp--)
-			*part++ = TCNT0 + 3;
-		if (TIFR0 & (1 << TOV0)) //Sensor is not responded at some point
-			return 1;
-		if (nBits < 0) continue;
-		AM2302data.arr[nBits >> 3] <<= 1;
-		if (TCNT0 > 22)
-			AM2302data.arr[nBits >> 3] |= 1;
-	}
-	uint8_t cSum = 0;
-	for (nBits = 0; nBits < 4; nBits++)
-		cSum += AM2302data.arr[nBits];
-	if (cSum != AM2302data.frame.checksum)
-		return 2;
-	if (AM2302data.frame.T < 0)
-		AM2302data.frame.T = ~(AM2302data.frame.T & 0x7FFF) + 1;
-	if (cycles == 3)
-	{
-		//tmpStatus.insideRH = AM2302data.frame.RH;
-		//tmpStatus.insideT = AM2302data.frame.T;
-	}
-	else
-	{
-		//tmpStatus.outsideRH = AM2302data.frame.RH;
-		//tmpStatus.outsideT = AM2302data.frame.T;
-		sRdy = true;
-	}
-	amRead = false;
-	return 0;
-}
-
-void FanRegulation()
-{
-	//Upper bounds for regulation
-	int16_t dT = tmpStatus.insideT - tmpStatus.outsideT - validConf.minDeltaT;
-	int16_t dRH = tmpStatus.insideRH - tmpStatus.outsideRH - validConf.minDeltaRH;
-	int16_t A = (FanMax - FanMin) * dT / validConf.dDeltaT;
-	int16_t B = (FanMax - FanMin) * dRH / validConf.dDeltaRH;
-	if (B > A)
-		A = B;
-	A += FanMin;
-	if (A > tmpStatus.fanLevel) //At least one of upper bounds is above
-	{
-		//tmpStatus.fanLevel = A > FanMax ? FanMax : A; //Increase level
-	}
-	else
-	{
-		//Lower bounds for regulation
-		dT -= validConf.minDeltaT >> 3;
-		dRH -= validConf.minDeltaRH >> 3;
-		A = (FanMax - FanMin) * dT / validConf.dDeltaT;
-		B = (FanMax - FanMin) * dRH / validConf.dDeltaRH;
-		if (B > A)
-			A = B;
-		A += FanMin;
-		//if (A < tmpStatus.fanLevel) //Both lower bounds are below
-		//	tmpStatus.fanLevel = A > FanMin ? A : 0; //Decrease level
-	}
-}
 
 void inline mcuInit()
 {
@@ -352,68 +351,16 @@ void inline mcuInit()
 	DIDR0 = (1 << ADC0D);
 	//Power reduction: I²C, USART1 and SPI are not used in this project
 	PRR = (1 << PRTWI) | (1 << PRUSART1) | (1 << PRSPI);
-
-	eeprom_read_block(&validConf, &eConf, sizeof(sysConfig));
-	validConf.fanLevelOverride = 0xFF; //No override at startup
-	validConf.CRC16 = CalculateCRC16(&validConf, sizeof(sysConfig) - 2);
 	sei();
 }
 
 int main(void)
 {
-	uint8_t readTries = 0;
 	mcuInit();
+
+	eeprom_read_block(&validConf, &eConf, sizeof(sysConfig));
+	validConf.fanLevelOverride = 0xFF; //No override at startup
+	validConf.CRC16 = CalculateCRC16(&validConf, sizeof(sysConfig) - 2);
     /* Replace with your application code */
-    while (1)
-    {
-		if (dRdy) //Command packet acquired
-		{
-			if (CalculateCRC16(&rcvdConf, sizeof(sysConfig) - 2) == rcvdConf.CRC16) //CRC OK
-			{
-				memcpy(&validConf, &rcvdConf, sizeof(sysConfig));
-				eeprom_update_block(&validConf, &eConf, sizeof(sysConfig));
-			}
-			dRdy = false;
-		}
-
-		if (tRdy) //Calculate and store RPM
-		{
-			uint32_t temp = (F_CPU / 8) * 30 * (tachCnt - 1);
-			temp /= tachSum;
-			if (cycles < 4)
-				tmpStatus.rpmFront = temp;
-			else
-				tmpStatus.rpmRear = temp;
-			tRdy = false;
-		}
-
-		if (sRdy)
-		{
-			FanRegulation();
-			sRdy = false;
-		}
-
-		if (amRead && !rxMode) //Read data from AM2302
-		{
-			uint8_t result = AM2302read();
-			tmpStatus.fanLevel = result;
-			if (readTries++ > 3 && result)
-			{
-				readTries = 0;
-				amRead = false;
-				if (cycles == 3) //Set special values to indicate an error on that channel
-				{
-					//tmpStatus.insideRH = (result == 2) ? 43 : 0;
-					//tmpStatus.insideT = 850;
-				}
-				else
-				{
-					//tmpStatus.outsideRH = (result == 2) ? 43 : 0;
-					//tmpStatus.outsideT = 850;
-				}
-			}
-			else
-				readTries = 0;
-		}
-    }
+    while (1) { }
 }

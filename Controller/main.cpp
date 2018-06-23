@@ -19,6 +19,8 @@ union i16i8
 {
 	uint16_t ui16;
 	uint8_t ui8[2];
+	int16_t i16;
+	int8_t i8[2];
 };
 
 struct systemConfig
@@ -348,10 +350,11 @@ ISR(RTC_OVF_vect)
 			rxMode = 0; //Packet considered lost
 			USARTC0.CTRLB |= USART_MPCM_bm; //Set MPCM bit
 			#ifdef RXC_EDMA
+			channelOT.linkSwCnt[1] = EDMA.CH0.TRFCNTL;
 			EDMA.CH0.CTRLA = 0;
 			while (EDMA.CH0.CTRLB & EDMA_CH_CHBUSY_bm);
 			USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_HI_gc;
-			PORTC.OUTCLR = PIN4_bm;
+			//PORTC.OUTCLR = PIN4_bm;
 			#endif
 		}
 		else
@@ -419,7 +422,8 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 			{
 				rxMark = (uint8_t)sysState.sysTick;
 				#ifdef RXC_EDMA
-				EDMA.CH0.TRFCNT = sizeof(systemConfig); //Bytes to receive into iobuf
+				EDMA.CH0.ADDR = (register16_t)iobuf;
+				EDMA.CH0.TRFCNT = sizeof(systemConfig) - 3; //Bytes to receive into iobuf
 				EDMA.CH0.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
 				USARTC0.CTRLA = USART_RXCINTLVL_OFF_gc; //Disable interrupt
 				PORTC.OUTSET = PIN4_bm;
@@ -559,7 +563,6 @@ inline void mcuInit()
 	//EDMA peripheral channel 0: USARTC read transfer
 	EDMA.CH0.CTRLB = EDMA_CH_TRNINTLVL_LO_gc;
 	EDMA.CH0.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
-	EDMA.CH0.ADDR = (register16_t)iobuf;
 	EDMA.CH0.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_RXC_gc;
 	//EDMA peripheral channel 1: USARTC write transfer
 	EDMA.CH1.CTRLB = EDMA_CH_TRNINTLVL_LO_gc; //Low-level interrupt

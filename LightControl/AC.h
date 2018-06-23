@@ -8,7 +8,6 @@
 #define F_CPU		3686400L
 #include <util/delay.h>
 
-
 #define PWM_freq	25000
 #define PWM_max		(F_CPU / PWM_freq - 1)
 #define FanMin		((25 * PWM_max) >> 8)
@@ -21,8 +20,6 @@
 #define CmdUC		0x13
 
 #define U0RXen()	PORTA &= ~(1 << PORTA5)
-#define DOPullLow()	DDRB |= (1 << DDRB2)
-#define DORelease()	DDRB &= ~(1 << DDRB2)
 #define SelChA()	PORTA |= (1 << PORTA6)
 #define SelChB()	PORTA &= ~(1 << PORTA6)
 
