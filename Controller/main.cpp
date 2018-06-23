@@ -351,6 +351,7 @@ ISR(RTC_OVF_vect)
 			EDMA.CH0.CTRLA = 0;
 			while (EDMA.CH0.CTRLB & EDMA_CH_CHBUSY_bm);
 			USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_HI_gc;
+			PORTC.OUTCLR = PIN4_bm;
 			#endif
 		}
 		else
@@ -421,6 +422,7 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 				EDMA.CH0.TRFCNT = sizeof(systemConfig); //Bytes to receive into iobuf
 				EDMA.CH0.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
 				USARTC0.CTRLA = USART_RXCINTLVL_OFF_gc; //Disable interrupt
+				PORTC.OUTSET = PIN4_bm;
 				#else
 				uCnt = sizeof(systemConfig);
 				rxBuf = iobuf; //First byte address in structure
@@ -429,25 +431,23 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 			else //Data transmit request
 			{
 				UCTXen();
-				USARTC0.STATUS = USART_TXCIF_bm;
 				if (rxMode == GetConfig)
 				{
-					EDMA.CH1.TRFCNT = sizeof(systemConfig);
+					EDMA.CH1.TRFCNT = sizeof(systemConfig) + 3;
 					EDMA.CH1.ADDR = (register16_t)&validConf;
 				}
 				else if (rxMode == GetStatus) //Get state
 				{
 					memcpy(iobuf, &sysState, sizeof(systemState));
 					((systemState*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(systemState) - 2);
-					EDMA.CH1.TRFCNT = sizeof(systemState);
+					EDMA.CH1.TRFCNT = sizeof(systemState) + 3;
 					EDMA.CH1.ADDR = (register16_t)iobuf;
-					PORTC.OUTSET = PIN4_bm;
 				}
 				else //Get on time
 				{
 					memcpy(iobuf, &channelOT, sizeof(channelsOnTime));
 					((channelsOnTime*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(channelsOnTime) - 2);
-					EDMA.CH1.TRFCNT = sizeof(channelsOnTime);
+					EDMA.CH1.TRFCNT = sizeof(channelsOnTime) + 3;
 					EDMA.CH1.ADDR = (register16_t)iobuf;
 				}
 				EDMA.CH1.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
@@ -481,6 +481,7 @@ ISR(EDMA_CH0_vect)
 		ApplyConfig();
 	EDMA.CH0.CTRLA = 0;
 	EDMA.CH0.CTRLB = EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm | EDMA_CH_TRNINTLVL_LO_gc;
+	PORTC.OUTCLR = PIN4_bm;
 }
 #endif
 
@@ -491,7 +492,6 @@ ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 	USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm | USART_MPCM_bm; //Set MPCM bit
 	EDMA.CH1.CTRLA = 0;
 	EDMA.CH1.CTRLB = EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm | EDMA_CH_TRNINTLVL_LO_gc;
-	PORTC.OUTCLR = PIN4_bm;
 }
 
 ISR(TCD5_OVF_vect)

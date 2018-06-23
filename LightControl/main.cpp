@@ -79,9 +79,9 @@ ISR (USART0_RX_vect)
 				rxBuf = (uint8_t*)&rcvdConf; //First byte address in structure
 				TCNT0 = 0;
 				TCCR0B = (1 << CS02); //14.4kHz clock
-				OCR0A = OCR0B; //Load cycles count
-				TIFR0 |= (1 << OCF0A); //Clear interrupt flag
-				TIMSK0 |= (1 << OCIE0A); //Enable packet lost interrupt
+				//OCR0A = OCR0B; //Load cycles count
+				TIFR0 = (1 << OCF0B); //Clear interrupt flag
+				TIMSK0 = (1 << OCIE0B); //Enable packet lost interrupt
 			}
 			else
 			{
@@ -112,7 +112,7 @@ ISR (USART0_RX_vect)
 			dRdy = true;
 			TIMSK0 = 0; //Disable packet lost interrupt
 			TCCR0B = (1 << CS01); //460.8kHz clock
-			OCR0A = 0xFE;
+			//OCR0A = 0xFE;
 		}
 	}
 }
@@ -129,29 +129,31 @@ ISR (USART0_TX_vect) //Transmit to RS485
 	}
 }
 
-ISR (TIMER0_COMPA_vect) //Packet lost interrupt
+ISR (TIMER0_COMPB_vect) //Packet lost interrupt
 {
 	TIMSK0 = 0; //Disable packet lost interrupt
 	TCCR0B = (1 << CS01); //460.8kHz clock
-	OCR0A = 0xFE;
+	//OCR0A = 0xFE;
 	UCSR0A = (1 << MPCM0);
 	rxMode = 0;
 }
 
 ISR (TIMER1_OVF_vect) //Occurs every 142.2ms
 {
-	if (++cycles > 7)
+	if (++cycles > 15)
 		cycles = 0;
 	switch (cycles)
 	{
 		case 0:
-		SelChA();
+		case 8:
+		//SelChA();
 		tachCnt = 0;
 		tachSum = 0;
 		TIMSK1 |= (1 << ICIE1);
 		break;
 
 		case 2:
+		case 10:
 		TIMSK1 &= ~(1 << ICIE1);
 		if (tachCnt < 2)
 			tmpStatus.rpmFront = 0;
@@ -160,18 +162,20 @@ ISR (TIMER1_OVF_vect) //Occurs every 142.2ms
 		break;
 
 		case 3:
-		case 7:
+		case 15:
 		amRead = true;
 		break;
 
 		case 4:
-		SelChB();
+		case 12:
+		//SelChB();
 		tachCnt = 0;
 		tachSum = 0;
 		TIMSK1 |= (1 << ICIE1);
 		break;
 
 		case 6:
+		case 14:
 		TIMSK1 &= ~(1 << ICIE1);
 		if (tachCnt < 2)
 			tmpStatus.rpmRear = 0;
@@ -223,30 +227,46 @@ ISR (ADC_vect)
 
 uint8_t AM2302read()
 {
-	int8_t nBits;
-	PORTB &= ~(1 << PORTB2);
+	int8_t nBits, cntp = 6;
+	uint8_t *part = (uint8_t*)&tmpStatus.insideRH;
 	DOPullLow();
-	_delay_ms(2.5);
-	DORelease();
+	TCCR0B = (1 << CS01) | (1 << CS00); //F_CPU / 64
 	TCNT0 = 0;
-	TIFR0 |= (1 << OCF0A);
-	while ((PINB & (1 << PINB2)) && ~(TIFR0 & (1 << OCF0A))); //Low response
+	TIFR0 = (1 << TOV0);
+	*part++ = TCCR0B;
+	while (0 == (TIFR0 & (1 << TOV0)));
+	*part++ = TIFR0;
+	PORTB &= ~(1 << PORTB2);
+	//_delay_ms(5);
+	DORelease();
+	//TCNT0 = 0;
+	TIFR0 = (1 << TOV0);
+	while (PINB & (1 << PINB2)) //Wait for low response
+		if (TIFR0 & (1 << TOV0))
+			break;
+	if (cntp--)
+		*part++ = TCNT0 + 3;
+	TCCR0B = (1 << CS01); //F_CPU / 8
 	for (nBits = -1; nBits < 40; nBits++)
 	{
 		TCNT0 = 0;
-		while (~(PINB & (1 << PINB2)) && ~(TIFR0 & (1 << OCF0A))); //Wait for high level
+		while (~(PINB & (1 << PINB2))) //Wait for high response
+			if (TIFR0 & (1 << TOV0))
+				break;
+		if (cntp--)
+			*part++ = TCNT0 + 3;
 		TCNT0 = 0;
-		while ((PINB & (1 << PINB2)) && ~(TIFR0 & (1 << OCF0A))); //Wait for low level
-		if (TIFR0 & (1 << OCF0A)) //Sensor is not responded at some point
+		while (PINB & (1 << PINB2)) //Wait for low response
+			if (TIFR0 & (1 << TOV0))
+				break;
+		if (cntp--)
+			*part++ = TCNT0 + 3;
+		if (TIFR0 & (1 << TOV0)) //Sensor is not responded at some point
 			return 1;
 		if (nBits < 0) continue;
-		int8_t tmp = TCNT0 < 22 ? 0 : 1; //High level for less than 48µs - 0
-		if (nBits < 16)
-			AM2302data.frame.RH = (AM2302data.frame.RH << 1) | tmp;
-		else if (nBits < 32)
-			AM2302data.frame.T = (AM2302data.frame.T << 1) | tmp;
-		else
-			AM2302data.frame.checksum = (AM2302data.frame.checksum << 1) | tmp;
+		AM2302data.arr[nBits >> 3] <<= 1;
+		if (TCNT0 > 22)
+			AM2302data.arr[nBits >> 3] |= 1;
 	}
 	uint8_t cSum = 0;
 	for (nBits = 0; nBits < 4; nBits++)
@@ -257,13 +277,13 @@ uint8_t AM2302read()
 		AM2302data.frame.T = ~(AM2302data.frame.T & 0x7FFF) + 1;
 	if (cycles == 3)
 	{
-		tmpStatus.insideRH = AM2302data.frame.RH;
-		tmpStatus.insideT = AM2302data.frame.T;
+		//tmpStatus.insideRH = AM2302data.frame.RH;
+		//tmpStatus.insideT = AM2302data.frame.T;
 	}
 	else
 	{
-		tmpStatus.outsideRH = AM2302data.frame.RH;
-		tmpStatus.outsideT = AM2302data.frame.T;
+		//tmpStatus.outsideRH = AM2302data.frame.RH;
+		//tmpStatus.outsideT = AM2302data.frame.T;
 		sRdy = true;
 	}
 	amRead = false;
@@ -282,7 +302,7 @@ void FanRegulation()
 	A += FanMin;
 	if (A > tmpStatus.fanLevel) //At least one of upper bounds is above
 	{
-		tmpStatus.fanLevel = A > FanMax ? FanMax : A; //Increase level
+		//tmpStatus.fanLevel = A > FanMax ? FanMax : A; //Increase level
 	}
 	else
 	{
@@ -294,8 +314,8 @@ void FanRegulation()
 		if (B > A)
 			A = B;
 		A += FanMin;
-		if (A < tmpStatus.fanLevel) //Both lower bounds are below
-			tmpStatus.fanLevel = A > FanMin ? A : 0; //Decrease level
+		//if (A < tmpStatus.fanLevel) //Both lower bounds are below
+		//	tmpStatus.fanLevel = A > FanMin ? A : 0; //Decrease level
 	}
 }
 
@@ -310,9 +330,9 @@ void inline mcuInit()
 	UCSR0C = (1 << USBS0) | (1 << UCSZ01) | (1 << UCSZ00);
 	UCSR0A = (1 << MPCM0);
 	//Timer 0: 460.8kHz clock, CTC on OCR0A
-	TCCR0A = (1 << WGM01);
+	//TCCR0A = (1 << WGM01);
 	TCCR0B = (1 << CS01); //1 tick = 2.17µs
-	OCR0A = 0xFE;
+	//OCR0A = 0xFE;
 	OCR0B = (sizeof(sysStatus) > sizeof(sysConfig) ? sizeof(sysStatus) : sizeof(sysConfig)) * 234 / 69; //Equals 57
 	//Timer 1: 460.8kHz clock, input capture on leading edge, noise filtering, OVF interrupt
 	//If fan is running for 4 poles, minimum measurable speed is 211rpm
@@ -376,19 +396,20 @@ int main(void)
 		if (amRead && !rxMode) //Read data from AM2302
 		{
 			uint8_t result = AM2302read();
+			tmpStatus.fanLevel = result;
 			if (readTries++ > 3 && result)
 			{
 				readTries = 0;
 				amRead = false;
 				if (cycles == 3) //Set special values to indicate an error on that channel
 				{
-					tmpStatus.insideRH = (result == 2) ? 43 : 0;
-					tmpStatus.insideT = 850;
+					//tmpStatus.insideRH = (result == 2) ? 43 : 0;
+					//tmpStatus.insideT = 850;
 				}
 				else
 				{
-					tmpStatus.outsideRH = (result == 2) ? 43 : 0;
-					tmpStatus.outsideT = 850;
+					//tmpStatus.outsideRH = (result == 2) ? 43 : 0;
+					//tmpStatus.outsideT = 850;
 				}
 			}
 			else

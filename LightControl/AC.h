@@ -26,6 +26,6 @@
 #define SelChA()	PORTA |= (1 << PORTA6)
 #define SelChB()	PORTA &= ~(1 << PORTA6)
 
-#define Idiv_x1mA	36
+#define Idiv_x1mA	33
 
 #endif /* AC_H_ */

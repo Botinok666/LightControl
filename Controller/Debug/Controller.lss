@@ -3,33 +3,33 @@ Controller.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000015a8  00000000  00000000  00000094  2**1
+  0 .text         0000159a  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00802000  00802000  00001695  2**0
+  1 .data         00000000  00802000  00802000  00001687  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          0000016f  00802000  00802000  0000163c  2**0
+  2 .bss          0000016f  00802000  00802000  0000162e  2**0
                   ALLOC
-  3 .eeprom       00000059  00810000  00810000  0000163c  2**0
+  3 .eeprom       00000059  00810000  00810000  0000162e  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  4 .comment      00000030  00000000  00000000  00001695  2**0
+  4 .comment      00000030  00000000  00000000  00001687  2**0
                   CONTENTS, READONLY
-  5 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000016c8  2**2
+  5 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000016b8  2**2
                   CONTENTS, READONLY
-  6 .debug_aranges 00000110  00000000  00000000  00001708  2**3
+  6 .debug_aranges 00000110  00000000  00000000  000016f8  2**3
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00004b4e  00000000  00000000  00001818  2**0
+  7 .debug_info   00004b4e  00000000  00000000  00001808  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00001f62  00000000  00000000  00006366  2**0
+  8 .debug_abbrev 00001f62  00000000  00000000  00006356  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00000f9f  00000000  00000000  000082c8  2**0
+  9 .debug_line   00000f9f  00000000  00000000  000082b8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  00000320  00000000  00000000  00009268  2**2
+ 10 .debug_frame  00000318  00000000  00000000  00009258  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00003442  00000000  00000000  00009588  2**0
+ 11 .debug_str    00003438  00000000  00000000  00009570  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000122e  00000000  00000000  0000c9ca  2**0
+ 12 .debug_loc    00001214  00000000  00000000  0000c9a8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000188  00000000  00000000  0000dbf8  2**0
+ 13 .debug_ranges 00000188  00000000  00000000  0000dbbc  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -39,7 +39,7 @@ Disassembly of section .text:
        4:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
        8:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
        c:	0c 94 e3 08 	jmp	0x11c6	; 0x11c6 <__vector_3>
-      10:	0c 94 20 09 	jmp	0x1240	; 0x1240 <__vector_4>
+      10:	0c 94 23 09 	jmp	0x1246	; 0x1246 <__vector_4>
       14:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       18:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       1c:	0c 94 bf 01 	jmp	0x37e	; 0x37e <__vector_7>
@@ -58,7 +58,7 @@ Disassembly of section .text:
       50:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       54:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       58:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
-      5c:	0c 94 3f 08 	jmp	0x107e	; 0x107e <__vector_23>
+      5c:	0c 94 42 08 	jmp	0x1084	; 0x1084 <__vector_23>
       60:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       64:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       68:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
@@ -69,9 +69,9 @@ Disassembly of section .text:
       7c:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       80:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       84:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
-      88:	0c 94 a3 05 	jmp	0xb46	; 0xb46 <__vector_34>
+      88:	0c 94 a6 05 	jmp	0xb4c	; 0xb4c <__vector_34>
       8c:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
-      90:	0c 94 47 09 	jmp	0x128e	; 0x128e <__vector_36>
+      90:	0c 94 40 09 	jmp	0x1280	; 0x1280 <__vector_36>
       94:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       98:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
       9c:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
@@ -80,7 +80,7 @@ Disassembly of section .text:
       a8:	0c 94 74 00 	jmp	0xe8	; 0xe8 <__bad_interrupt>
 
 000000ac <__ctors_start>:
-      ac:	1d 0a       	sbc	r1, r29
+      ac:	16 0a       	sbc	r1, r22
 
 000000ae <__ctors_end>:
       ae:	11 24       	eor	r1, r1
@@ -111,12 +111,12 @@ Disassembly of section .text:
       d0:	04 c0       	rjmp	.+8      	; 0xda <__do_global_ctors+0x10>
       d2:	21 97       	sbiw	r28, 0x01	; 1
       d4:	fe 01       	movw	r30, r28
-      d6:	0e 94 86 0a 	call	0x150c	; 0x150c <__tablejump2__>
+      d6:	0e 94 7f 0a 	call	0x14fe	; 0x14fe <__tablejump2__>
       da:	c6 35       	cpi	r28, 0x56	; 86
       dc:	d1 07       	cpc	r29, r17
       de:	c9 f7       	brne	.-14     	; 0xd2 <__do_global_ctors+0x8>
-      e0:	0e 94 fe 09 	call	0x13fc	; 0x13fc <main>
-      e4:	0c 94 d2 0a 	jmp	0x15a4	; 0x15a4 <_exit>
+      e0:	0e 94 f7 09 	call	0x13ee	; 0x13ee <main>
+      e4:	0c 94 cb 0a 	jmp	0x1596	; 0x1596 <_exit>
 
 000000e8 <__bad_interrupt>:
       e8:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -551,7 +551,7 @@ void ApplyConfig()
      328:	70 e0       	ldi	r23, 0x00	; 0
      32a:	84 e2       	ldi	r24, 0x24	; 36
      32c:	91 e2       	ldi	r25, 0x21	; 33
-     32e:	0e 94 90 0a 	call	0x1520	; 0x1520 <eeprom_update_block>
+     32e:	0e 94 89 0a 	call	0x1512	; 0x1512 <eeprom_update_block>
 	RTC.CALIB = validConf.rtcCorrect;
      332:	80 91 42 21 	lds	r24, 0x2142	; 0x802142 <validConf+0x1e>
      336:	80 93 06 04 	sts	0x0406, r24	; 0x800406 <__TEXT_REGION_LENGTH__+0x700406>
@@ -671,7 +671,7 @@ ISR(RTC_OVF_vect)
      3de:	86 81       	ldd	r24, Z+6	; 0x06
      3e0:	97 81       	ldd	r25, Z+7	; 0x07
      3e2:	a1 e0       	ldi	r26, 0x01	; 1
-     3e4:	0e 94 66 0a 	call	0x14cc	; 0x14cc <__adddi3_s8>
+     3e4:	0e 94 5f 0a 	call	0x14be	; 0x14be <__adddi3_s8>
      3e8:	20 83       	st	Z, r18
      3ea:	31 83       	std	Z+1, r19	; 0x01
      3ec:	42 83       	std	Z+2, r20	; 0x02
@@ -959,7 +959,7 @@ ISR(RTC_OVF_vect)
      5c4:	12 16       	cp	r1, r18
      5c6:	13 06       	cpc	r1, r19
      5c8:	0c f4       	brge	.+2      	; 0x5cc <__LOCK_REGION_LENGTH__+0x1cc>
-     5ca:	71 c2       	rjmp	.+1250   	; 0xaae <__LOCK_REGION_LENGTH__+0x6ae>
+     5ca:	74 c2       	rjmp	.+1256   	; 0xab4 <__LOCK_REGION_LENGTH__+0x6b4>
 						_onTimeStamp = sysState.sysTick;
 				}
 				gLevels[j] = tempLvl;
@@ -1035,7 +1035,7 @@ ISR(RTC_OVF_vect)
      62e:	80 91 02 20 	lds	r24, 0x2002	; 0x802002 <msenCh>
      632:	88 23       	and	r24, r24
      634:	09 f4       	brne	.+2      	; 0x638 <__LOCK_REGION_LENGTH__+0x238>
-     636:	5c c2       	rjmp	.+1208   	; 0xaf0 <__LOCK_REGION_LENGTH__+0x6f0>
+     636:	5f c2       	rjmp	.+1214   	; 0xaf6 <__LOCK_REGION_LENGTH__+0x6f6>
 		{
 			uint16_t ton = (uint16_t)(sysState.sysTick - _onTimeStamp) >> 5;
      638:	2c e0       	ldi	r18, 0x0C	; 12
@@ -1139,7 +1139,7 @@ ISR(RTC_OVF_vect)
      6e4:	18 f4       	brcc	.+6      	; 0x6ec <__LOCK_REGION_LENGTH__+0x2ec>
      6e6:	55 23       	and	r21, r21
      6e8:	09 f4       	brne	.+2      	; 0x6ec <__LOCK_REGION_LENGTH__+0x2ec>
-     6ea:	02 c2       	rjmp	.+1028   	; 0xaf0 <__LOCK_REGION_LENGTH__+0x6f0>
+     6ea:	05 c2       	rjmp	.+1034   	; 0xaf6 <__LOCK_REGION_LENGTH__+0x6f6>
 			return;
 		sysState.linkLevels[_linkNum] = level;
      6ec:	24 5f       	subi	r18, 0xF4	; 244
@@ -1211,7 +1211,7 @@ ISR(RTC_OVF_vect)
 		}
 		if (!dimInProcess) //Refresh saved ticks value only if no dimming in the process right now
      750:	d1 10       	cpse	r13, r1
-     752:	ce c1       	rjmp	.+924    	; 0xaf0 <__LOCK_REGION_LENGTH__+0x6f0>
+     752:	d1 c1       	rjmp	.+930    	; 0xaf6 <__LOCK_REGION_LENGTH__+0x6f6>
 			_tickLastChg = sysState.sysTick;
      754:	23 e2       	ldi	r18, 0x23	; 35
      756:	2a 9d       	mul	r18, r10
@@ -1256,7 +1256,7 @@ ISR(RTC_OVF_vect)
      7a4:	ec 85       	ldd	r30, Y+12	; 0x0c
      7a6:	17 96       	adiw	r26, 0x07	; 7
      7a8:	ec 93       	st	X, r30
-     7aa:	a2 c1       	rjmp	.+836    	; 0xaf0 <__LOCK_REGION_LENGTH__+0x6f0>
+     7aa:	a5 c1       	rjmp	.+842    	; 0xaf6 <__LOCK_REGION_LENGTH__+0x6f6>
 			if (ton > _fTime)
 			{
 				ltEnt = cntDown = false;
@@ -1265,11 +1265,11 @@ ISR(RTC_OVF_vect)
 			else if (!ltEnt && _onTime)
      7ac:	20 91 03 20 	lds	r18, 0x2003	; 0x802003 <msenCh+0x1>
      7b0:	21 11       	cpse	r18, r1
-     7b2:	9e c1       	rjmp	.+828    	; 0xaf0 <__LOCK_REGION_LENGTH__+0x6f0>
+     7b2:	a1 c1       	rjmp	.+834    	; 0xaf6 <__LOCK_REGION_LENGTH__+0x6f6>
      7b4:	20 91 06 20 	lds	r18, 0x2006	; 0x802006 <msenCh+0x4>
      7b8:	22 23       	and	r18, r18
      7ba:	09 f4       	brne	.+2      	; 0x7be <__LOCK_REGION_LENGTH__+0x3be>
-     7bc:	99 c1       	rjmp	.+818    	; 0xaf0 <__LOCK_REGION_LENGTH__+0x6f0>
+     7bc:	9c c1       	rjmp	.+824    	; 0xaf6 <__LOCK_REGION_LENGTH__+0x6f6>
 			{
 				ltEnt = true;
      7be:	22 e0       	ldi	r18, 0x02	; 2
@@ -1325,7 +1325,7 @@ ISR(RTC_OVF_vect)
      812:	71 11       	cpse	r23, r1
      814:	40 e0       	ldi	r20, 0x00	; 0
      816:	54 13       	cpse	r21, r20
-     818:	6b c1       	rjmp	.+726    	; 0xaf0 <__LOCK_REGION_LENGTH__+0x6f0>
+     818:	6e c1       	rjmp	.+732    	; 0xaf6 <__LOCK_REGION_LENGTH__+0x6f6>
 			return;
 		sysState.linkLevels[_linkNum] = level;
      81a:	a9 01       	movw	r20, r18
@@ -1432,7 +1432,7 @@ ISR(RTC_OVF_vect)
 		}
 		if (!dimInProcess) //Refresh saved ticks value only if no dimming in the process right now
      8a6:	71 11       	cpse	r23, r1
-     8a8:	23 c1       	rjmp	.+582    	; 0xaf0 <__LOCK_REGION_LENGTH__+0x6f0>
+     8a8:	26 c1       	rjmp	.+588    	; 0xaf6 <__LOCK_REGION_LENGTH__+0x6f6>
 			_tickLastChg = sysState.sysTick;
      8aa:	23 e2       	ldi	r18, 0x23	; 35
      8ac:	2a 9d       	mul	r18, r10
@@ -1477,7 +1477,7 @@ ISR(RTC_OVF_vect)
      8fa:	ec 85       	ldd	r30, Y+12	; 0x0c
      8fc:	17 96       	adiw	r26, 0x07	; 7
      8fe:	ec 93       	st	X, r30
-     900:	f7 c0       	rjmp	.+494    	; 0xaf0 <__LOCK_REGION_LENGTH__+0x6f0>
+     900:	fa c0       	rjmp	.+500    	; 0xaf6 <__LOCK_REGION_LENGTH__+0x6f6>
 	uint8_t i;
 	for (i = 0; i < 4; i++)
 		links[i].updateLevel();
@@ -1698,18 +1698,18 @@ ISR(RTC_OVF_vect)
      a3c:	70 e0       	ldi	r23, 0x00	; 0
      a3e:	84 ed       	ldi	r24, 0xD4	; 212
      a40:	90 e2       	ldi	r25, 0x20	; 32
-     a42:	0e 94 90 0a 	call	0x1520	; 0x1520 <eeprom_update_block>
+     a42:	0e 94 89 0a 	call	0x1512	; 0x1512 <eeprom_update_block>
 
 	if (rxMode == SetConfig) //We are currently receiving data packet
      a46:	80 91 5b 21 	lds	r24, 0x215B	; 0x80215b <rxMode>
      a4a:	83 32       	cpi	r24, 0x23	; 35
-     a4c:	e9 f4       	brne	.+58     	; 0xa88 <__LOCK_REGION_LENGTH__+0x688>
+     a4c:	01 f5       	brne	.+64     	; 0xa8e <__LOCK_REGION_LENGTH__+0x68e>
 	{
 		if (rs485busy == rxMark) //Second tick in a row detected
      a4e:	80 91 5a 21 	lds	r24, 0x215A	; 0x80215a <rxMark>
      a52:	90 91 01 20 	lds	r25, 0x2001	; 0x802001 <_ZZ10__vector_7E9rs485busy>
      a56:	98 13       	cpse	r25, r24
-     a58:	12 c0       	rjmp	.+36     	; 0xa7e <__LOCK_REGION_LENGTH__+0x67e>
+     a58:	15 c0       	rjmp	.+42     	; 0xa84 <__LOCK_REGION_LENGTH__+0x684>
 		{
 			rxMode = 0; //Packet considered lost
      a5a:	10 92 5b 21 	sts	0x215B, r1	; 0x80215b <rxMode>
@@ -1731,1122 +1731,1122 @@ ISR(RTC_OVF_vect)
 			USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_HI_gc;
      a76:	80 e7       	ldi	r24, 0x70	; 112
      a78:	80 93 c2 08 	sts	0x08C2, r24	; 0x8008c2 <__TEXT_REGION_LENGTH__+0x7008c2>
-     a7c:	0a c0       	rjmp	.+20     	; 0xa92 <__LOCK_REGION_LENGTH__+0x692>
+			PORTC.OUTCLR = PIN4_bm;
+     a7c:	80 e1       	ldi	r24, 0x10	; 16
+     a7e:	80 93 46 06 	sts	0x0646, r24	; 0x800646 <__TEXT_REGION_LENGTH__+0x700646>
+     a82:	0a c0       	rjmp	.+20     	; 0xa98 <__LOCK_REGION_LENGTH__+0x698>
 			#endif
 		}
 		else
 			rs485busy = rxMark;
-     a7e:	80 91 5a 21 	lds	r24, 0x215A	; 0x80215a <rxMark>
-     a82:	80 93 01 20 	sts	0x2001, r24	; 0x802001 <_ZZ10__vector_7E9rs485busy>
-     a86:	05 c0       	rjmp	.+10     	; 0xa92 <__LOCK_REGION_LENGTH__+0x692>
+     a84:	80 91 5a 21 	lds	r24, 0x215A	; 0x80215a <rxMark>
+     a88:	80 93 01 20 	sts	0x2001, r24	; 0x802001 <_ZZ10__vector_7E9rs485busy>
+     a8c:	05 c0       	rjmp	.+10     	; 0xa98 <__LOCK_REGION_LENGTH__+0x698>
 	}
 	else
 		rs485busy = rxMark - 1;
-     a88:	80 91 5a 21 	lds	r24, 0x215A	; 0x80215a <rxMark>
-     a8c:	81 50       	subi	r24, 0x01	; 1
-     a8e:	80 93 01 20 	sts	0x2001, r24	; 0x802001 <_ZZ10__vector_7E9rs485busy>
+     a8e:	80 91 5a 21 	lds	r24, 0x215A	; 0x80215a <rxMark>
+     a92:	81 50       	subi	r24, 0x01	; 1
+     a94:	80 93 01 20 	sts	0x2001, r24	; 0x802001 <_ZZ10__vector_7E9rs485busy>
 	framePtr = DSI8xFrames;
-     a92:	87 e4       	ldi	r24, 0x47	; 71
-     a94:	91 e2       	ldi	r25, 0x21	; 33
-     a96:	80 93 45 21 	sts	0x2145, r24	; 0x802145 <framePtr>
-     a9a:	90 93 46 21 	sts	0x2146, r25	; 0x802146 <framePtr+0x1>
+     a98:	87 e4       	ldi	r24, 0x47	; 71
+     a9a:	91 e2       	ldi	r25, 0x21	; 33
+     a9c:	80 93 45 21 	sts	0x2145, r24	; 0x802145 <framePtr>
+     aa0:	90 93 46 21 	sts	0x2146, r25	; 0x802146 <framePtr+0x1>
 	TCD5.INTFLAGS |= TC5_OVFIF_bm;
-     a9e:	e0 e4       	ldi	r30, 0x40	; 64
-     aa0:	f9 e0       	ldi	r31, 0x09	; 9
-     aa2:	84 85       	ldd	r24, Z+12	; 0x0c
-     aa4:	81 60       	ori	r24, 0x01	; 1
-     aa6:	84 87       	std	Z+12, r24	; 0x0c
+     aa4:	e0 e4       	ldi	r30, 0x40	; 64
+     aa6:	f9 e0       	ldi	r31, 0x09	; 9
+     aa8:	84 85       	ldd	r24, Z+12	; 0x0c
+     aaa:	81 60       	ori	r24, 0x01	; 1
+     aac:	84 87       	std	Z+12, r24	; 0x0c
 	TCD5.INTCTRLA = TC_OVFINTLVL_HI_gc;
-     aa8:	83 e0       	ldi	r24, 0x03	; 3
-     aaa:	86 83       	std	Z+6, r24	; 0x06
+     aae:	83 e0       	ldi	r24, 0x03	; 3
+     ab0:	86 83       	std	Z+6, r24	; 0x06
 }
-     aac:	26 c0       	rjmp	.+76     	; 0xafa <__LOCK_REGION_LENGTH__+0x6fa>
+     ab2:	26 c0       	rjmp	.+76     	; 0xb00 <__LOCK_REGION_LENGTH__+0x700>
 				}
 				else //Level needs to be raised
 				{
 					tempLvl += ((-tempLvl > delta) ? delta : -tempLvl) + (int16_t)_lvl[s];
 					if (!gLevels[j] && tempLvl > 0) //Lamp has been switched on - remember ticks
 						_onTimeStamp = sysState.sysTick;
-     aae:	ac e0       	ldi	r26, 0x0C	; 12
-     ab0:	b1 e2       	ldi	r27, 0x21	; 33
-     ab2:	8c 91       	ld	r24, X
-     ab4:	83 8f       	std	Z+27, r24	; 0x1b
-     ab6:	80 91 0d 21 	lds	r24, 0x210D	; 0x80210d <sysState+0x1>
-     aba:	84 8f       	std	Z+28, r24	; 0x1c
-     abc:	80 91 0e 21 	lds	r24, 0x210E	; 0x80210e <sysState+0x2>
-     ac0:	85 8f       	std	Z+29, r24	; 0x1d
-     ac2:	80 91 0f 21 	lds	r24, 0x210F	; 0x80210f <sysState+0x3>
-     ac6:	86 8f       	std	Z+30, r24	; 0x1e
-     ac8:	80 91 10 21 	lds	r24, 0x2110	; 0x802110 <sysState+0x4>
-     acc:	87 8f       	std	Z+31, r24	; 0x1f
-     ace:	80 91 11 21 	lds	r24, 0x2111	; 0x802111 <sysState+0x5>
-     ad2:	80 a3       	std	Z+32, r24	; 0x20
-     ad4:	80 91 12 21 	lds	r24, 0x2112	; 0x802112 <sysState+0x6>
-     ad8:	81 a3       	std	Z+33, r24	; 0x21
-     ada:	80 91 13 21 	lds	r24, 0x2113	; 0x802113 <sysState+0x7>
-     ade:	82 a3       	std	Z+34, r24	; 0x22
+     ab4:	ac e0       	ldi	r26, 0x0C	; 12
+     ab6:	b1 e2       	ldi	r27, 0x21	; 33
+     ab8:	8c 91       	ld	r24, X
+     aba:	83 8f       	std	Z+27, r24	; 0x1b
+     abc:	80 91 0d 21 	lds	r24, 0x210D	; 0x80210d <sysState+0x1>
+     ac0:	84 8f       	std	Z+28, r24	; 0x1c
+     ac2:	80 91 0e 21 	lds	r24, 0x210E	; 0x80210e <sysState+0x2>
+     ac6:	85 8f       	std	Z+29, r24	; 0x1d
+     ac8:	80 91 0f 21 	lds	r24, 0x210F	; 0x80210f <sysState+0x3>
+     acc:	86 8f       	std	Z+30, r24	; 0x1e
+     ace:	80 91 10 21 	lds	r24, 0x2110	; 0x802110 <sysState+0x4>
+     ad2:	87 8f       	std	Z+31, r24	; 0x1f
+     ad4:	80 91 11 21 	lds	r24, 0x2111	; 0x802111 <sysState+0x5>
+     ad8:	80 a3       	std	Z+32, r24	; 0x20
+     ada:	80 91 12 21 	lds	r24, 0x2112	; 0x802112 <sysState+0x6>
+     ade:	81 a3       	std	Z+33, r24	; 0x21
+     ae0:	80 91 13 21 	lds	r24, 0x2113	; 0x802113 <sysState+0x7>
+     ae4:	82 a3       	std	Z+34, r24	; 0x22
 				}
 				gLevels[j] = tempLvl;
-     ae0:	44 0f       	add	r20, r20
-     ae2:	55 1f       	adc	r21, r21
-     ae4:	43 5a       	subi	r20, 0xA3	; 163
-     ae6:	5e 4d       	sbci	r21, 0xDE	; 222
-     ae8:	da 01       	movw	r26, r20
-     aea:	2d 93       	st	X+, r18
-     aec:	3c 93       	st	X, r19
-     aee:	77 cd       	rjmp	.-1298   	; 0x5de <__LOCK_REGION_LENGTH__+0x1de>
-     af0:	a4 e1       	ldi	r26, 0x14	; 20
-     af2:	b1 e2       	ldi	r27, 0x21	; 33
+     ae6:	44 0f       	add	r20, r20
+     ae8:	55 1f       	adc	r21, r21
+     aea:	43 5a       	subi	r20, 0xA3	; 163
+     aec:	5e 4d       	sbci	r21, 0xDE	; 222
+     aee:	da 01       	movw	r26, r20
+     af0:	2d 93       	st	X+, r18
+     af2:	3c 93       	st	X, r19
+     af4:	74 cd       	rjmp	.-1304   	; 0x5de <__LOCK_REGION_LENGTH__+0x1de>
+     af6:	a4 e1       	ldi	r26, 0x14	; 20
+     af8:	b1 e2       	ldi	r27, 0x21	; 33
 		int16_t tempLvl = (int16_t)oLvl - level;
 		if (-3 < tempLvl && tempLvl < 3 && ((level == 0) == (0 == oLvl)))
 			return;
 		sysState.linkLevels[_linkNum] = level;
 
 		for (uint8_t i = 0; i < _linkCnt; i++)
-     af4:	80 e0       	ldi	r24, 0x00	; 0
-     af6:	90 e0       	ldi	r25, 0x00	; 0
-     af8:	04 cf       	rjmp	.-504    	; 0x902 <__LOCK_REGION_LENGTH__+0x502>
+     afa:	80 e0       	ldi	r24, 0x00	; 0
+     afc:	90 e0       	ldi	r25, 0x00	; 0
+     afe:	01 cf       	rjmp	.-510    	; 0x902 <__LOCK_REGION_LENGTH__+0x502>
 	else
 		rs485busy = rxMark - 1;
 	framePtr = DSI8xFrames;
 	TCD5.INTFLAGS |= TC5_OVFIF_bm;
 	TCD5.INTCTRLA = TC_OVFINTLVL_HI_gc;
 }
-     afa:	2e 96       	adiw	r28, 0x0e	; 14
-     afc:	cd bf       	out	0x3d, r28	; 61
-     afe:	de bf       	out	0x3e, r29	; 62
-     b00:	df 91       	pop	r29
-     b02:	cf 91       	pop	r28
-     b04:	ff 91       	pop	r31
-     b06:	ef 91       	pop	r30
-     b08:	bf 91       	pop	r27
-     b0a:	af 91       	pop	r26
-     b0c:	9f 91       	pop	r25
-     b0e:	8f 91       	pop	r24
-     b10:	7f 91       	pop	r23
-     b12:	6f 91       	pop	r22
-     b14:	5f 91       	pop	r21
-     b16:	4f 91       	pop	r20
-     b18:	3f 91       	pop	r19
-     b1a:	2f 91       	pop	r18
-     b1c:	1f 91       	pop	r17
-     b1e:	0f 91       	pop	r16
-     b20:	ff 90       	pop	r15
-     b22:	ef 90       	pop	r14
-     b24:	df 90       	pop	r13
-     b26:	cf 90       	pop	r12
-     b28:	bf 90       	pop	r11
-     b2a:	af 90       	pop	r10
-     b2c:	9f 90       	pop	r9
-     b2e:	8f 90       	pop	r8
-     b30:	7f 90       	pop	r7
-     b32:	6f 90       	pop	r6
-     b34:	5f 90       	pop	r5
-     b36:	4f 90       	pop	r4
-     b38:	3f 90       	pop	r3
-     b3a:	2f 90       	pop	r2
-     b3c:	0f 90       	pop	r0
-     b3e:	0f be       	out	0x3f, r0	; 63
-     b40:	0f 90       	pop	r0
-     b42:	1f 90       	pop	r1
-     b44:	18 95       	reti
+     b00:	2e 96       	adiw	r28, 0x0e	; 14
+     b02:	cd bf       	out	0x3d, r28	; 61
+     b04:	de bf       	out	0x3e, r29	; 62
+     b06:	df 91       	pop	r29
+     b08:	cf 91       	pop	r28
+     b0a:	ff 91       	pop	r31
+     b0c:	ef 91       	pop	r30
+     b0e:	bf 91       	pop	r27
+     b10:	af 91       	pop	r26
+     b12:	9f 91       	pop	r25
+     b14:	8f 91       	pop	r24
+     b16:	7f 91       	pop	r23
+     b18:	6f 91       	pop	r22
+     b1a:	5f 91       	pop	r21
+     b1c:	4f 91       	pop	r20
+     b1e:	3f 91       	pop	r19
+     b20:	2f 91       	pop	r18
+     b22:	1f 91       	pop	r17
+     b24:	0f 91       	pop	r16
+     b26:	ff 90       	pop	r15
+     b28:	ef 90       	pop	r14
+     b2a:	df 90       	pop	r13
+     b2c:	cf 90       	pop	r12
+     b2e:	bf 90       	pop	r11
+     b30:	af 90       	pop	r10
+     b32:	9f 90       	pop	r9
+     b34:	8f 90       	pop	r8
+     b36:	7f 90       	pop	r7
+     b38:	6f 90       	pop	r6
+     b3a:	5f 90       	pop	r5
+     b3c:	4f 90       	pop	r4
+     b3e:	3f 90       	pop	r3
+     b40:	2f 90       	pop	r2
+     b42:	0f 90       	pop	r0
+     b44:	0f be       	out	0x3f, r0	; 63
+     b46:	0f 90       	pop	r0
+     b48:	1f 90       	pop	r1
+     b4a:	18 95       	reti
 
-00000b46 <__vector_34>:
+00000b4c <__vector_34>:
 
 ISR(ADCA_CH0_vect)
 {
-     b46:	1f 92       	push	r1
-     b48:	0f 92       	push	r0
-     b4a:	0f b6       	in	r0, 0x3f	; 63
-     b4c:	0f 92       	push	r0
-     b4e:	11 24       	eor	r1, r1
-     b50:	af 92       	push	r10
-     b52:	bf 92       	push	r11
-     b54:	df 92       	push	r13
-     b56:	ef 92       	push	r14
-     b58:	ff 92       	push	r15
-     b5a:	0f 93       	push	r16
-     b5c:	1f 93       	push	r17
-     b5e:	2f 93       	push	r18
-     b60:	3f 93       	push	r19
-     b62:	4f 93       	push	r20
-     b64:	5f 93       	push	r21
-     b66:	6f 93       	push	r22
-     b68:	7f 93       	push	r23
-     b6a:	8f 93       	push	r24
-     b6c:	9f 93       	push	r25
-     b6e:	af 93       	push	r26
-     b70:	bf 93       	push	r27
-     b72:	cf 93       	push	r28
-     b74:	df 93       	push	r29
-     b76:	ef 93       	push	r30
-     b78:	ff 93       	push	r31
+     b4c:	1f 92       	push	r1
+     b4e:	0f 92       	push	r0
+     b50:	0f b6       	in	r0, 0x3f	; 63
+     b52:	0f 92       	push	r0
+     b54:	11 24       	eor	r1, r1
+     b56:	af 92       	push	r10
+     b58:	bf 92       	push	r11
+     b5a:	df 92       	push	r13
+     b5c:	ef 92       	push	r14
+     b5e:	ff 92       	push	r15
+     b60:	0f 93       	push	r16
+     b62:	1f 93       	push	r17
+     b64:	2f 93       	push	r18
+     b66:	3f 93       	push	r19
+     b68:	4f 93       	push	r20
+     b6a:	5f 93       	push	r21
+     b6c:	6f 93       	push	r22
+     b6e:	7f 93       	push	r23
+     b70:	8f 93       	push	r24
+     b72:	9f 93       	push	r25
+     b74:	af 93       	push	r26
+     b76:	bf 93       	push	r27
+     b78:	cf 93       	push	r28
+     b7a:	df 93       	push	r29
+     b7c:	ef 93       	push	r30
+     b7e:	ff 93       	push	r31
 	static uint8_t sAdcCnt = 0;
 	int16_t result = ADCA.CH0RES;
-     b7a:	80 91 10 02 	lds	r24, 0x0210	; 0x800210 <__TEXT_REGION_LENGTH__+0x700210>
-     b7e:	90 91 11 02 	lds	r25, 0x0211	; 0x800211 <__TEXT_REGION_LENGTH__+0x700211>
+     b80:	80 91 10 02 	lds	r24, 0x0210	; 0x800210 <__TEXT_REGION_LENGTH__+0x700210>
+     b84:	90 91 11 02 	lds	r25, 0x0211	; 0x800211 <__TEXT_REGION_LENGTH__+0x700211>
 	if (sAdcCnt < 4 && LINK_VALID_MIN < result && result < LINK_VALID_MAX)
-     b82:	20 91 00 20 	lds	r18, 0x2000	; 0x802000 <_edata>
-     b86:	24 30       	cpi	r18, 0x04	; 4
-     b88:	08 f0       	brcs	.+2      	; 0xb8c <__vector_34+0x46>
-     b8a:	5f c1       	rjmp	.+702    	; 0xe4a <__vector_34+0x304>
-     b8c:	bc 01       	movw	r22, r24
-     b8e:	6e 5e       	subi	r22, 0xEE	; 238
-     b90:	73 41       	sbci	r23, 0x13	; 19
-     b92:	6b 36       	cpi	r22, 0x6B	; 107
-     b94:	77 46       	sbci	r23, 0x67	; 103
-     b96:	08 f0       	brcs	.+2      	; 0xb9a <__vector_34+0x54>
-     b98:	49 c1       	rjmp	.+658    	; 0xe2c <__vector_34+0x2e6>
+     b88:	20 91 00 20 	lds	r18, 0x2000	; 0x802000 <_edata>
+     b8c:	24 30       	cpi	r18, 0x04	; 4
+     b8e:	08 f0       	brcs	.+2      	; 0xb92 <__vector_34+0x46>
+     b90:	5f c1       	rjmp	.+702    	; 0xe50 <__vector_34+0x304>
+     b92:	bc 01       	movw	r22, r24
+     b94:	6e 5e       	subi	r22, 0xEE	; 238
+     b96:	73 41       	sbci	r23, 0x13	; 19
+     b98:	6b 36       	cpi	r22, 0x6B	; 107
+     b9a:	77 46       	sbci	r23, 0x67	; 103
+     b9c:	08 f0       	brcs	.+2      	; 0xba0 <__vector_34+0x54>
+     b9e:	49 c1       	rjmp	.+658    	; 0xe32 <__vector_34+0x2e6>
 	{
 		sysState.linksMask |= (1 << sAdcCnt); //Set 'valid' bit
-     b9a:	a2 2e       	mov	r10, r18
-     b9c:	b1 2c       	mov	r11, r1
-     b9e:	ec e0       	ldi	r30, 0x0C	; 12
-     ba0:	f1 e2       	ldi	r31, 0x21	; 33
-     ba2:	61 e0       	ldi	r22, 0x01	; 1
-     ba4:	70 e0       	ldi	r23, 0x00	; 0
-     ba6:	02 2e       	mov	r0, r18
-     ba8:	02 c0       	rjmp	.+4      	; 0xbae <__vector_34+0x68>
-     baa:	66 0f       	add	r22, r22
-     bac:	77 1f       	adc	r23, r23
-     bae:	0a 94       	dec	r0
-     bb0:	e2 f7       	brpl	.-8      	; 0xbaa <__vector_34+0x64>
-     bb2:	35 89       	ldd	r19, Z+21	; 0x15
-     bb4:	36 2b       	or	r19, r22
-     bb6:	35 8b       	std	Z+21, r19	; 0x15
+     ba0:	a2 2e       	mov	r10, r18
+     ba2:	b1 2c       	mov	r11, r1
+     ba4:	ec e0       	ldi	r30, 0x0C	; 12
+     ba6:	f1 e2       	ldi	r31, 0x21	; 33
+     ba8:	61 e0       	ldi	r22, 0x01	; 1
+     baa:	70 e0       	ldi	r23, 0x00	; 0
+     bac:	02 2e       	mov	r0, r18
+     bae:	02 c0       	rjmp	.+4      	; 0xbb4 <__vector_34+0x68>
+     bb0:	66 0f       	add	r22, r22
+     bb2:	77 1f       	adc	r23, r23
+     bb4:	0a 94       	dec	r0
+     bb6:	e2 f7       	brpl	.-8      	; 0xbb0 <__vector_34+0x64>
+     bb8:	35 89       	ldd	r19, Z+21	; 0x15
+     bba:	36 2b       	or	r19, r22
+     bbc:	35 8b       	std	Z+21, r19	; 0x15
 		if (result < LINK_ON_BARRIER)
-     bb8:	85 34       	cpi	r24, 0x45	; 69
-     bba:	6b e1       	ldi	r22, 0x1B	; 27
-     bbc:	96 07       	cpc	r25, r22
-     bbe:	0c f0       	brlt	.+2      	; 0xbc2 <__vector_34+0x7c>
-     bc0:	88 c0       	rjmp	.+272    	; 0xcd2 <__vector_34+0x18c>
+     bbe:	85 34       	cpi	r24, 0x45	; 69
+     bc0:	6b e1       	ldi	r22, 0x1B	; 27
+     bc2:	96 07       	cpc	r25, r22
+     bc4:	0c f0       	brlt	.+2      	; 0xbc8 <__vector_34+0x7c>
+     bc6:	88 c0       	rjmp	.+272    	; 0xcd8 <__vector_34+0x18c>
 		{
 			result = 0;
 			if (sysState.linksMask & (0x10 << sAdcCnt)) //Previous level was non-zero
-     bc2:	80 e1       	ldi	r24, 0x10	; 16
-     bc4:	90 e0       	ldi	r25, 0x00	; 0
-     bc6:	02 2e       	mov	r0, r18
-     bc8:	02 c0       	rjmp	.+4      	; 0xbce <__vector_34+0x88>
-     bca:	88 0f       	add	r24, r24
-     bcc:	99 1f       	adc	r25, r25
-     bce:	0a 94       	dec	r0
-     bd0:	e2 f7       	brpl	.-8      	; 0xbca <__vector_34+0x84>
-     bd2:	43 2f       	mov	r20, r19
-     bd4:	50 e0       	ldi	r21, 0x00	; 0
-     bd6:	48 23       	and	r20, r24
-     bd8:	59 23       	and	r21, r25
-     bda:	45 2b       	or	r20, r21
-     bdc:	09 f4       	brne	.+2      	; 0xbe0 <__vector_34+0x9a>
-     bde:	74 c0       	rjmp	.+232    	; 0xcc8 <__vector_34+0x182>
+     bc8:	80 e1       	ldi	r24, 0x10	; 16
+     bca:	90 e0       	ldi	r25, 0x00	; 0
+     bcc:	02 2e       	mov	r0, r18
+     bce:	02 c0       	rjmp	.+4      	; 0xbd4 <__vector_34+0x88>
+     bd0:	88 0f       	add	r24, r24
+     bd2:	99 1f       	adc	r25, r25
+     bd4:	0a 94       	dec	r0
+     bd6:	e2 f7       	brpl	.-8      	; 0xbd0 <__vector_34+0x84>
+     bd8:	43 2f       	mov	r20, r19
+     bda:	50 e0       	ldi	r21, 0x00	; 0
+     bdc:	48 23       	and	r20, r24
+     bde:	59 23       	and	r21, r25
+     be0:	45 2b       	or	r20, r21
+     be2:	09 f4       	brne	.+2      	; 0xbe6 <__vector_34+0x9a>
+     be4:	74 c0       	rjmp	.+232    	; 0xcce <__vector_34+0x182>
 	}
 
 	void setLevel(uint8_t level) //Accepts level in the range 0…255
 	{
 		bool dimInProcess = false;
 		uint8_t oLvl = sysState.linkLevels[_linkNum];
-     be0:	43 e2       	ldi	r20, 0x23	; 35
-     be2:	4a 9d       	mul	r20, r10
-     be4:	f0 01       	movw	r30, r0
-     be6:	4b 9d       	mul	r20, r11
-     be8:	f0 0d       	add	r31, r0
-     bea:	11 24       	eor	r1, r1
-     bec:	e0 5f       	subi	r30, 0xF0	; 240
-     bee:	ff 4d       	sbci	r31, 0xDF	; 223
-     bf0:	42 81       	ldd	r20, Z+2	; 0x02
-     bf2:	50 e0       	ldi	r21, 0x00	; 0
-     bf4:	fa 01       	movw	r30, r20
-     bf6:	e4 5f       	subi	r30, 0xF4	; 244
-     bf8:	fe 4d       	sbci	r31, 0xDE	; 222
-     bfa:	e1 89       	ldd	r30, Z+17	; 0x11
+     be6:	43 e2       	ldi	r20, 0x23	; 35
+     be8:	4a 9d       	mul	r20, r10
+     bea:	f0 01       	movw	r30, r0
+     bec:	4b 9d       	mul	r20, r11
+     bee:	f0 0d       	add	r31, r0
+     bf0:	11 24       	eor	r1, r1
+     bf2:	e0 5f       	subi	r30, 0xF0	; 240
+     bf4:	ff 4d       	sbci	r31, 0xDF	; 223
+     bf6:	42 81       	ldd	r20, Z+2	; 0x02
+     bf8:	50 e0       	ldi	r21, 0x00	; 0
+     bfa:	fa 01       	movw	r30, r20
+     bfc:	e4 5f       	subi	r30, 0xF4	; 244
+     bfe:	fe 4d       	sbci	r31, 0xDE	; 222
+     c00:	e1 89       	ldd	r30, Z+17	; 0x11
 		int16_t tempLvl = (int16_t)oLvl - level;
 		if (-3 < tempLvl && tempLvl < 3 && ((level == 0) == (0 == oLvl)))
-     bfc:	6e 2f       	mov	r22, r30
-     bfe:	70 e0       	ldi	r23, 0x00	; 0
-     c00:	6e 5f       	subi	r22, 0xFE	; 254
-     c02:	7f 4f       	sbci	r23, 0xFF	; 255
-     c04:	65 30       	cpi	r22, 0x05	; 5
-     c06:	71 05       	cpc	r23, r1
-     c08:	18 f4       	brcc	.+6      	; 0xc10 <__vector_34+0xca>
-     c0a:	ee 23       	and	r30, r30
-     c0c:	09 f4       	brne	.+2      	; 0xc10 <__vector_34+0xca>
-     c0e:	5c c0       	rjmp	.+184    	; 0xcc8 <__vector_34+0x182>
+     c02:	6e 2f       	mov	r22, r30
+     c04:	70 e0       	ldi	r23, 0x00	; 0
+     c06:	6e 5f       	subi	r22, 0xFE	; 254
+     c08:	7f 4f       	sbci	r23, 0xFF	; 255
+     c0a:	65 30       	cpi	r22, 0x05	; 5
+     c0c:	71 05       	cpc	r23, r1
+     c0e:	18 f4       	brcc	.+6      	; 0xc16 <__vector_34+0xca>
+     c10:	ee 23       	and	r30, r30
+     c12:	09 f4       	brne	.+2      	; 0xc16 <__vector_34+0xca>
+     c14:	5c c0       	rjmp	.+184    	; 0xcce <__vector_34+0x182>
 			return;
 		sysState.linkLevels[_linkNum] = level;
-     c10:	fa 01       	movw	r30, r20
-     c12:	e4 5f       	subi	r30, 0xF4	; 244
-     c14:	fe 4d       	sbci	r31, 0xDE	; 222
-     c16:	11 8a       	std	Z+17, r1	; 0x11
+     c16:	fa 01       	movw	r30, r20
+     c18:	e4 5f       	subi	r30, 0xF4	; 244
+     c1a:	fe 4d       	sbci	r31, 0xDE	; 222
+     c1c:	11 8a       	std	Z+17, r1	; 0x11
 
 		for (uint8_t i = 0; i < _linkCnt; i++)
-     c18:	43 e2       	ldi	r20, 0x23	; 35
-     c1a:	4a 9d       	mul	r20, r10
-     c1c:	f0 01       	movw	r30, r0
-     c1e:	4b 9d       	mul	r20, r11
-     c20:	f0 0d       	add	r31, r0
-     c22:	11 24       	eor	r1, r1
-     c24:	e0 5f       	subi	r30, 0xF0	; 240
-     c26:	ff 4d       	sbci	r31, 0xDF	; 223
-     c28:	d1 80       	ldd	r13, Z+1	; 0x01
-     c2a:	dd 20       	and	r13, r13
-     c2c:	19 f1       	breq	.+70     	; 0xc74 <__vector_34+0x12e>
-     c2e:	c3 e2       	ldi	r28, 0x23	; 35
-     c30:	2c 9f       	mul	r18, r28
-     c32:	a0 01       	movw	r20, r0
-     c34:	11 24       	eor	r1, r1
-     c36:	4d 5e       	subi	r20, 0xED	; 237
-     c38:	5f 4d       	sbci	r21, 0xDF	; 223
-     c3a:	00 e0       	ldi	r16, 0x00	; 0
-     c3c:	10 e0       	ldi	r17, 0x00	; 0
-     c3e:	da 01       	movw	r26, r20
+     c1e:	43 e2       	ldi	r20, 0x23	; 35
+     c20:	4a 9d       	mul	r20, r10
+     c22:	f0 01       	movw	r30, r0
+     c24:	4b 9d       	mul	r20, r11
+     c26:	f0 0d       	add	r31, r0
+     c28:	11 24       	eor	r1, r1
+     c2a:	e0 5f       	subi	r30, 0xF0	; 240
+     c2c:	ff 4d       	sbci	r31, 0xDF	; 223
+     c2e:	d1 80       	ldd	r13, Z+1	; 0x01
+     c30:	dd 20       	and	r13, r13
+     c32:	19 f1       	breq	.+70     	; 0xc7a <__vector_34+0x12e>
+     c34:	c3 e2       	ldi	r28, 0x23	; 35
+     c36:	2c 9f       	mul	r18, r28
+     c38:	a0 01       	movw	r20, r0
+     c3a:	11 24       	eor	r1, r1
+     c3c:	4d 5e       	subi	r20, 0xED	; 237
+     c3e:	5f 4d       	sbci	r21, 0xDF	; 223
+     c40:	00 e0       	ldi	r16, 0x00	; 0
+     c42:	10 e0       	ldi	r17, 0x00	; 0
+     c44:	da 01       	movw	r26, r20
 		{
 			dimInProcess |= (_lvl[i] != gLevels[_link[i]]);
-     c40:	ec 91       	ld	r30, X
-     c42:	4f 5f       	subi	r20, 0xFF	; 255
-     c44:	5f 4f       	sbci	r21, 0xFF	; 255
-     c46:	f0 e0       	ldi	r31, 0x00	; 0
-     c48:	ee 0f       	add	r30, r30
-     c4a:	ff 1f       	adc	r31, r31
-     c4c:	e3 5a       	subi	r30, 0xA3	; 163
-     c4e:	fe 4d       	sbci	r31, 0xDE	; 222
-     c50:	e0 80       	ld	r14, Z
-     c52:	f1 80       	ldd	r15, Z+1	; 0x01
-     c54:	13 96       	adiw	r26, 0x03	; 3
-     c56:	6c 91       	ld	r22, X
-     c58:	70 e0       	ldi	r23, 0x00	; 0
-     c5a:	e1 e0       	ldi	r30, 0x01	; 1
-     c5c:	6e 15       	cp	r22, r14
-     c5e:	7f 05       	cpc	r23, r15
-     c60:	09 f4       	brne	.+2      	; 0xc64 <__vector_34+0x11e>
-     c62:	e0 e0       	ldi	r30, 0x00	; 0
-     c64:	0e 2b       	or	r16, r30
+     c46:	ec 91       	ld	r30, X
+     c48:	4f 5f       	subi	r20, 0xFF	; 255
+     c4a:	5f 4f       	sbci	r21, 0xFF	; 255
+     c4c:	f0 e0       	ldi	r31, 0x00	; 0
+     c4e:	ee 0f       	add	r30, r30
+     c50:	ff 1f       	adc	r31, r31
+     c52:	e3 5a       	subi	r30, 0xA3	; 163
+     c54:	fe 4d       	sbci	r31, 0xDE	; 222
+     c56:	e0 80       	ld	r14, Z
+     c58:	f1 80       	ldd	r15, Z+1	; 0x01
+     c5a:	13 96       	adiw	r26, 0x03	; 3
+     c5c:	6c 91       	ld	r22, X
+     c5e:	70 e0       	ldi	r23, 0x00	; 0
+     c60:	e1 e0       	ldi	r30, 0x01	; 1
+     c62:	6e 15       	cp	r22, r14
+     c64:	7f 05       	cpc	r23, r15
+     c66:	09 f4       	brne	.+2      	; 0xc6a <__vector_34+0x11e>
+     c68:	e0 e0       	ldi	r30, 0x00	; 0
+     c6a:	0e 2b       	or	r16, r30
 			if (!level || !_difLvl[i]) //Set zero level directly
 				_lvl[i] = 0;
-     c66:	fa 01       	movw	r30, r20
-     c68:	12 82       	std	Z+2, r1	; 0x02
+     c6c:	fa 01       	movw	r30, r20
+     c6e:	12 82       	std	Z+2, r1	; 0x02
 		int16_t tempLvl = (int16_t)oLvl - level;
 		if (-3 < tempLvl && tempLvl < 3 && ((level == 0) == (0 == oLvl)))
 			return;
 		sysState.linkLevels[_linkNum] = level;
 
 		for (uint8_t i = 0; i < _linkCnt; i++)
-     c6a:	1f 5f       	subi	r17, 0xFF	; 255
-     c6c:	1d 11       	cpse	r17, r13
-     c6e:	e7 cf       	rjmp	.-50     	; 0xc3e <__vector_34+0xf8>
+     c70:	1f 5f       	subi	r17, 0xFF	; 255
+     c72:	1d 11       	cpse	r17, r13
+     c74:	e7 cf       	rjmp	.-50     	; 0xc44 <__vector_34+0xf8>
 				uint16_t temp = level;
 				temp *= _difLvl[i];
 				_lvl[i] = (uint8_t)(temp >> 8) + _minLvl[i];
 			}
 		}
 		if (!dimInProcess) //Refresh saved ticks value only if no dimming in the process right now
-     c70:	01 11       	cpse	r16, r1
-     c72:	2a c0       	rjmp	.+84     	; 0xcc8 <__vector_34+0x182>
+     c76:	01 11       	cpse	r16, r1
+     c78:	2a c0       	rjmp	.+84     	; 0xcce <__vector_34+0x182>
 			_tickLastChg = sysState.sysTick;
-     c74:	63 e2       	ldi	r22, 0x23	; 35
-     c76:	6a 9d       	mul	r22, r10
-     c78:	a0 01       	movw	r20, r0
-     c7a:	6b 9d       	mul	r22, r11
-     c7c:	50 0d       	add	r21, r0
-     c7e:	11 24       	eor	r1, r1
-     c80:	ea 01       	movw	r28, r20
-     c82:	c0 5f       	subi	r28, 0xF0	; 240
-     c84:	df 4d       	sbci	r29, 0xDF	; 223
-     c86:	de 01       	movw	r26, r28
-     c88:	53 96       	adiw	r26, 0x13	; 19
-     c8a:	ec e0       	ldi	r30, 0x0C	; 12
-     c8c:	f1 e2       	ldi	r31, 0x21	; 33
-     c8e:	40 81       	ld	r20, Z
-     c90:	4b 8b       	std	Y+19, r20	; 0x13
-     c92:	41 81       	ldd	r20, Z+1	; 0x01
-     c94:	11 96       	adiw	r26, 0x01	; 1
-     c96:	4c 93       	st	X, r20
-     c98:	11 97       	sbiw	r26, 0x01	; 1
-     c9a:	42 81       	ldd	r20, Z+2	; 0x02
-     c9c:	12 96       	adiw	r26, 0x02	; 2
-     c9e:	4c 93       	st	X, r20
-     ca0:	12 97       	sbiw	r26, 0x02	; 2
-     ca2:	43 81       	ldd	r20, Z+3	; 0x03
-     ca4:	13 96       	adiw	r26, 0x03	; 3
-     ca6:	4c 93       	st	X, r20
-     ca8:	13 97       	sbiw	r26, 0x03	; 3
-     caa:	44 81       	ldd	r20, Z+4	; 0x04
-     cac:	14 96       	adiw	r26, 0x04	; 4
-     cae:	4c 93       	st	X, r20
-     cb0:	14 97       	sbiw	r26, 0x04	; 4
-     cb2:	45 81       	ldd	r20, Z+5	; 0x05
-     cb4:	15 96       	adiw	r26, 0x05	; 5
-     cb6:	4c 93       	st	X, r20
-     cb8:	15 97       	sbiw	r26, 0x05	; 5
-     cba:	46 81       	ldd	r20, Z+6	; 0x06
-     cbc:	16 96       	adiw	r26, 0x06	; 6
-     cbe:	4c 93       	st	X, r20
-     cc0:	16 97       	sbiw	r26, 0x06	; 6
-     cc2:	47 81       	ldd	r20, Z+7	; 0x07
-     cc4:	17 96       	adiw	r26, 0x07	; 7
-     cc6:	4c 93       	st	X, r20
+     c7a:	63 e2       	ldi	r22, 0x23	; 35
+     c7c:	6a 9d       	mul	r22, r10
+     c7e:	a0 01       	movw	r20, r0
+     c80:	6b 9d       	mul	r22, r11
+     c82:	50 0d       	add	r21, r0
+     c84:	11 24       	eor	r1, r1
+     c86:	ea 01       	movw	r28, r20
+     c88:	c0 5f       	subi	r28, 0xF0	; 240
+     c8a:	df 4d       	sbci	r29, 0xDF	; 223
+     c8c:	de 01       	movw	r26, r28
+     c8e:	53 96       	adiw	r26, 0x13	; 19
+     c90:	ec e0       	ldi	r30, 0x0C	; 12
+     c92:	f1 e2       	ldi	r31, 0x21	; 33
+     c94:	40 81       	ld	r20, Z
+     c96:	4b 8b       	std	Y+19, r20	; 0x13
+     c98:	41 81       	ldd	r20, Z+1	; 0x01
+     c9a:	11 96       	adiw	r26, 0x01	; 1
+     c9c:	4c 93       	st	X, r20
+     c9e:	11 97       	sbiw	r26, 0x01	; 1
+     ca0:	42 81       	ldd	r20, Z+2	; 0x02
+     ca2:	12 96       	adiw	r26, 0x02	; 2
+     ca4:	4c 93       	st	X, r20
+     ca6:	12 97       	sbiw	r26, 0x02	; 2
+     ca8:	43 81       	ldd	r20, Z+3	; 0x03
+     caa:	13 96       	adiw	r26, 0x03	; 3
+     cac:	4c 93       	st	X, r20
+     cae:	13 97       	sbiw	r26, 0x03	; 3
+     cb0:	44 81       	ldd	r20, Z+4	; 0x04
+     cb2:	14 96       	adiw	r26, 0x04	; 4
+     cb4:	4c 93       	st	X, r20
+     cb6:	14 97       	sbiw	r26, 0x04	; 4
+     cb8:	45 81       	ldd	r20, Z+5	; 0x05
+     cba:	15 96       	adiw	r26, 0x05	; 5
+     cbc:	4c 93       	st	X, r20
+     cbe:	15 97       	sbiw	r26, 0x05	; 5
+     cc0:	46 81       	ldd	r20, Z+6	; 0x06
+     cc2:	16 96       	adiw	r26, 0x06	; 6
+     cc4:	4c 93       	st	X, r20
+     cc6:	16 97       	sbiw	r26, 0x06	; 6
+     cc8:	47 81       	ldd	r20, Z+7	; 0x07
+     cca:	17 96       	adiw	r26, 0x07	; 7
+     ccc:	4c 93       	st	X, r20
 		if (result < LINK_ON_BARRIER)
 		{
 			result = 0;
 			if (sysState.linksMask & (0x10 << sAdcCnt)) //Previous level was non-zero
 				links[sAdcCnt].setLevel(0);
 			sysState.linksMask &= ~(0x10 << sAdcCnt); //Clear 'non-zero' bit
-     cc8:	80 95       	com	r24
-     cca:	38 23       	and	r19, r24
-     ccc:	30 93 21 21 	sts	0x2121, r19	; 0x802121 <sysState+0x15>
-     cd0:	a8 c1       	rjmp	.+848    	; 0x1022 <__vector_34+0x4dc>
+     cce:	80 95       	com	r24
+     cd0:	38 23       	and	r19, r24
+     cd2:	30 93 21 21 	sts	0x2121, r19	; 0x802121 <sysState+0x15>
+     cd6:	a8 c1       	rjmp	.+848    	; 0x1028 <__vector_34+0x4dc>
 		}
 		else
 		{
 			result = (result - LINK_1PERC_CODE) / LINK_SCALE;
-     cd2:	80 59       	subi	r24, 0x90	; 144
-     cd4:	91 42       	sbci	r25, 0x21	; 33
-     cd6:	64 e5       	ldi	r22, 0x54	; 84
-     cd8:	70 e0       	ldi	r23, 0x00	; 0
-     cda:	0e 94 52 0a 	call	0x14a4	; 0x14a4 <__divmodhi4>
+     cd8:	80 59       	subi	r24, 0x90	; 144
+     cda:	91 42       	sbci	r25, 0x21	; 33
+     cdc:	64 e5       	ldi	r22, 0x54	; 84
+     cde:	70 e0       	ldi	r23, 0x00	; 0
+     ce0:	0e 94 4b 0a 	call	0x1496	; 0x1496 <__divmodhi4>
 			if (result < 5)
-     cde:	65 30       	cpi	r22, 0x05	; 5
-     ce0:	71 05       	cpc	r23, r1
-     ce2:	14 f4       	brge	.+4      	; 0xce8 <__vector_34+0x1a2>
+     ce4:	65 30       	cpi	r22, 0x05	; 5
+     ce6:	71 05       	cpc	r23, r1
+     ce8:	14 f4       	brge	.+4      	; 0xcee <__vector_34+0x1a2>
 				result = 5;
-     ce4:	65 e0       	ldi	r22, 0x05	; 5
-     ce6:	70 e0       	ldi	r23, 0x00	; 0
-     ce8:	6f 3f       	cpi	r22, 0xFF	; 255
-     cea:	71 05       	cpc	r23, r1
-     cec:	19 f0       	breq	.+6      	; 0xcf4 <__vector_34+0x1ae>
-     cee:	14 f0       	brlt	.+4      	; 0xcf4 <__vector_34+0x1ae>
-     cf0:	6f ef       	ldi	r22, 0xFF	; 255
-     cf2:	70 e0       	ldi	r23, 0x00	; 0
+     cea:	65 e0       	ldi	r22, 0x05	; 5
+     cec:	70 e0       	ldi	r23, 0x00	; 0
+     cee:	6f 3f       	cpi	r22, 0xFF	; 255
+     cf0:	71 05       	cpc	r23, r1
+     cf2:	19 f0       	breq	.+6      	; 0xcfa <__vector_34+0x1ae>
+     cf4:	14 f0       	brlt	.+4      	; 0xcfa <__vector_34+0x1ae>
+     cf6:	6f ef       	ldi	r22, 0xFF	; 255
+     cf8:	70 e0       	ldi	r23, 0x00	; 0
 			if (result > 255)
 				result = 255;
 			sysState.linksMask |= (0x10 << sAdcCnt); //Set 'non-zero' bit
-     cf4:	80 e1       	ldi	r24, 0x10	; 16
-     cf6:	90 e0       	ldi	r25, 0x00	; 0
-     cf8:	02 2e       	mov	r0, r18
-     cfa:	02 c0       	rjmp	.+4      	; 0xd00 <__vector_34+0x1ba>
-     cfc:	88 0f       	add	r24, r24
-     cfe:	99 1f       	adc	r25, r25
-     d00:	0a 94       	dec	r0
-     d02:	e2 f7       	brpl	.-8      	; 0xcfc <__vector_34+0x1b6>
-     d04:	38 2b       	or	r19, r24
-     d06:	30 93 21 21 	sts	0x2121, r19	; 0x802121 <sysState+0x15>
+     cfa:	80 e1       	ldi	r24, 0x10	; 16
+     cfc:	90 e0       	ldi	r25, 0x00	; 0
+     cfe:	02 2e       	mov	r0, r18
+     d00:	02 c0       	rjmp	.+4      	; 0xd06 <__vector_34+0x1ba>
+     d02:	88 0f       	add	r24, r24
+     d04:	99 1f       	adc	r25, r25
+     d06:	0a 94       	dec	r0
+     d08:	e2 f7       	brpl	.-8      	; 0xd02 <__vector_34+0x1b6>
+     d0a:	38 2b       	or	r19, r24
+     d0c:	30 93 21 21 	sts	0x2121, r19	; 0x802121 <sysState+0x15>
 			links[sAdcCnt].setLevel((uint8_t)result);
-     d0a:	16 2f       	mov	r17, r22
+     d10:	16 2f       	mov	r17, r22
 	}
 
 	void setLevel(uint8_t level) //Accepts level in the range 0…255
 	{
 		bool dimInProcess = false;
 		uint8_t oLvl = sysState.linkLevels[_linkNum];
-     d0c:	83 e2       	ldi	r24, 0x23	; 35
-     d0e:	8a 9d       	mul	r24, r10
-     d10:	f0 01       	movw	r30, r0
-     d12:	8b 9d       	mul	r24, r11
-     d14:	f0 0d       	add	r31, r0
-     d16:	11 24       	eor	r1, r1
-     d18:	e0 5f       	subi	r30, 0xF0	; 240
-     d1a:	ff 4d       	sbci	r31, 0xDF	; 223
-     d1c:	42 81       	ldd	r20, Z+2	; 0x02
-     d1e:	50 e0       	ldi	r21, 0x00	; 0
-     d20:	fa 01       	movw	r30, r20
-     d22:	e4 5f       	subi	r30, 0xF4	; 244
-     d24:	fe 4d       	sbci	r31, 0xDE	; 222
-     d26:	31 89       	ldd	r19, Z+17	; 0x11
-     d28:	77 27       	eor	r23, r23
+     d12:	83 e2       	ldi	r24, 0x23	; 35
+     d14:	8a 9d       	mul	r24, r10
+     d16:	f0 01       	movw	r30, r0
+     d18:	8b 9d       	mul	r24, r11
+     d1a:	f0 0d       	add	r31, r0
+     d1c:	11 24       	eor	r1, r1
+     d1e:	e0 5f       	subi	r30, 0xF0	; 240
+     d20:	ff 4d       	sbci	r31, 0xDF	; 223
+     d22:	42 81       	ldd	r20, Z+2	; 0x02
+     d24:	50 e0       	ldi	r21, 0x00	; 0
+     d26:	fa 01       	movw	r30, r20
+     d28:	e4 5f       	subi	r30, 0xF4	; 244
+     d2a:	fe 4d       	sbci	r31, 0xDE	; 222
+     d2c:	31 89       	ldd	r19, Z+17	; 0x11
+     d2e:	77 27       	eor	r23, r23
 		int16_t tempLvl = (int16_t)oLvl - level;
 		if (-3 < tempLvl && tempLvl < 3 && ((level == 0) == (0 == oLvl)))
-     d2a:	83 2f       	mov	r24, r19
-     d2c:	90 e0       	ldi	r25, 0x00	; 0
-     d2e:	86 1b       	sub	r24, r22
-     d30:	97 0b       	sbc	r25, r23
-     d32:	02 96       	adiw	r24, 0x02	; 2
-     d34:	05 97       	sbiw	r24, 0x05	; 5
-     d36:	48 f4       	brcc	.+18     	; 0xd4a <__vector_34+0x204>
-     d38:	91 e0       	ldi	r25, 0x01	; 1
-     d3a:	11 11       	cpse	r17, r1
-     d3c:	01 c0       	rjmp	.+2      	; 0xd40 <__vector_34+0x1fa>
-     d3e:	90 e0       	ldi	r25, 0x00	; 0
-     d40:	81 e0       	ldi	r24, 0x01	; 1
-     d42:	31 11       	cpse	r19, r1
-     d44:	80 e0       	ldi	r24, 0x00	; 0
-     d46:	98 13       	cpse	r25, r24
-     d48:	6c c1       	rjmp	.+728    	; 0x1022 <__vector_34+0x4dc>
+     d30:	83 2f       	mov	r24, r19
+     d32:	90 e0       	ldi	r25, 0x00	; 0
+     d34:	86 1b       	sub	r24, r22
+     d36:	97 0b       	sbc	r25, r23
+     d38:	02 96       	adiw	r24, 0x02	; 2
+     d3a:	05 97       	sbiw	r24, 0x05	; 5
+     d3c:	48 f4       	brcc	.+18     	; 0xd50 <__vector_34+0x204>
+     d3e:	91 e0       	ldi	r25, 0x01	; 1
+     d40:	11 11       	cpse	r17, r1
+     d42:	01 c0       	rjmp	.+2      	; 0xd46 <__vector_34+0x1fa>
+     d44:	90 e0       	ldi	r25, 0x00	; 0
+     d46:	81 e0       	ldi	r24, 0x01	; 1
+     d48:	31 11       	cpse	r19, r1
+     d4a:	80 e0       	ldi	r24, 0x00	; 0
+     d4c:	98 13       	cpse	r25, r24
+     d4e:	6c c1       	rjmp	.+728    	; 0x1028 <__vector_34+0x4dc>
 			return;
 		sysState.linkLevels[_linkNum] = level;
-     d4a:	fa 01       	movw	r30, r20
-     d4c:	e4 5f       	subi	r30, 0xF4	; 244
-     d4e:	fe 4d       	sbci	r31, 0xDE	; 222
-     d50:	11 8b       	std	Z+17, r17	; 0x11
+     d50:	fa 01       	movw	r30, r20
+     d52:	e4 5f       	subi	r30, 0xF4	; 244
+     d54:	fe 4d       	sbci	r31, 0xDE	; 222
+     d56:	11 8b       	std	Z+17, r17	; 0x11
 
 		for (uint8_t i = 0; i < _linkCnt; i++)
-     d52:	83 e2       	ldi	r24, 0x23	; 35
-     d54:	8a 9d       	mul	r24, r10
-     d56:	f0 01       	movw	r30, r0
-     d58:	8b 9d       	mul	r24, r11
-     d5a:	f0 0d       	add	r31, r0
-     d5c:	11 24       	eor	r1, r1
-     d5e:	e0 5f       	subi	r30, 0xF0	; 240
-     d60:	ff 4d       	sbci	r31, 0xDF	; 223
-     d62:	01 81       	ldd	r16, Z+1	; 0x01
-     d64:	00 23       	and	r16, r16
-     d66:	b9 f1       	breq	.+110    	; 0xdd6 <__vector_34+0x290>
-     d68:	f3 e2       	ldi	r31, 0x23	; 35
-     d6a:	2f 9f       	mul	r18, r31
-     d6c:	d0 01       	movw	r26, r0
-     d6e:	11 24       	eor	r1, r1
-     d70:	ad 5e       	subi	r26, 0xED	; 237
-     d72:	bf 4d       	sbci	r27, 0xDF	; 223
-     d74:	50 e0       	ldi	r21, 0x00	; 0
-     d76:	30 e0       	ldi	r19, 0x00	; 0
+     d58:	83 e2       	ldi	r24, 0x23	; 35
+     d5a:	8a 9d       	mul	r24, r10
+     d5c:	f0 01       	movw	r30, r0
+     d5e:	8b 9d       	mul	r24, r11
+     d60:	f0 0d       	add	r31, r0
+     d62:	11 24       	eor	r1, r1
+     d64:	e0 5f       	subi	r30, 0xF0	; 240
+     d66:	ff 4d       	sbci	r31, 0xDF	; 223
+     d68:	01 81       	ldd	r16, Z+1	; 0x01
+     d6a:	00 23       	and	r16, r16
+     d6c:	b9 f1       	breq	.+110    	; 0xddc <__vector_34+0x290>
+     d6e:	f3 e2       	ldi	r31, 0x23	; 35
+     d70:	2f 9f       	mul	r18, r31
+     d72:	d0 01       	movw	r26, r0
+     d74:	11 24       	eor	r1, r1
+     d76:	ad 5e       	subi	r26, 0xED	; 237
+     d78:	bf 4d       	sbci	r27, 0xDF	; 223
+     d7a:	50 e0       	ldi	r21, 0x00	; 0
+     d7c:	30 e0       	ldi	r19, 0x00	; 0
 		{
 			dimInProcess |= (_lvl[i] != gLevels[_link[i]]);
-     d78:	ed 01       	movw	r28, r26
-     d7a:	e8 81       	ld	r30, Y
-     d7c:	11 96       	adiw	r26, 0x01	; 1
-     d7e:	f0 e0       	ldi	r31, 0x00	; 0
-     d80:	ee 0f       	add	r30, r30
-     d82:	ff 1f       	adc	r31, r31
-     d84:	e3 5a       	subi	r30, 0xA3	; 163
-     d86:	fe 4d       	sbci	r31, 0xDE	; 222
-     d88:	01 90       	ld	r0, Z+
-     d8a:	f0 81       	ld	r31, Z
-     d8c:	e0 2d       	mov	r30, r0
-     d8e:	8b 81       	ldd	r24, Y+3	; 0x03
-     d90:	90 e0       	ldi	r25, 0x00	; 0
-     d92:	41 e0       	ldi	r20, 0x01	; 1
-     d94:	8e 17       	cp	r24, r30
-     d96:	9f 07       	cpc	r25, r31
-     d98:	09 f4       	brne	.+2      	; 0xd9c <__vector_34+0x256>
-     d9a:	40 e0       	ldi	r20, 0x00	; 0
-     d9c:	54 2b       	or	r21, r20
+     d7e:	ed 01       	movw	r28, r26
+     d80:	e8 81       	ld	r30, Y
+     d82:	11 96       	adiw	r26, 0x01	; 1
+     d84:	f0 e0       	ldi	r31, 0x00	; 0
+     d86:	ee 0f       	add	r30, r30
+     d88:	ff 1f       	adc	r31, r31
+     d8a:	e3 5a       	subi	r30, 0xA3	; 163
+     d8c:	fe 4d       	sbci	r31, 0xDE	; 222
+     d8e:	01 90       	ld	r0, Z+
+     d90:	f0 81       	ld	r31, Z
+     d92:	e0 2d       	mov	r30, r0
+     d94:	8b 81       	ldd	r24, Y+3	; 0x03
+     d96:	90 e0       	ldi	r25, 0x00	; 0
+     d98:	41 e0       	ldi	r20, 0x01	; 1
+     d9a:	8e 17       	cp	r24, r30
+     d9c:	9f 07       	cpc	r25, r31
+     d9e:	09 f4       	brne	.+2      	; 0xda2 <__vector_34+0x256>
+     da0:	40 e0       	ldi	r20, 0x00	; 0
+     da2:	54 2b       	or	r21, r20
 			if (!level || !_difLvl[i]) //Set zero level directly
-     d9e:	11 23       	and	r17, r17
-     da0:	29 f0       	breq	.+10     	; 0xdac <__vector_34+0x266>
-     da2:	18 96       	adiw	r26, 0x08	; 8
-     da4:	8c 91       	ld	r24, X
-     da6:	18 97       	sbiw	r26, 0x08	; 8
-     da8:	81 11       	cpse	r24, r1
-     daa:	04 c0       	rjmp	.+8      	; 0xdb4 <__vector_34+0x26e>
+     da4:	11 23       	and	r17, r17
+     da6:	29 f0       	breq	.+10     	; 0xdb2 <__vector_34+0x266>
+     da8:	18 96       	adiw	r26, 0x08	; 8
+     daa:	8c 91       	ld	r24, X
+     dac:	18 97       	sbiw	r26, 0x08	; 8
+     dae:	81 11       	cpse	r24, r1
+     db0:	04 c0       	rjmp	.+8      	; 0xdba <__vector_34+0x26e>
 				_lvl[i] = 0;
-     dac:	12 96       	adiw	r26, 0x02	; 2
-     dae:	1c 92       	st	X, r1
-     db0:	12 97       	sbiw	r26, 0x02	; 2
-     db2:	0c c0       	rjmp	.+24     	; 0xdcc <__vector_34+0x286>
+     db2:	12 96       	adiw	r26, 0x02	; 2
+     db4:	1c 92       	st	X, r1
+     db6:	12 97       	sbiw	r26, 0x02	; 2
+     db8:	0c c0       	rjmp	.+24     	; 0xdd2 <__vector_34+0x286>
 			else //Convert non-zero value to the actual range
 			{
 				uint16_t temp = level;
 				temp *= _difLvl[i];
 				_lvl[i] = (uint8_t)(temp >> 8) + _minLvl[i];
-     db4:	86 9f       	mul	r24, r22
-     db6:	f0 01       	movw	r30, r0
-     db8:	87 9f       	mul	r24, r23
-     dba:	f0 0d       	add	r31, r0
-     dbc:	11 24       	eor	r1, r1
-     dbe:	15 96       	adiw	r26, 0x05	; 5
-     dc0:	8c 91       	ld	r24, X
-     dc2:	15 97       	sbiw	r26, 0x05	; 5
-     dc4:	8f 0f       	add	r24, r31
-     dc6:	12 96       	adiw	r26, 0x02	; 2
-     dc8:	8c 93       	st	X, r24
-     dca:	12 97       	sbiw	r26, 0x02	; 2
+     dba:	86 9f       	mul	r24, r22
+     dbc:	f0 01       	movw	r30, r0
+     dbe:	87 9f       	mul	r24, r23
+     dc0:	f0 0d       	add	r31, r0
+     dc2:	11 24       	eor	r1, r1
+     dc4:	15 96       	adiw	r26, 0x05	; 5
+     dc6:	8c 91       	ld	r24, X
+     dc8:	15 97       	sbiw	r26, 0x05	; 5
+     dca:	8f 0f       	add	r24, r31
+     dcc:	12 96       	adiw	r26, 0x02	; 2
+     dce:	8c 93       	st	X, r24
+     dd0:	12 97       	sbiw	r26, 0x02	; 2
 		int16_t tempLvl = (int16_t)oLvl - level;
 		if (-3 < tempLvl && tempLvl < 3 && ((level == 0) == (0 == oLvl)))
 			return;
 		sysState.linkLevels[_linkNum] = level;
 
 		for (uint8_t i = 0; i < _linkCnt; i++)
-     dcc:	3f 5f       	subi	r19, 0xFF	; 255
-     dce:	03 13       	cpse	r16, r19
-     dd0:	d3 cf       	rjmp	.-90     	; 0xd78 <__vector_34+0x232>
+     dd2:	3f 5f       	subi	r19, 0xFF	; 255
+     dd4:	03 13       	cpse	r16, r19
+     dd6:	d3 cf       	rjmp	.-90     	; 0xd7e <__vector_34+0x232>
 				uint16_t temp = level;
 				temp *= _difLvl[i];
 				_lvl[i] = (uint8_t)(temp >> 8) + _minLvl[i];
 			}
 		}
 		if (!dimInProcess) //Refresh saved ticks value only if no dimming in the process right now
-     dd2:	51 11       	cpse	r21, r1
-     dd4:	26 c1       	rjmp	.+588    	; 0x1022 <__vector_34+0x4dc>
+     dd8:	51 11       	cpse	r21, r1
+     dda:	26 c1       	rjmp	.+588    	; 0x1028 <__vector_34+0x4dc>
 			_tickLastChg = sysState.sysTick;
-     dd6:	33 e2       	ldi	r19, 0x23	; 35
-     dd8:	3a 9d       	mul	r19, r10
-     dda:	c0 01       	movw	r24, r0
-     ddc:	3b 9d       	mul	r19, r11
-     dde:	90 0d       	add	r25, r0
-     de0:	11 24       	eor	r1, r1
-     de2:	ec 01       	movw	r28, r24
-     de4:	c0 5f       	subi	r28, 0xF0	; 240
-     de6:	df 4d       	sbci	r29, 0xDF	; 223
-     de8:	de 01       	movw	r26, r28
-     dea:	53 96       	adiw	r26, 0x13	; 19
-     dec:	ec e0       	ldi	r30, 0x0C	; 12
-     dee:	f1 e2       	ldi	r31, 0x21	; 33
-     df0:	80 81       	ld	r24, Z
-     df2:	8b 8b       	std	Y+19, r24	; 0x13
-     df4:	81 81       	ldd	r24, Z+1	; 0x01
-     df6:	11 96       	adiw	r26, 0x01	; 1
-     df8:	8c 93       	st	X, r24
-     dfa:	11 97       	sbiw	r26, 0x01	; 1
-     dfc:	82 81       	ldd	r24, Z+2	; 0x02
-     dfe:	12 96       	adiw	r26, 0x02	; 2
-     e00:	8c 93       	st	X, r24
-     e02:	12 97       	sbiw	r26, 0x02	; 2
-     e04:	83 81       	ldd	r24, Z+3	; 0x03
-     e06:	13 96       	adiw	r26, 0x03	; 3
-     e08:	8c 93       	st	X, r24
-     e0a:	13 97       	sbiw	r26, 0x03	; 3
-     e0c:	84 81       	ldd	r24, Z+4	; 0x04
-     e0e:	14 96       	adiw	r26, 0x04	; 4
-     e10:	8c 93       	st	X, r24
-     e12:	14 97       	sbiw	r26, 0x04	; 4
-     e14:	85 81       	ldd	r24, Z+5	; 0x05
-     e16:	15 96       	adiw	r26, 0x05	; 5
-     e18:	8c 93       	st	X, r24
-     e1a:	15 97       	sbiw	r26, 0x05	; 5
-     e1c:	86 81       	ldd	r24, Z+6	; 0x06
-     e1e:	16 96       	adiw	r26, 0x06	; 6
-     e20:	8c 93       	st	X, r24
-     e22:	16 97       	sbiw	r26, 0x06	; 6
-     e24:	87 81       	ldd	r24, Z+7	; 0x07
-     e26:	17 96       	adiw	r26, 0x07	; 7
-     e28:	8c 93       	st	X, r24
-     e2a:	fb c0       	rjmp	.+502    	; 0x1022 <__vector_34+0x4dc>
+     ddc:	33 e2       	ldi	r19, 0x23	; 35
+     dde:	3a 9d       	mul	r19, r10
+     de0:	c0 01       	movw	r24, r0
+     de2:	3b 9d       	mul	r19, r11
+     de4:	90 0d       	add	r25, r0
+     de6:	11 24       	eor	r1, r1
+     de8:	ec 01       	movw	r28, r24
+     dea:	c0 5f       	subi	r28, 0xF0	; 240
+     dec:	df 4d       	sbci	r29, 0xDF	; 223
+     dee:	de 01       	movw	r26, r28
+     df0:	53 96       	adiw	r26, 0x13	; 19
+     df2:	ec e0       	ldi	r30, 0x0C	; 12
+     df4:	f1 e2       	ldi	r31, 0x21	; 33
+     df6:	80 81       	ld	r24, Z
+     df8:	8b 8b       	std	Y+19, r24	; 0x13
+     dfa:	81 81       	ldd	r24, Z+1	; 0x01
+     dfc:	11 96       	adiw	r26, 0x01	; 1
+     dfe:	8c 93       	st	X, r24
+     e00:	11 97       	sbiw	r26, 0x01	; 1
+     e02:	82 81       	ldd	r24, Z+2	; 0x02
+     e04:	12 96       	adiw	r26, 0x02	; 2
+     e06:	8c 93       	st	X, r24
+     e08:	12 97       	sbiw	r26, 0x02	; 2
+     e0a:	83 81       	ldd	r24, Z+3	; 0x03
+     e0c:	13 96       	adiw	r26, 0x03	; 3
+     e0e:	8c 93       	st	X, r24
+     e10:	13 97       	sbiw	r26, 0x03	; 3
+     e12:	84 81       	ldd	r24, Z+4	; 0x04
+     e14:	14 96       	adiw	r26, 0x04	; 4
+     e16:	8c 93       	st	X, r24
+     e18:	14 97       	sbiw	r26, 0x04	; 4
+     e1a:	85 81       	ldd	r24, Z+5	; 0x05
+     e1c:	15 96       	adiw	r26, 0x05	; 5
+     e1e:	8c 93       	st	X, r24
+     e20:	15 97       	sbiw	r26, 0x05	; 5
+     e22:	86 81       	ldd	r24, Z+6	; 0x06
+     e24:	16 96       	adiw	r26, 0x06	; 6
+     e26:	8c 93       	st	X, r24
+     e28:	16 97       	sbiw	r26, 0x06	; 6
+     e2a:	87 81       	ldd	r24, Z+7	; 0x07
+     e2c:	17 96       	adiw	r26, 0x07	; 7
+     e2e:	8c 93       	st	X, r24
+     e30:	fb c0       	rjmp	.+502    	; 0x1028 <__vector_34+0x4dc>
 			sysState.linksMask |= (0x10 << sAdcCnt); //Set 'non-zero' bit
 			links[sAdcCnt].setLevel((uint8_t)result);
 		}
 	}
 	else if (sAdcCnt < 4)
 		sysState.linksMask &= ~(0x11 << sAdcCnt); //Clear 'valid' and 'non-zero' bits
-     e2c:	ec e0       	ldi	r30, 0x0C	; 12
-     e2e:	f1 e2       	ldi	r31, 0x21	; 33
-     e30:	81 e1       	ldi	r24, 0x11	; 17
-     e32:	90 e0       	ldi	r25, 0x00	; 0
-     e34:	02 2e       	mov	r0, r18
-     e36:	02 c0       	rjmp	.+4      	; 0xe3c <__vector_34+0x2f6>
-     e38:	88 0f       	add	r24, r24
-     e3a:	99 1f       	adc	r25, r25
-     e3c:	0a 94       	dec	r0
-     e3e:	e2 f7       	brpl	.-8      	; 0xe38 <__vector_34+0x2f2>
-     e40:	80 95       	com	r24
-     e42:	95 89       	ldd	r25, Z+21	; 0x15
-     e44:	89 23       	and	r24, r25
-     e46:	85 8b       	std	Z+21, r24	; 0x15
-     e48:	ec c0       	rjmp	.+472    	; 0x1022 <__vector_34+0x4dc>
+     e32:	ec e0       	ldi	r30, 0x0C	; 12
+     e34:	f1 e2       	ldi	r31, 0x21	; 33
+     e36:	81 e1       	ldi	r24, 0x11	; 17
+     e38:	90 e0       	ldi	r25, 0x00	; 0
+     e3a:	02 2e       	mov	r0, r18
+     e3c:	02 c0       	rjmp	.+4      	; 0xe42 <__vector_34+0x2f6>
+     e3e:	88 0f       	add	r24, r24
+     e40:	99 1f       	adc	r25, r25
+     e42:	0a 94       	dec	r0
+     e44:	e2 f7       	brpl	.-8      	; 0xe3e <__vector_34+0x2f2>
+     e46:	80 95       	com	r24
+     e48:	95 89       	ldd	r25, Z+21	; 0x15
+     e4a:	89 23       	and	r24, r25
+     e4c:	85 8b       	std	Z+21, r24	; 0x15
+     e4e:	ec c0       	rjmp	.+472    	; 0x1028 <__vector_34+0x4dc>
 	else //sAdcCnt == 4: MSEN channel
 		msenCh.setLevel((uint8_t)(result >> 6));
-     e4a:	08 2e       	mov	r0, r24
-     e4c:	89 2f       	mov	r24, r25
-     e4e:	00 0c       	add	r0, r0
-     e50:	88 1f       	adc	r24, r24
-     e52:	99 0b       	sbc	r25, r25
+     e50:	08 2e       	mov	r0, r24
+     e52:	89 2f       	mov	r24, r25
      e54:	00 0c       	add	r0, r0
      e56:	88 1f       	adc	r24, r24
-     e58:	99 1f       	adc	r25, r25
-     e5a:	38 2f       	mov	r19, r24
+     e58:	99 0b       	sbc	r25, r25
+     e5a:	00 0c       	add	r0, r0
+     e5c:	88 1f       	adc	r24, r24
+     e5e:	99 1f       	adc	r25, r25
+     e60:	38 2f       	mov	r19, r24
 		_onTime = validConf.msenOnTime > 5 ? validConf.msenOnTime : 6;
 		_fTime = _onTime + validConf.msenLowTime;
 	}
 	void setLevel(uint8_t level)
 	{
 		if (level < MSEN_VALID_MIN || !validConf.msenOnTime || (sysState.linksMask & (0x10 << _linkNum)))
-     e5c:	84 31       	cpi	r24, 0x14	; 20
-     e5e:	c0 f0       	brcs	.+48     	; 0xe90 <__vector_34+0x34a>
-     e60:	40 91 3e 21 	lds	r20, 0x213E	; 0x80213e <validConf+0x1a>
-     e64:	44 23       	and	r20, r20
-     e66:	a1 f0       	breq	.+40     	; 0xe90 <__vector_34+0x34a>
-     e68:	e0 91 04 20 	lds	r30, 0x2004	; 0x802004 <msenCh+0x2>
-     e6c:	ae 2f       	mov	r26, r30
-     e6e:	b0 e0       	ldi	r27, 0x00	; 0
-     e70:	40 91 21 21 	lds	r20, 0x2121	; 0x802121 <sysState+0x15>
-     e74:	64 2f       	mov	r22, r20
-     e76:	70 e0       	ldi	r23, 0x00	; 0
-     e78:	40 e1       	ldi	r20, 0x10	; 16
-     e7a:	50 e0       	ldi	r21, 0x00	; 0
-     e7c:	0e 2e       	mov	r0, r30
-     e7e:	02 c0       	rjmp	.+4      	; 0xe84 <__vector_34+0x33e>
-     e80:	44 0f       	add	r20, r20
-     e82:	55 1f       	adc	r21, r21
-     e84:	0a 94       	dec	r0
-     e86:	e2 f7       	brpl	.-8      	; 0xe80 <__vector_34+0x33a>
-     e88:	46 23       	and	r20, r22
-     e8a:	57 23       	and	r21, r23
-     e8c:	45 2b       	or	r20, r21
-     e8e:	29 f0       	breq	.+10     	; 0xe9a <__vector_34+0x354>
+     e62:	84 31       	cpi	r24, 0x14	; 20
+     e64:	c0 f0       	brcs	.+48     	; 0xe96 <__vector_34+0x34a>
+     e66:	40 91 3e 21 	lds	r20, 0x213E	; 0x80213e <validConf+0x1a>
+     e6a:	44 23       	and	r20, r20
+     e6c:	a1 f0       	breq	.+40     	; 0xe96 <__vector_34+0x34a>
+     e6e:	e0 91 04 20 	lds	r30, 0x2004	; 0x802004 <msenCh+0x2>
+     e72:	ae 2f       	mov	r26, r30
+     e74:	b0 e0       	ldi	r27, 0x00	; 0
+     e76:	40 91 21 21 	lds	r20, 0x2121	; 0x802121 <sysState+0x15>
+     e7a:	64 2f       	mov	r22, r20
+     e7c:	70 e0       	ldi	r23, 0x00	; 0
+     e7e:	40 e1       	ldi	r20, 0x10	; 16
+     e80:	50 e0       	ldi	r21, 0x00	; 0
+     e82:	0e 2e       	mov	r0, r30
+     e84:	02 c0       	rjmp	.+4      	; 0xe8a <__vector_34+0x33e>
+     e86:	44 0f       	add	r20, r20
+     e88:	55 1f       	adc	r21, r21
+     e8a:	0a 94       	dec	r0
+     e8c:	e2 f7       	brpl	.-8      	; 0xe86 <__vector_34+0x33a>
+     e8e:	46 23       	and	r20, r22
+     e90:	57 23       	and	r21, r23
+     e92:	45 2b       	or	r20, r21
+     e94:	29 f0       	breq	.+10     	; 0xea0 <__vector_34+0x354>
 		{
 			_lvl = 0; //MSEN disconnected, disabled (by zero on time) or there is non-zero level from link
-     e90:	e2 e0       	ldi	r30, 0x02	; 2
-     e92:	f0 e2       	ldi	r31, 0x20	; 32
-     e94:	13 82       	std	Z+3, r1	; 0x03
+     e96:	e2 e0       	ldi	r30, 0x02	; 2
+     e98:	f0 e2       	ldi	r31, 0x20	; 32
+     e9a:	13 82       	std	Z+3, r1	; 0x03
 			cntDown = false;
-     e96:	10 82       	st	Z, r1
-     e98:	c4 c0       	rjmp	.+392    	; 0x1022 <__vector_34+0x4dc>
+     e9c:	10 82       	st	Z, r1
+     e9e:	c4 c0       	rjmp	.+392    	; 0x1028 <__vector_34+0x4dc>
 			return;
 		}
 		if (level > MSEN_SEN1_TRIG && _lvl == MSEN_VALID_MIN) //Off to on transition
-     e9a:	8a 33       	cpi	r24, 0x3A	; 58
-     e9c:	08 f4       	brcc	.+2      	; 0xea0 <__vector_34+0x35a>
-     e9e:	96 c0       	rjmp	.+300    	; 0xfcc <__vector_34+0x486>
-     ea0:	40 91 05 20 	lds	r20, 0x2005	; 0x802005 <msenCh+0x3>
-     ea4:	44 31       	cpi	r20, 0x14	; 20
-     ea6:	09 f0       	breq	.+2      	; 0xeaa <__vector_34+0x364>
-     ea8:	91 c0       	rjmp	.+290    	; 0xfcc <__vector_34+0x486>
+     ea0:	8a 33       	cpi	r24, 0x3A	; 58
+     ea2:	08 f4       	brcc	.+2      	; 0xea6 <__vector_34+0x35a>
+     ea4:	96 c0       	rjmp	.+300    	; 0xfd2 <__vector_34+0x486>
+     ea6:	40 91 05 20 	lds	r20, 0x2005	; 0x802005 <msenCh+0x3>
+     eaa:	44 31       	cpi	r20, 0x14	; 20
+     eac:	09 f0       	breq	.+2      	; 0xeb0 <__vector_34+0x364>
+     eae:	91 c0       	rjmp	.+290    	; 0xfd2 <__vector_34+0x486>
 		{
 			_lvl = level;
-     eaa:	80 93 05 20 	sts	0x2005, r24	; 0x802005 <msenCh+0x3>
+     eb0:	80 93 05 20 	sts	0x2005, r24	; 0x802005 <msenCh+0x3>
 		}
 	}
 
 	void setLevel(uint8_t level, bool direction) //Accepts level in the range 0…255
 	{
 		_dir = direction;
-     eae:	83 e2       	ldi	r24, 0x23	; 35
-     eb0:	8a 9f       	mul	r24, r26
-     eb2:	e0 01       	movw	r28, r0
-     eb4:	8b 9f       	mul	r24, r27
-     eb6:	d0 0d       	add	r29, r0
-     eb8:	11 24       	eor	r1, r1
-     eba:	c0 5f       	subi	r28, 0xF0	; 240
-     ebc:	df 4d       	sbci	r29, 0xDF	; 223
-     ebe:	81 e0       	ldi	r24, 0x01	; 1
-     ec0:	37 34       	cpi	r19, 0x47	; 71
-     ec2:	08 f4       	brcc	.+2      	; 0xec6 <__vector_34+0x380>
-     ec4:	80 e0       	ldi	r24, 0x00	; 0
-     ec6:	88 83       	st	Y, r24
+     eb4:	83 e2       	ldi	r24, 0x23	; 35
+     eb6:	8a 9f       	mul	r24, r26
+     eb8:	e0 01       	movw	r28, r0
+     eba:	8b 9f       	mul	r24, r27
+     ebc:	d0 0d       	add	r29, r0
+     ebe:	11 24       	eor	r1, r1
+     ec0:	c0 5f       	subi	r28, 0xF0	; 240
+     ec2:	df 4d       	sbci	r29, 0xDF	; 223
+     ec4:	81 e0       	ldi	r24, 0x01	; 1
+     ec6:	37 34       	cpi	r19, 0x47	; 71
+     ec8:	08 f4       	brcc	.+2      	; 0xecc <__vector_34+0x380>
+     eca:	80 e0       	ldi	r24, 0x00	; 0
+     ecc:	88 83       	st	Y, r24
 	}
 
 	void setLevel(uint8_t level) //Accepts level in the range 0…255
 	{
 		bool dimInProcess = false;
 		uint8_t oLvl = sysState.linkLevels[_linkNum];
-     ec8:	83 e2       	ldi	r24, 0x23	; 35
-     eca:	8a 9f       	mul	r24, r26
-     ecc:	e0 01       	movw	r28, r0
-     ece:	8b 9f       	mul	r24, r27
-     ed0:	d0 0d       	add	r29, r0
-     ed2:	11 24       	eor	r1, r1
-     ed4:	c0 5f       	subi	r28, 0xF0	; 240
-     ed6:	df 4d       	sbci	r29, 0xDF	; 223
-     ed8:	8a 81       	ldd	r24, Y+2	; 0x02
-     eda:	90 e0       	ldi	r25, 0x00	; 0
-     edc:	ec 01       	movw	r28, r24
-     ede:	c4 5f       	subi	r28, 0xF4	; 244
-     ee0:	de 4d       	sbci	r29, 0xDE	; 222
-     ee2:	39 89       	ldd	r19, Y+17	; 0x11
+     ece:	83 e2       	ldi	r24, 0x23	; 35
+     ed0:	8a 9f       	mul	r24, r26
+     ed2:	e0 01       	movw	r28, r0
+     ed4:	8b 9f       	mul	r24, r27
+     ed6:	d0 0d       	add	r29, r0
+     ed8:	11 24       	eor	r1, r1
+     eda:	c0 5f       	subi	r28, 0xF0	; 240
+     edc:	df 4d       	sbci	r29, 0xDF	; 223
+     ede:	8a 81       	ldd	r24, Y+2	; 0x02
+     ee0:	90 e0       	ldi	r25, 0x00	; 0
+     ee2:	ec 01       	movw	r28, r24
+     ee4:	c4 5f       	subi	r28, 0xF4	; 244
+     ee6:	de 4d       	sbci	r29, 0xDE	; 222
+     ee8:	39 89       	ldd	r19, Y+17	; 0x11
 		int16_t tempLvl = (int16_t)oLvl - level;
 		if (-3 < tempLvl && tempLvl < 3 && ((level == 0) == (0 == oLvl)))
-     ee4:	43 2f       	mov	r20, r19
-     ee6:	50 e0       	ldi	r21, 0x00	; 0
-     ee8:	4d 5f       	subi	r20, 0xFD	; 253
-     eea:	51 09       	sbc	r21, r1
-     eec:	45 30       	cpi	r20, 0x05	; 5
-     eee:	51 05       	cpc	r21, r1
-     ef0:	10 f4       	brcc	.+4      	; 0xef6 <__vector_34+0x3b0>
-     ef2:	31 11       	cpse	r19, r1
-     ef4:	66 c0       	rjmp	.+204    	; 0xfc2 <__vector_34+0x47c>
+     eea:	43 2f       	mov	r20, r19
+     eec:	50 e0       	ldi	r21, 0x00	; 0
+     eee:	4d 5f       	subi	r20, 0xFD	; 253
+     ef0:	51 09       	sbc	r21, r1
+     ef2:	45 30       	cpi	r20, 0x05	; 5
+     ef4:	51 05       	cpc	r21, r1
+     ef6:	10 f4       	brcc	.+4      	; 0xefc <__vector_34+0x3b0>
+     ef8:	31 11       	cpse	r19, r1
+     efa:	66 c0       	rjmp	.+204    	; 0xfc8 <__vector_34+0x47c>
 			return;
 		sysState.linkLevels[_linkNum] = level;
-     ef6:	ec 01       	movw	r28, r24
-     ef8:	c4 5f       	subi	r28, 0xF4	; 244
-     efa:	de 4d       	sbci	r29, 0xDE	; 222
-     efc:	3f ef       	ldi	r19, 0xFF	; 255
-     efe:	39 8b       	std	Y+17, r19	; 0x11
+     efc:	ec 01       	movw	r28, r24
+     efe:	c4 5f       	subi	r28, 0xF4	; 244
+     f00:	de 4d       	sbci	r29, 0xDE	; 222
+     f02:	3f ef       	ldi	r19, 0xFF	; 255
+     f04:	39 8b       	std	Y+17, r19	; 0x11
 
 		for (uint8_t i = 0; i < _linkCnt; i++)
-     f00:	83 e2       	ldi	r24, 0x23	; 35
-     f02:	8a 9f       	mul	r24, r26
-     f04:	e0 01       	movw	r28, r0
-     f06:	8b 9f       	mul	r24, r27
-     f08:	d0 0d       	add	r29, r0
-     f0a:	11 24       	eor	r1, r1
-     f0c:	c0 5f       	subi	r28, 0xF0	; 240
-     f0e:	df 4d       	sbci	r29, 0xDF	; 223
-     f10:	69 81       	ldd	r22, Y+1	; 0x01
-     f12:	66 23       	and	r22, r22
-     f14:	69 f1       	breq	.+90     	; 0xf70 <__vector_34+0x42a>
-     f16:	33 e2       	ldi	r19, 0x23	; 35
-     f18:	e3 9f       	mul	r30, r19
-     f1a:	f0 01       	movw	r30, r0
-     f1c:	11 24       	eor	r1, r1
-     f1e:	ed 5e       	subi	r30, 0xED	; 237
-     f20:	ff 4d       	sbci	r31, 0xDF	; 223
-     f22:	50 e0       	ldi	r21, 0x00	; 0
-     f24:	30 e0       	ldi	r19, 0x00	; 0
+     f06:	83 e2       	ldi	r24, 0x23	; 35
+     f08:	8a 9f       	mul	r24, r26
+     f0a:	e0 01       	movw	r28, r0
+     f0c:	8b 9f       	mul	r24, r27
+     f0e:	d0 0d       	add	r29, r0
+     f10:	11 24       	eor	r1, r1
+     f12:	c0 5f       	subi	r28, 0xF0	; 240
+     f14:	df 4d       	sbci	r29, 0xDF	; 223
+     f16:	69 81       	ldd	r22, Y+1	; 0x01
+     f18:	66 23       	and	r22, r22
+     f1a:	69 f1       	breq	.+90     	; 0xf76 <__vector_34+0x42a>
+     f1c:	33 e2       	ldi	r19, 0x23	; 35
+     f1e:	e3 9f       	mul	r30, r19
+     f20:	f0 01       	movw	r30, r0
+     f22:	11 24       	eor	r1, r1
+     f24:	ed 5e       	subi	r30, 0xED	; 237
+     f26:	ff 4d       	sbci	r31, 0xDF	; 223
+     f28:	50 e0       	ldi	r21, 0x00	; 0
+     f2a:	30 e0       	ldi	r19, 0x00	; 0
 				_lvl[i] = 0;
 			else //Convert non-zero value to the actual range
 			{
 				uint16_t temp = level;
 				temp *= _difLvl[i];
 				_lvl[i] = (uint8_t)(temp >> 8) + _minLvl[i];
-     f26:	7f ef       	ldi	r23, 0xFF	; 255
-     f28:	cf 01       	movw	r24, r30
+     f2c:	7f ef       	ldi	r23, 0xFF	; 255
+     f2e:	cf 01       	movw	r24, r30
 			return;
 		sysState.linkLevels[_linkNum] = level;
 
 		for (uint8_t i = 0; i < _linkCnt; i++)
 		{
 			dimInProcess |= (_lvl[i] != gLevels[_link[i]]);
-     f2a:	40 81       	ld	r20, Z
-     f2c:	31 96       	adiw	r30, 0x01	; 1
-     f2e:	c4 2f       	mov	r28, r20
-     f30:	d0 e0       	ldi	r29, 0x00	; 0
-     f32:	cc 0f       	add	r28, r28
-     f34:	dd 1f       	adc	r29, r29
-     f36:	c3 5a       	subi	r28, 0xA3	; 163
-     f38:	de 4d       	sbci	r29, 0xDE	; 222
-     f3a:	08 81       	ld	r16, Y
-     f3c:	19 81       	ldd	r17, Y+1	; 0x01
-     f3e:	ec 01       	movw	r28, r24
-     f40:	8b 81       	ldd	r24, Y+3	; 0x03
-     f42:	90 e0       	ldi	r25, 0x00	; 0
-     f44:	41 e0       	ldi	r20, 0x01	; 1
-     f46:	80 17       	cp	r24, r16
-     f48:	91 07       	cpc	r25, r17
-     f4a:	09 f4       	brne	.+2      	; 0xf4e <__vector_34+0x408>
-     f4c:	40 e0       	ldi	r20, 0x00	; 0
-     f4e:	54 2b       	or	r21, r20
+     f30:	40 81       	ld	r20, Z
+     f32:	31 96       	adiw	r30, 0x01	; 1
+     f34:	c4 2f       	mov	r28, r20
+     f36:	d0 e0       	ldi	r29, 0x00	; 0
+     f38:	cc 0f       	add	r28, r28
+     f3a:	dd 1f       	adc	r29, r29
+     f3c:	c3 5a       	subi	r28, 0xA3	; 163
+     f3e:	de 4d       	sbci	r29, 0xDE	; 222
+     f40:	08 81       	ld	r16, Y
+     f42:	19 81       	ldd	r17, Y+1	; 0x01
+     f44:	ec 01       	movw	r28, r24
+     f46:	8b 81       	ldd	r24, Y+3	; 0x03
+     f48:	90 e0       	ldi	r25, 0x00	; 0
+     f4a:	41 e0       	ldi	r20, 0x01	; 1
+     f4c:	80 17       	cp	r24, r16
+     f4e:	91 07       	cpc	r25, r17
+     f50:	09 f4       	brne	.+2      	; 0xf54 <__vector_34+0x408>
+     f52:	40 e0       	ldi	r20, 0x00	; 0
+     f54:	54 2b       	or	r21, r20
 			if (!level || !_difLvl[i]) //Set zero level directly
-     f50:	80 85       	ldd	r24, Z+8	; 0x08
-     f52:	81 11       	cpse	r24, r1
-     f54:	02 c0       	rjmp	.+4      	; 0xf5a <__vector_34+0x414>
+     f56:	80 85       	ldd	r24, Z+8	; 0x08
+     f58:	81 11       	cpse	r24, r1
+     f5a:	02 c0       	rjmp	.+4      	; 0xf60 <__vector_34+0x414>
 				_lvl[i] = 0;
-     f56:	12 82       	std	Z+2, r1	; 0x02
-     f58:	06 c0       	rjmp	.+12     	; 0xf66 <__vector_34+0x420>
+     f5c:	12 82       	std	Z+2, r1	; 0x02
+     f5e:	06 c0       	rjmp	.+12     	; 0xf6c <__vector_34+0x420>
 			else //Convert non-zero value to the actual range
 			{
 				uint16_t temp = level;
 				temp *= _difLvl[i];
 				_lvl[i] = (uint8_t)(temp >> 8) + _minLvl[i];
-     f5a:	78 9f       	mul	r23, r24
-     f5c:	c0 01       	movw	r24, r0
-     f5e:	11 24       	eor	r1, r1
-     f60:	85 81       	ldd	r24, Z+5	; 0x05
-     f62:	89 0f       	add	r24, r25
-     f64:	82 83       	std	Z+2, r24	; 0x02
+     f60:	78 9f       	mul	r23, r24
+     f62:	c0 01       	movw	r24, r0
+     f64:	11 24       	eor	r1, r1
+     f66:	85 81       	ldd	r24, Z+5	; 0x05
+     f68:	89 0f       	add	r24, r25
+     f6a:	82 83       	std	Z+2, r24	; 0x02
 		int16_t tempLvl = (int16_t)oLvl - level;
 		if (-3 < tempLvl && tempLvl < 3 && ((level == 0) == (0 == oLvl)))
 			return;
 		sysState.linkLevels[_linkNum] = level;
 
 		for (uint8_t i = 0; i < _linkCnt; i++)
-     f66:	3f 5f       	subi	r19, 0xFF	; 255
-     f68:	63 13       	cpse	r22, r19
-     f6a:	de cf       	rjmp	.-68     	; 0xf28 <__vector_34+0x3e2>
+     f6c:	3f 5f       	subi	r19, 0xFF	; 255
+     f6e:	63 13       	cpse	r22, r19
+     f70:	de cf       	rjmp	.-68     	; 0xf2e <__vector_34+0x3e2>
 				uint16_t temp = level;
 				temp *= _difLvl[i];
 				_lvl[i] = (uint8_t)(temp >> 8) + _minLvl[i];
 			}
 		}
 		if (!dimInProcess) //Refresh saved ticks value only if no dimming in the process right now
-     f6c:	51 11       	cpse	r21, r1
-     f6e:	29 c0       	rjmp	.+82     	; 0xfc2 <__vector_34+0x47c>
+     f72:	51 11       	cpse	r21, r1
+     f74:	29 c0       	rjmp	.+82     	; 0xfc8 <__vector_34+0x47c>
 			_tickLastChg = sysState.sysTick;
-     f70:	83 e2       	ldi	r24, 0x23	; 35
-     f72:	8a 9f       	mul	r24, r26
-     f74:	e0 01       	movw	r28, r0
-     f76:	8b 9f       	mul	r24, r27
-     f78:	d0 0d       	add	r29, r0
-     f7a:	11 24       	eor	r1, r1
-     f7c:	c0 5f       	subi	r28, 0xF0	; 240
-     f7e:	df 4d       	sbci	r29, 0xDF	; 223
-     f80:	de 01       	movw	r26, r28
-     f82:	53 96       	adiw	r26, 0x13	; 19
-     f84:	ec e0       	ldi	r30, 0x0C	; 12
-     f86:	f1 e2       	ldi	r31, 0x21	; 33
-     f88:	80 81       	ld	r24, Z
-     f8a:	8b 8b       	std	Y+19, r24	; 0x13
-     f8c:	81 81       	ldd	r24, Z+1	; 0x01
-     f8e:	11 96       	adiw	r26, 0x01	; 1
-     f90:	8c 93       	st	X, r24
-     f92:	11 97       	sbiw	r26, 0x01	; 1
-     f94:	82 81       	ldd	r24, Z+2	; 0x02
-     f96:	12 96       	adiw	r26, 0x02	; 2
-     f98:	8c 93       	st	X, r24
-     f9a:	12 97       	sbiw	r26, 0x02	; 2
-     f9c:	83 81       	ldd	r24, Z+3	; 0x03
-     f9e:	13 96       	adiw	r26, 0x03	; 3
-     fa0:	8c 93       	st	X, r24
-     fa2:	13 97       	sbiw	r26, 0x03	; 3
-     fa4:	84 81       	ldd	r24, Z+4	; 0x04
-     fa6:	14 96       	adiw	r26, 0x04	; 4
-     fa8:	8c 93       	st	X, r24
-     faa:	14 97       	sbiw	r26, 0x04	; 4
-     fac:	85 81       	ldd	r24, Z+5	; 0x05
-     fae:	15 96       	adiw	r26, 0x05	; 5
-     fb0:	8c 93       	st	X, r24
-     fb2:	15 97       	sbiw	r26, 0x05	; 5
-     fb4:	86 81       	ldd	r24, Z+6	; 0x06
-     fb6:	16 96       	adiw	r26, 0x06	; 6
-     fb8:	8c 93       	st	X, r24
-     fba:	16 97       	sbiw	r26, 0x06	; 6
-     fbc:	87 81       	ldd	r24, Z+7	; 0x07
-     fbe:	17 96       	adiw	r26, 0x07	; 7
-     fc0:	8c 93       	st	X, r24
+     f76:	83 e2       	ldi	r24, 0x23	; 35
+     f78:	8a 9f       	mul	r24, r26
+     f7a:	e0 01       	movw	r28, r0
+     f7c:	8b 9f       	mul	r24, r27
+     f7e:	d0 0d       	add	r29, r0
+     f80:	11 24       	eor	r1, r1
+     f82:	c0 5f       	subi	r28, 0xF0	; 240
+     f84:	df 4d       	sbci	r29, 0xDF	; 223
+     f86:	de 01       	movw	r26, r28
+     f88:	53 96       	adiw	r26, 0x13	; 19
+     f8a:	ec e0       	ldi	r30, 0x0C	; 12
+     f8c:	f1 e2       	ldi	r31, 0x21	; 33
+     f8e:	80 81       	ld	r24, Z
+     f90:	8b 8b       	std	Y+19, r24	; 0x13
+     f92:	81 81       	ldd	r24, Z+1	; 0x01
+     f94:	11 96       	adiw	r26, 0x01	; 1
+     f96:	8c 93       	st	X, r24
+     f98:	11 97       	sbiw	r26, 0x01	; 1
+     f9a:	82 81       	ldd	r24, Z+2	; 0x02
+     f9c:	12 96       	adiw	r26, 0x02	; 2
+     f9e:	8c 93       	st	X, r24
+     fa0:	12 97       	sbiw	r26, 0x02	; 2
+     fa2:	83 81       	ldd	r24, Z+3	; 0x03
+     fa4:	13 96       	adiw	r26, 0x03	; 3
+     fa6:	8c 93       	st	X, r24
+     fa8:	13 97       	sbiw	r26, 0x03	; 3
+     faa:	84 81       	ldd	r24, Z+4	; 0x04
+     fac:	14 96       	adiw	r26, 0x04	; 4
+     fae:	8c 93       	st	X, r24
+     fb0:	14 97       	sbiw	r26, 0x04	; 4
+     fb2:	85 81       	ldd	r24, Z+5	; 0x05
+     fb4:	15 96       	adiw	r26, 0x05	; 5
+     fb6:	8c 93       	st	X, r24
+     fb8:	15 97       	sbiw	r26, 0x05	; 5
+     fba:	86 81       	ldd	r24, Z+6	; 0x06
+     fbc:	16 96       	adiw	r26, 0x06	; 6
+     fbe:	8c 93       	st	X, r24
+     fc0:	16 97       	sbiw	r26, 0x06	; 6
+     fc2:	87 81       	ldd	r24, Z+7	; 0x07
+     fc4:	17 96       	adiw	r26, 0x07	; 7
+     fc6:	8c 93       	st	X, r24
 		}
 		if (level > MSEN_SEN1_TRIG && _lvl == MSEN_VALID_MIN) //Off to on transition
 		{
 			_lvl = level;
 			links[_linkNum].setLevel(255, level > MSEN_SEN2_TRIG); //Start from max light level
 			ltEnt = cntDown = false;
-     fc2:	e2 e0       	ldi	r30, 0x02	; 2
-     fc4:	f0 e2       	ldi	r31, 0x20	; 32
-     fc6:	10 82       	st	Z, r1
-     fc8:	11 82       	std	Z+1, r1	; 0x01
-     fca:	2b c0       	rjmp	.+86     	; 0x1022 <__vector_34+0x4dc>
+     fc8:	e2 e0       	ldi	r30, 0x02	; 2
+     fca:	f0 e2       	ldi	r31, 0x20	; 32
+     fcc:	10 82       	st	Z, r1
+     fce:	11 82       	std	Z+1, r1	; 0x01
+     fd0:	2b c0       	rjmp	.+86     	; 0x1028 <__vector_34+0x4dc>
 			return;
 		}
 		if (level < MSEN_SEN1_TRIG && _lvl > level) //On to off transition
-     fcc:	39 33       	cpi	r19, 0x39	; 57
-     fce:	48 f5       	brcc	.+82     	; 0x1022 <__vector_34+0x4dc>
-     fd0:	80 91 05 20 	lds	r24, 0x2005	; 0x802005 <msenCh+0x3>
-     fd4:	38 17       	cp	r19, r24
-     fd6:	28 f5       	brcc	.+74     	; 0x1022 <__vector_34+0x4dc>
+     fd2:	39 33       	cpi	r19, 0x39	; 57
+     fd4:	48 f5       	brcc	.+82     	; 0x1028 <__vector_34+0x4dc>
+     fd6:	80 91 05 20 	lds	r24, 0x2005	; 0x802005 <msenCh+0x3>
+     fda:	38 17       	cp	r19, r24
+     fdc:	28 f5       	brcc	.+74     	; 0x1028 <__vector_34+0x4dc>
 		{
 			_lvl = MSEN_VALID_MIN;
-     fd8:	e2 e0       	ldi	r30, 0x02	; 2
-     fda:	f0 e2       	ldi	r31, 0x20	; 32
-     fdc:	84 e1       	ldi	r24, 0x14	; 20
-     fde:	83 83       	std	Z+3, r24	; 0x03
+     fde:	e2 e0       	ldi	r30, 0x02	; 2
+     fe0:	f0 e2       	ldi	r31, 0x20	; 32
+     fe2:	84 e1       	ldi	r24, 0x14	; 20
+     fe4:	83 83       	std	Z+3, r24	; 0x03
 			_onTimeStamp = sysState.sysTick;
-     fe0:	ac e0       	ldi	r26, 0x0C	; 12
-     fe2:	b1 e2       	ldi	r27, 0x21	; 33
-     fe4:	8c 91       	ld	r24, X
-     fe6:	86 83       	std	Z+6, r24	; 0x06
-     fe8:	11 96       	adiw	r26, 0x01	; 1
+     fe6:	ac e0       	ldi	r26, 0x0C	; 12
+     fe8:	b1 e2       	ldi	r27, 0x21	; 33
      fea:	8c 91       	ld	r24, X
-     fec:	11 97       	sbiw	r26, 0x01	; 1
-     fee:	87 83       	std	Z+7, r24	; 0x07
-     ff0:	12 96       	adiw	r26, 0x02	; 2
-     ff2:	8c 91       	ld	r24, X
-     ff4:	12 97       	sbiw	r26, 0x02	; 2
-     ff6:	80 87       	std	Z+8, r24	; 0x08
-     ff8:	13 96       	adiw	r26, 0x03	; 3
-     ffa:	8c 91       	ld	r24, X
-     ffc:	13 97       	sbiw	r26, 0x03	; 3
-     ffe:	81 87       	std	Z+9, r24	; 0x09
-    1000:	14 96       	adiw	r26, 0x04	; 4
-    1002:	8c 91       	ld	r24, X
-    1004:	14 97       	sbiw	r26, 0x04	; 4
-    1006:	82 87       	std	Z+10, r24	; 0x0a
-    1008:	15 96       	adiw	r26, 0x05	; 5
-    100a:	8c 91       	ld	r24, X
-    100c:	15 97       	sbiw	r26, 0x05	; 5
-    100e:	83 87       	std	Z+11, r24	; 0x0b
-    1010:	16 96       	adiw	r26, 0x06	; 6
-    1012:	8c 91       	ld	r24, X
-    1014:	16 97       	sbiw	r26, 0x06	; 6
-    1016:	84 87       	std	Z+12, r24	; 0x0c
-    1018:	17 96       	adiw	r26, 0x07	; 7
-    101a:	8c 91       	ld	r24, X
-    101c:	85 87       	std	Z+13, r24	; 0x0d
+     fec:	86 83       	std	Z+6, r24	; 0x06
+     fee:	11 96       	adiw	r26, 0x01	; 1
+     ff0:	8c 91       	ld	r24, X
+     ff2:	11 97       	sbiw	r26, 0x01	; 1
+     ff4:	87 83       	std	Z+7, r24	; 0x07
+     ff6:	12 96       	adiw	r26, 0x02	; 2
+     ff8:	8c 91       	ld	r24, X
+     ffa:	12 97       	sbiw	r26, 0x02	; 2
+     ffc:	80 87       	std	Z+8, r24	; 0x08
+     ffe:	13 96       	adiw	r26, 0x03	; 3
+    1000:	8c 91       	ld	r24, X
+    1002:	13 97       	sbiw	r26, 0x03	; 3
+    1004:	81 87       	std	Z+9, r24	; 0x09
+    1006:	14 96       	adiw	r26, 0x04	; 4
+    1008:	8c 91       	ld	r24, X
+    100a:	14 97       	sbiw	r26, 0x04	; 4
+    100c:	82 87       	std	Z+10, r24	; 0x0a
+    100e:	15 96       	adiw	r26, 0x05	; 5
+    1010:	8c 91       	ld	r24, X
+    1012:	15 97       	sbiw	r26, 0x05	; 5
+    1014:	83 87       	std	Z+11, r24	; 0x0b
+    1016:	16 96       	adiw	r26, 0x06	; 6
+    1018:	8c 91       	ld	r24, X
+    101a:	16 97       	sbiw	r26, 0x06	; 6
+    101c:	84 87       	std	Z+12, r24	; 0x0c
+    101e:	17 96       	adiw	r26, 0x07	; 7
+    1020:	8c 91       	ld	r24, X
+    1022:	85 87       	std	Z+13, r24	; 0x0d
 			cntDown = true;
-    101e:	81 e0       	ldi	r24, 0x01	; 1
-    1020:	80 83       	st	Z, r24
+    1024:	81 e0       	ldi	r24, 0x01	; 1
+    1026:	80 83       	st	Z, r24
 	else if (sAdcCnt < 4)
 		sysState.linksMask &= ~(0x11 << sAdcCnt); //Clear 'valid' and 'non-zero' bits
 	else //sAdcCnt == 4: MSEN channel
 		msenCh.setLevel((uint8_t)(result >> 6));
 
 	sAdcCnt++;
-    1022:	81 e0       	ldi	r24, 0x01	; 1
-    1024:	82 0f       	add	r24, r18
-    1026:	80 93 00 20 	sts	0x2000, r24	; 0x802000 <_edata>
+    1028:	81 e0       	ldi	r24, 0x01	; 1
+    102a:	82 0f       	add	r24, r18
+    102c:	80 93 00 20 	sts	0x2000, r24	; 0x802000 <_edata>
 	ADCA.CH0.MUXCTRL = (sAdcCnt + 1) << ADC_CH_MUXPOS_gp;
-    102a:	2e 5f       	subi	r18, 0xFE	; 254
-    102c:	22 0f       	add	r18, r18
-    102e:	22 0f       	add	r18, r18
-    1030:	22 0f       	add	r18, r18
-    1032:	20 93 21 02 	sts	0x0221, r18	; 0x800221 <__TEXT_REGION_LENGTH__+0x700221>
+    1030:	2e 5f       	subi	r18, 0xFE	; 254
+    1032:	22 0f       	add	r18, r18
+    1034:	22 0f       	add	r18, r18
+    1036:	22 0f       	add	r18, r18
+    1038:	20 93 21 02 	sts	0x0221, r18	; 0x800221 <__TEXT_REGION_LENGTH__+0x700221>
 	if (sAdcCnt < 5)
-    1036:	85 30       	cpi	r24, 0x05	; 5
-    1038:	30 f4       	brcc	.+12     	; 0x1046 <__vector_34+0x500>
+    103c:	85 30       	cpi	r24, 0x05	; 5
+    103e:	30 f4       	brcc	.+12     	; 0x104c <__vector_34+0x500>
 		ADCA.CTRLA |= ADC_START_bm;
-    103a:	e0 e0       	ldi	r30, 0x00	; 0
-    103c:	f2 e0       	ldi	r31, 0x02	; 2
-    103e:	80 81       	ld	r24, Z
-    1040:	84 60       	ori	r24, 0x04	; 4
-    1042:	80 83       	st	Z, r24
-    1044:	02 c0       	rjmp	.+4      	; 0x104a <__vector_34+0x504>
+    1040:	e0 e0       	ldi	r30, 0x00	; 0
+    1042:	f2 e0       	ldi	r31, 0x02	; 2
+    1044:	80 81       	ld	r24, Z
+    1046:	84 60       	ori	r24, 0x04	; 4
+    1048:	80 83       	st	Z, r24
+    104a:	02 c0       	rjmp	.+4      	; 0x1050 <__vector_34+0x504>
 	else
 		sAdcCnt = 0;
-    1046:	10 92 00 20 	sts	0x2000, r1	; 0x802000 <_edata>
+    104c:	10 92 00 20 	sts	0x2000, r1	; 0x802000 <_edata>
 }
-    104a:	ff 91       	pop	r31
-    104c:	ef 91       	pop	r30
-    104e:	df 91       	pop	r29
-    1050:	cf 91       	pop	r28
-    1052:	bf 91       	pop	r27
-    1054:	af 91       	pop	r26
-    1056:	9f 91       	pop	r25
-    1058:	8f 91       	pop	r24
-    105a:	7f 91       	pop	r23
-    105c:	6f 91       	pop	r22
-    105e:	5f 91       	pop	r21
-    1060:	4f 91       	pop	r20
-    1062:	3f 91       	pop	r19
-    1064:	2f 91       	pop	r18
-    1066:	1f 91       	pop	r17
-    1068:	0f 91       	pop	r16
-    106a:	ff 90       	pop	r15
-    106c:	ef 90       	pop	r14
-    106e:	df 90       	pop	r13
-    1070:	bf 90       	pop	r11
-    1072:	af 90       	pop	r10
-    1074:	0f 90       	pop	r0
-    1076:	0f be       	out	0x3f, r0	; 63
-    1078:	0f 90       	pop	r0
-    107a:	1f 90       	pop	r1
-    107c:	18 95       	reti
+    1050:	ff 91       	pop	r31
+    1052:	ef 91       	pop	r30
+    1054:	df 91       	pop	r29
+    1056:	cf 91       	pop	r28
+    1058:	bf 91       	pop	r27
+    105a:	af 91       	pop	r26
+    105c:	9f 91       	pop	r25
+    105e:	8f 91       	pop	r24
+    1060:	7f 91       	pop	r23
+    1062:	6f 91       	pop	r22
+    1064:	5f 91       	pop	r21
+    1066:	4f 91       	pop	r20
+    1068:	3f 91       	pop	r19
+    106a:	2f 91       	pop	r18
+    106c:	1f 91       	pop	r17
+    106e:	0f 91       	pop	r16
+    1070:	ff 90       	pop	r15
+    1072:	ef 90       	pop	r14
+    1074:	df 90       	pop	r13
+    1076:	bf 90       	pop	r11
+    1078:	af 90       	pop	r10
+    107a:	0f 90       	pop	r0
+    107c:	0f be       	out	0x3f, r0	; 63
+    107e:	0f 90       	pop	r0
+    1080:	1f 90       	pop	r1
+    1082:	18 95       	reti
 
-0000107e <__vector_23>:
+00001084 <__vector_23>:
 
 ISR(USARTC0_RXC_vect) //Data received from RS485
 {
-    107e:	1f 92       	push	r1
-    1080:	0f 92       	push	r0
-    1082:	0f b6       	in	r0, 0x3f	; 63
-    1084:	0f 92       	push	r0
-    1086:	11 24       	eor	r1, r1
-    1088:	2f 93       	push	r18
-    108a:	3f 93       	push	r19
-    108c:	4f 93       	push	r20
-    108e:	5f 93       	push	r21
-    1090:	6f 93       	push	r22
-    1092:	7f 93       	push	r23
-    1094:	8f 93       	push	r24
-    1096:	9f 93       	push	r25
-    1098:	af 93       	push	r26
-    109a:	bf 93       	push	r27
-    109c:	cf 93       	push	r28
-    109e:	df 93       	push	r29
-    10a0:	ef 93       	push	r30
-    10a2:	ff 93       	push	r31
+    1084:	1f 92       	push	r1
+    1086:	0f 92       	push	r0
+    1088:	0f b6       	in	r0, 0x3f	; 63
+    108a:	0f 92       	push	r0
+    108c:	11 24       	eor	r1, r1
+    108e:	2f 93       	push	r18
+    1090:	3f 93       	push	r19
+    1092:	4f 93       	push	r20
+    1094:	5f 93       	push	r21
+    1096:	6f 93       	push	r22
+    1098:	7f 93       	push	r23
+    109a:	8f 93       	push	r24
+    109c:	9f 93       	push	r25
+    109e:	af 93       	push	r26
+    10a0:	bf 93       	push	r27
+    10a2:	cf 93       	push	r28
+    10a4:	df 93       	push	r29
+    10a6:	ef 93       	push	r30
+    10a8:	ff 93       	push	r31
 	#ifndef RXC_EDMA
 	static uint8_t uCnt;
 	static uint8_t *rxBuf;
 	#endif
 	uint8_t data = USARTC0.DATA;
-    10a4:	e0 ec       	ldi	r30, 0xC0	; 192
-    10a6:	f8 e0       	ldi	r31, 0x08	; 8
-    10a8:	80 81       	ld	r24, Z
+    10aa:	e0 ec       	ldi	r30, 0xC0	; 192
+    10ac:	f8 e0       	ldi	r31, 0x08	; 8
+    10ae:	80 81       	ld	r24, Z
 	if (USARTC0.CTRLB & USART_MPCM_bm) //Address listening mode
-    10aa:	93 81       	ldd	r25, Z+3	; 0x03
-    10ac:	91 ff       	sbrs	r25, 1
-    10ae:	78 c0       	rjmp	.+240    	; 0x11a0 <__vector_23+0x122>
+    10b0:	93 81       	ldd	r25, Z+3	; 0x03
+    10b2:	91 ff       	sbrs	r25, 1
+    10b4:	75 c0       	rjmp	.+234    	; 0x11a0 <__vector_23+0x11c>
 	{
 		if (CmdLC <= data && data <= CmdUC)
-    10b0:	9f ed       	ldi	r25, 0xDF	; 223
-    10b2:	98 0f       	add	r25, r24
-    10b4:	94 30       	cpi	r25, 0x04	; 4
-    10b6:	08 f0       	brcs	.+2      	; 0x10ba <__vector_23+0x3c>
-    10b8:	71 c0       	rjmp	.+226    	; 0x119c <__vector_23+0x11e>
+    10b6:	9f ed       	ldi	r25, 0xDF	; 223
+    10b8:	98 0f       	add	r25, r24
+    10ba:	94 30       	cpi	r25, 0x04	; 4
+    10bc:	08 f0       	brcs	.+2      	; 0x10c0 <__vector_23+0x3c>
+    10be:	6e c0       	rjmp	.+220    	; 0x119c <__vector_23+0x118>
 		{
 			USARTC0.CTRLB &= ~USART_MPCM_bm; //Clear MPCM bit
-    10ba:	93 81       	ldd	r25, Z+3	; 0x03
-    10bc:	9d 7f       	andi	r25, 0xFD	; 253
-    10be:	93 83       	std	Z+3, r25	; 0x03
+    10c0:	93 81       	ldd	r25, Z+3	; 0x03
+    10c2:	9d 7f       	andi	r25, 0xFD	; 253
+    10c4:	93 83       	std	Z+3, r25	; 0x03
 			rxMode = data;
-    10c0:	80 93 5b 21 	sts	0x215B, r24	; 0x80215b <rxMode>
+    10c6:	80 93 5b 21 	sts	0x215B, r24	; 0x80215b <rxMode>
 			if (data == SetConfig)
-    10c4:	83 32       	cpi	r24, 0x23	; 35
-    10c6:	79 f4       	brne	.+30     	; 0x10e6 <__vector_23+0x68>
+    10ca:	83 32       	cpi	r24, 0x23	; 35
+    10cc:	91 f4       	brne	.+36     	; 0x10f2 <__vector_23+0x6e>
 			{
 				rxMark = (uint8_t)sysState.sysTick;
-    10c8:	80 91 0c 21 	lds	r24, 0x210C	; 0x80210c <sysState>
-    10cc:	80 93 5a 21 	sts	0x215A, r24	; 0x80215a <rxMark>
+    10ce:	80 91 0c 21 	lds	r24, 0x210C	; 0x80210c <sysState>
+    10d2:	80 93 5a 21 	sts	0x215A, r24	; 0x80215a <rxMark>
 				#ifdef RXC_EDMA
 				EDMA.CH0.TRFCNT = sizeof(systemConfig); //Bytes to receive into iobuf
-    10d0:	e0 e0       	ldi	r30, 0x00	; 0
-    10d2:	f1 e0       	ldi	r31, 0x01	; 1
-    10d4:	81 e2       	ldi	r24, 0x21	; 33
-    10d6:	90 e0       	ldi	r25, 0x00	; 0
-    10d8:	86 8b       	std	Z+22, r24	; 0x16
-    10da:	97 8b       	std	Z+23, r25	; 0x17
+    10d6:	e0 e0       	ldi	r30, 0x00	; 0
+    10d8:	f1 e0       	ldi	r31, 0x01	; 1
+    10da:	81 e2       	ldi	r24, 0x21	; 33
+    10dc:	90 e0       	ldi	r25, 0x00	; 0
+    10de:	86 8b       	std	Z+22, r24	; 0x16
+    10e0:	97 8b       	std	Z+23, r25	; 0x17
 				EDMA.CH0.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
-    10dc:	84 e8       	ldi	r24, 0x84	; 132
-    10de:	80 8b       	std	Z+16, r24	; 0x10
+    10e2:	84 e8       	ldi	r24, 0x84	; 132
+    10e4:	80 8b       	std	Z+16, r24	; 0x10
 				USARTC0.CTRLA = USART_RXCINTLVL_OFF_gc; //Disable interrupt
-    10e0:	10 92 c2 08 	sts	0x08C2, r1	; 0x8008c2 <__TEXT_REGION_LENGTH__+0x7008c2>
-    10e4:	5d c0       	rjmp	.+186    	; 0x11a0 <__vector_23+0x122>
+    10e6:	10 92 c2 08 	sts	0x08C2, r1	; 0x8008c2 <__TEXT_REGION_LENGTH__+0x7008c2>
+				PORTC.OUTSET = PIN4_bm;
+    10ea:	80 e1       	ldi	r24, 0x10	; 16
+    10ec:	80 93 45 06 	sts	0x0645, r24	; 0x800645 <__TEXT_REGION_LENGTH__+0x700645>
+    10f0:	57 c0       	rjmp	.+174    	; 0x11a0 <__vector_23+0x11c>
 0, 30, 96,	//Motion sensor on time, low time, low level
 0, 0, 0};	//groupConfig, rtcCorrect, CRC16
 
 void inline UCTXen()
 {
 	PORTC.OUTSET = PIN1_bm;
-    10e6:	82 e0       	ldi	r24, 0x02	; 2
-    10e8:	80 93 45 06 	sts	0x0645, r24	; 0x800645 <__TEXT_REGION_LENGTH__+0x700645>
+    10f2:	82 e0       	ldi	r24, 0x02	; 2
+    10f4:	80 93 45 06 	sts	0x0645, r24	; 0x800645 <__TEXT_REGION_LENGTH__+0x700645>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
-    10ec:	8f e6       	ldi	r24, 0x6F	; 111
-    10ee:	92 e0       	ldi	r25, 0x02	; 2
-    10f0:	01 97       	sbiw	r24, 0x01	; 1
-    10f2:	f1 f7       	brne	.-4      	; 0x10f0 <__vector_23+0x72>
-    10f4:	00 c0       	rjmp	.+0      	; 0x10f6 <__vector_23+0x78>
-    10f6:	00 00       	nop
+    10f8:	8f e6       	ldi	r24, 0x6F	; 111
+    10fa:	92 e0       	ldi	r25, 0x02	; 2
+    10fc:	01 97       	sbiw	r24, 0x01	; 1
+    10fe:	f1 f7       	brne	.-4      	; 0x10fc <__vector_23+0x78>
+    1100:	00 c0       	rjmp	.+0      	; 0x1102 <__vector_23+0x7e>
+    1102:	00 00       	nop
 				#endif
 			}
 			else //Data transmit request
 			{
 				UCTXen();
-				USARTC0.STATUS = USART_TXCIF_bm;
-    10f8:	80 e4       	ldi	r24, 0x40	; 64
-    10fa:	80 93 c1 08 	sts	0x08C1, r24	; 0x8008c1 <__TEXT_REGION_LENGTH__+0x7008c1>
 				if (rxMode == GetConfig)
-    10fe:	80 91 5b 21 	lds	r24, 0x215B	; 0x80215b <rxMode>
-    1102:	82 32       	cpi	r24, 0x22	; 34
-    1104:	59 f4       	brne	.+22     	; 0x111c <__vector_23+0x9e>
+    1104:	80 91 5b 21 	lds	r24, 0x215B	; 0x80215b <rxMode>
+    1108:	82 32       	cpi	r24, 0x22	; 34
+    110a:	59 f4       	brne	.+22     	; 0x1122 <__vector_23+0x9e>
 				{
-					EDMA.CH1.TRFCNT = sizeof(systemConfig);
-    1106:	e0 e0       	ldi	r30, 0x00	; 0
-    1108:	f1 e0       	ldi	r31, 0x01	; 1
-    110a:	81 e2       	ldi	r24, 0x21	; 33
-    110c:	90 e0       	ldi	r25, 0x00	; 0
-    110e:	86 a3       	std	Z+38, r24	; 0x26
-    1110:	97 a3       	std	Z+39, r25	; 0x27
+					EDMA.CH1.TRFCNT = sizeof(systemConfig) + 3;
+    110c:	e0 e0       	ldi	r30, 0x00	; 0
+    110e:	f1 e0       	ldi	r31, 0x01	; 1
+    1110:	84 e2       	ldi	r24, 0x24	; 36
+    1112:	90 e0       	ldi	r25, 0x00	; 0
+    1114:	86 a3       	std	Z+38, r24	; 0x26
+    1116:	97 a3       	std	Z+39, r25	; 0x27
 					EDMA.CH1.ADDR = (register16_t)&validConf;
-    1112:	84 e2       	ldi	r24, 0x24	; 36
-    1114:	91 e2       	ldi	r25, 0x21	; 33
-    1116:	80 a7       	std	Z+40, r24	; 0x28
-    1118:	91 a7       	std	Z+41, r25	; 0x29
-    111a:	3c c0       	rjmp	.+120    	; 0x1194 <__vector_23+0x116>
+    1118:	84 e2       	ldi	r24, 0x24	; 36
+    111a:	91 e2       	ldi	r25, 0x21	; 33
+    111c:	80 a7       	std	Z+40, r24	; 0x28
+    111e:	91 a7       	std	Z+41, r25	; 0x29
+    1120:	39 c0       	rjmp	.+114    	; 0x1194 <__vector_23+0x110>
 				}
 				else if (rxMode == GetStatus) //Get state
-    111c:	80 91 5b 21 	lds	r24, 0x215B	; 0x80215b <rxMode>
-    1120:	81 32       	cpi	r24, 0x21	; 33
-    1122:	e1 f4       	brne	.+56     	; 0x115c <__vector_23+0xde>
+    1122:	80 91 5b 21 	lds	r24, 0x215B	; 0x80215b <rxMode>
+    1126:	81 32       	cpi	r24, 0x21	; 33
+    1128:	c9 f4       	brne	.+50     	; 0x115c <__vector_23+0xd8>
 				{
 					memcpy(iobuf, &sysState, sizeof(systemState));
-    1124:	cc e9       	ldi	r28, 0x9C	; 156
-    1126:	d0 e2       	ldi	r29, 0x20	; 32
-    1128:	88 e1       	ldi	r24, 0x18	; 24
-    112a:	ec e0       	ldi	r30, 0x0C	; 12
-    112c:	f1 e2       	ldi	r31, 0x21	; 33
-    112e:	de 01       	movw	r26, r28
-    1130:	01 90       	ld	r0, Z+
-    1132:	0d 92       	st	X+, r0
-    1134:	8a 95       	dec	r24
-    1136:	e1 f7       	brne	.-8      	; 0x1130 <__vector_23+0xb2>
+    112a:	cc e9       	ldi	r28, 0x9C	; 156
+    112c:	d0 e2       	ldi	r29, 0x20	; 32
+    112e:	88 e1       	ldi	r24, 0x18	; 24
+    1130:	ec e0       	ldi	r30, 0x0C	; 12
+    1132:	f1 e2       	ldi	r31, 0x21	; 33
+    1134:	de 01       	movw	r26, r28
+    1136:	01 90       	ld	r0, Z+
+    1138:	0d 92       	st	X+, r0
+    113a:	8a 95       	dec	r24
+    113c:	e1 f7       	brne	.-8      	; 0x1136 <__vector_23+0xb2>
 					((systemState*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(systemState) - 2);
-    1138:	66 e1       	ldi	r22, 0x16	; 22
-    113a:	ce 01       	movw	r24, r28
-    113c:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
-    1140:	8e 8b       	std	Y+22, r24	; 0x16
-    1142:	9f 8b       	std	Y+23, r25	; 0x17
-					EDMA.CH1.TRFCNT = sizeof(systemState);
-    1144:	e0 e0       	ldi	r30, 0x00	; 0
-    1146:	f1 e0       	ldi	r31, 0x01	; 1
-    1148:	88 e1       	ldi	r24, 0x18	; 24
-    114a:	90 e0       	ldi	r25, 0x00	; 0
-    114c:	86 a3       	std	Z+38, r24	; 0x26
-    114e:	97 a3       	std	Z+39, r25	; 0x27
+    113e:	66 e1       	ldi	r22, 0x16	; 22
+    1140:	ce 01       	movw	r24, r28
+    1142:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
+    1146:	8e 8b       	std	Y+22, r24	; 0x16
+    1148:	9f 8b       	std	Y+23, r25	; 0x17
+					EDMA.CH1.TRFCNT = sizeof(systemState) + 3;
+    114a:	e0 e0       	ldi	r30, 0x00	; 0
+    114c:	f1 e0       	ldi	r31, 0x01	; 1
+    114e:	8b e1       	ldi	r24, 0x1B	; 27
+    1150:	90 e0       	ldi	r25, 0x00	; 0
+    1152:	86 a3       	std	Z+38, r24	; 0x26
+    1154:	97 a3       	std	Z+39, r25	; 0x27
 					EDMA.CH1.ADDR = (register16_t)iobuf;
-    1150:	c0 a7       	std	Z+40, r28	; 0x28
-    1152:	d1 a7       	std	Z+41, r29	; 0x29
-					PORTC.OUTSET = PIN4_bm;
-    1154:	80 e1       	ldi	r24, 0x10	; 16
-    1156:	80 93 45 06 	sts	0x0645, r24	; 0x800645 <__TEXT_REGION_LENGTH__+0x700645>
-    115a:	1c c0       	rjmp	.+56     	; 0x1194 <__vector_23+0x116>
+    1156:	c0 a7       	std	Z+40, r28	; 0x28
+    1158:	d1 a7       	std	Z+41, r29	; 0x29
+    115a:	1c c0       	rjmp	.+56     	; 0x1194 <__vector_23+0x110>
 				}
 				else //Get on time
 				{
@@ -2859,7 +2859,7 @@ void inline UCTXen()
     1166:	01 90       	ld	r0, Z+
     1168:	0d 92       	st	X+, r0
     116a:	8a 95       	dec	r24
-    116c:	e1 f7       	brne	.-8      	; 0x1166 <__vector_23+0xe8>
+    116c:	e1 f7       	brne	.-8      	; 0x1166 <__vector_23+0xe2>
 					((channelsOnTime*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(channelsOnTime) - 2);
     116e:	66 e3       	ldi	r22, 0x36	; 54
     1170:	8c e9       	ldi	r24, 0x9C	; 156
@@ -2871,10 +2871,10 @@ void inline UCTXen()
     117e:	8d 93       	st	X+, r24
     1180:	9c 93       	st	X, r25
     1182:	d7 97       	sbiw	r26, 0x37	; 55
-					EDMA.CH1.TRFCNT = sizeof(channelsOnTime);
+					EDMA.CH1.TRFCNT = sizeof(channelsOnTime) + 3;
     1184:	e0 e0       	ldi	r30, 0x00	; 0
     1186:	f1 e0       	ldi	r31, 0x01	; 1
-    1188:	88 e3       	ldi	r24, 0x38	; 56
+    1188:	8b e3       	ldi	r24, 0x3B	; 59
     118a:	90 e0       	ldi	r25, 0x00	; 0
     118c:	86 a3       	std	Z+38, r24	; 0x26
     118e:	97 a3       	std	Z+39, r25	; 0x27
@@ -2885,7 +2885,7 @@ void inline UCTXen()
 				EDMA.CH1.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
     1194:	84 e8       	ldi	r24, 0x84	; 132
     1196:	80 93 20 01 	sts	0x0120, r24	; 0x800120 <__TEXT_REGION_LENGTH__+0x700120>
-    119a:	02 c0       	rjmp	.+4      	; 0x11a0 <__vector_23+0x122>
+    119a:	02 c0       	rjmp	.+4      	; 0x11a0 <__vector_23+0x11c>
 			}
 		}
 		else
@@ -2968,622 +2968,613 @@ ISR(EDMA_CH0_vect)
 	EDMA.CH0.CTRLB = EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm | EDMA_CH_TRNINTLVL_LO_gc;
     121a:	81 e3       	ldi	r24, 0x31	; 49
     121c:	81 8b       	std	Z+17, r24	; 0x11
+	PORTC.OUTCLR = PIN4_bm;
+    121e:	80 e1       	ldi	r24, 0x10	; 16
+    1220:	80 93 46 06 	sts	0x0646, r24	; 0x800646 <__TEXT_REGION_LENGTH__+0x700646>
 }
-    121e:	ff 91       	pop	r31
-    1220:	ef 91       	pop	r30
-    1222:	bf 91       	pop	r27
-    1224:	af 91       	pop	r26
-    1226:	9f 91       	pop	r25
-    1228:	8f 91       	pop	r24
-    122a:	7f 91       	pop	r23
-    122c:	6f 91       	pop	r22
-    122e:	5f 91       	pop	r21
-    1230:	4f 91       	pop	r20
-    1232:	3f 91       	pop	r19
-    1234:	2f 91       	pop	r18
-    1236:	0f 90       	pop	r0
-    1238:	0f be       	out	0x3f, r0	; 63
-    123a:	0f 90       	pop	r0
-    123c:	1f 90       	pop	r1
-    123e:	18 95       	reti
+    1224:	ff 91       	pop	r31
+    1226:	ef 91       	pop	r30
+    1228:	bf 91       	pop	r27
+    122a:	af 91       	pop	r26
+    122c:	9f 91       	pop	r25
+    122e:	8f 91       	pop	r24
+    1230:	7f 91       	pop	r23
+    1232:	6f 91       	pop	r22
+    1234:	5f 91       	pop	r21
+    1236:	4f 91       	pop	r20
+    1238:	3f 91       	pop	r19
+    123a:	2f 91       	pop	r18
+    123c:	0f 90       	pop	r0
+    123e:	0f be       	out	0x3f, r0	; 63
+    1240:	0f 90       	pop	r0
+    1242:	1f 90       	pop	r1
+    1244:	18 95       	reti
 
-00001240 <__vector_4>:
+00001246 <__vector_4>:
 #endif
 
 ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 {
-    1240:	1f 92       	push	r1
-    1242:	0f 92       	push	r0
-    1244:	0f b6       	in	r0, 0x3f	; 63
-    1246:	0f 92       	push	r0
-    1248:	11 24       	eor	r1, r1
-    124a:	8f 93       	push	r24
-    124c:	af 93       	push	r26
-    124e:	bf 93       	push	r27
-    1250:	ef 93       	push	r30
-    1252:	ff 93       	push	r31
+    1246:	1f 92       	push	r1
+    1248:	0f 92       	push	r0
+    124a:	0f b6       	in	r0, 0x3f	; 63
+    124c:	0f 92       	push	r0
+    124e:	11 24       	eor	r1, r1
+    1250:	8f 93       	push	r24
+    1252:	ef 93       	push	r30
+    1254:	ff 93       	push	r31
 	UCRXen(); //Set bus in the idle state
-    1254:	e0 e4       	ldi	r30, 0x40	; 64
-    1256:	f6 e0       	ldi	r31, 0x06	; 6
-    1258:	82 e0       	ldi	r24, 0x02	; 2
-    125a:	86 83       	std	Z+6, r24	; 0x06
+    1256:	82 e0       	ldi	r24, 0x02	; 2
+    1258:	80 93 46 06 	sts	0x0646, r24	; 0x800646 <__TEXT_REGION_LENGTH__+0x700646>
 	rxMode = 0;
     125c:	10 92 5b 21 	sts	0x215B, r1	; 0x80215b <rxMode>
 	USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm | USART_MPCM_bm; //Set MPCM bit
     1260:	8a e1       	ldi	r24, 0x1A	; 26
     1262:	80 93 c3 08 	sts	0x08C3, r24	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
 	EDMA.CH1.CTRLA = 0;
-    1266:	a0 e0       	ldi	r26, 0x00	; 0
-    1268:	b1 e0       	ldi	r27, 0x01	; 1
-    126a:	90 96       	adiw	r26, 0x20	; 32
-    126c:	1c 92       	st	X, r1
-    126e:	90 97       	sbiw	r26, 0x20	; 32
+    1266:	e0 e0       	ldi	r30, 0x00	; 0
+    1268:	f1 e0       	ldi	r31, 0x01	; 1
+    126a:	10 a2       	std	Z+32, r1	; 0x20
 	EDMA.CH1.CTRLB = EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm | EDMA_CH_TRNINTLVL_LO_gc;
-    1270:	81 e3       	ldi	r24, 0x31	; 49
-    1272:	91 96       	adiw	r26, 0x21	; 33
-    1274:	8c 93       	st	X, r24
-	PORTC.OUTCLR = PIN4_bm;
-    1276:	80 e1       	ldi	r24, 0x10	; 16
-    1278:	86 83       	std	Z+6, r24	; 0x06
+    126c:	81 e3       	ldi	r24, 0x31	; 49
+    126e:	81 a3       	std	Z+33, r24	; 0x21
 }
-    127a:	ff 91       	pop	r31
-    127c:	ef 91       	pop	r30
-    127e:	bf 91       	pop	r27
-    1280:	af 91       	pop	r26
-    1282:	8f 91       	pop	r24
-    1284:	0f 90       	pop	r0
-    1286:	0f be       	out	0x3f, r0	; 63
-    1288:	0f 90       	pop	r0
-    128a:	1f 90       	pop	r1
-    128c:	18 95       	reti
+    1270:	ff 91       	pop	r31
+    1272:	ef 91       	pop	r30
+    1274:	8f 91       	pop	r24
+    1276:	0f 90       	pop	r0
+    1278:	0f be       	out	0x3f, r0	; 63
+    127a:	0f 90       	pop	r0
+    127c:	1f 90       	pop	r1
+    127e:	18 95       	reti
 
-0000128e <__vector_36>:
+00001280 <__vector_36>:
 
 ISR(TCD5_OVF_vect)
 {
-    128e:	1f 92       	push	r1
-    1290:	0f 92       	push	r0
-    1292:	0f b6       	in	r0, 0x3f	; 63
-    1294:	0f 92       	push	r0
-    1296:	11 24       	eor	r1, r1
-    1298:	2f 93       	push	r18
-    129a:	8f 93       	push	r24
-    129c:	9f 93       	push	r25
-    129e:	ef 93       	push	r30
-    12a0:	ff 93       	push	r31
+    1280:	1f 92       	push	r1
+    1282:	0f 92       	push	r0
+    1284:	0f b6       	in	r0, 0x3f	; 63
+    1286:	0f 92       	push	r0
+    1288:	11 24       	eor	r1, r1
+    128a:	2f 93       	push	r18
+    128c:	8f 93       	push	r24
+    128e:	9f 93       	push	r25
+    1290:	ef 93       	push	r30
+    1292:	ff 93       	push	r31
 	PORTD.OUT = *framePtr++;
-    12a2:	e0 91 45 21 	lds	r30, 0x2145	; 0x802145 <framePtr>
-    12a6:	f0 91 46 21 	lds	r31, 0x2146	; 0x802146 <framePtr+0x1>
-    12aa:	cf 01       	movw	r24, r30
-    12ac:	01 96       	adiw	r24, 0x01	; 1
-    12ae:	80 93 45 21 	sts	0x2145, r24	; 0x802145 <framePtr>
-    12b2:	90 93 46 21 	sts	0x2146, r25	; 0x802146 <framePtr+0x1>
-    12b6:	20 81       	ld	r18, Z
-    12b8:	20 93 64 06 	sts	0x0664, r18	; 0x800664 <__TEXT_REGION_LENGTH__+0x700664>
+    1294:	e0 91 45 21 	lds	r30, 0x2145	; 0x802145 <framePtr>
+    1298:	f0 91 46 21 	lds	r31, 0x2146	; 0x802146 <framePtr+0x1>
+    129c:	cf 01       	movw	r24, r30
+    129e:	01 96       	adiw	r24, 0x01	; 1
+    12a0:	80 93 45 21 	sts	0x2145, r24	; 0x802145 <framePtr>
+    12a4:	90 93 46 21 	sts	0x2146, r25	; 0x802146 <framePtr+0x1>
+    12a8:	20 81       	ld	r18, Z
+    12aa:	20 93 64 06 	sts	0x0664, r18	; 0x800664 <__TEXT_REGION_LENGTH__+0x700664>
 	if (framePtr == DSI8xFrames + sizeof(DSI8xFrames) - 1)
-    12bc:	89 55       	subi	r24, 0x59	; 89
-    12be:	91 42       	sbci	r25, 0x21	; 33
-    12c0:	11 f4       	brne	.+4      	; 0x12c6 <__vector_36+0x38>
+    12ae:	89 55       	subi	r24, 0x59	; 89
+    12b0:	91 42       	sbci	r25, 0x21	; 33
+    12b2:	11 f4       	brne	.+4      	; 0x12b8 <__vector_36+0x38>
 		TCD5.INTCTRLA = TC_OVFINTLVL_OFF_gc;
-    12c2:	10 92 46 09 	sts	0x0946, r1	; 0x800946 <__TEXT_REGION_LENGTH__+0x700946>
+    12b4:	10 92 46 09 	sts	0x0946, r1	; 0x800946 <__TEXT_REGION_LENGTH__+0x700946>
 	TCD5.INTFLAGS = TC5_OVFIF_bm;
-    12c6:	81 e0       	ldi	r24, 0x01	; 1
-    12c8:	80 93 4c 09 	sts	0x094C, r24	; 0x80094c <__TEXT_REGION_LENGTH__+0x70094c>
+    12b8:	81 e0       	ldi	r24, 0x01	; 1
+    12ba:	80 93 4c 09 	sts	0x094C, r24	; 0x80094c <__TEXT_REGION_LENGTH__+0x70094c>
 }
-    12cc:	ff 91       	pop	r31
-    12ce:	ef 91       	pop	r30
-    12d0:	9f 91       	pop	r25
-    12d2:	8f 91       	pop	r24
-    12d4:	2f 91       	pop	r18
-    12d6:	0f 90       	pop	r0
-    12d8:	0f be       	out	0x3f, r0	; 63
-    12da:	0f 90       	pop	r0
-    12dc:	1f 90       	pop	r1
-    12de:	18 95       	reti
+    12be:	ff 91       	pop	r31
+    12c0:	ef 91       	pop	r30
+    12c2:	9f 91       	pop	r25
+    12c4:	8f 91       	pop	r24
+    12c6:	2f 91       	pop	r18
+    12c8:	0f 90       	pop	r0
+    12ca:	0f be       	out	0x3f, r0	; 63
+    12cc:	0f 90       	pop	r0
+    12ce:	1f 90       	pop	r1
+    12d0:	18 95       	reti
 
-000012e0 <_Z7mcuInitv>:
+000012d2 <_Z7mcuInitv>:
 
 inline void mcuInit()
 {
 	//Port A configuration: 0-5 analog inputs, 7 inverted output
 	PORTA.DIRSET = PIN7_bm;
-    12e0:	e0 e0       	ldi	r30, 0x00	; 0
-    12e2:	f6 e0       	ldi	r31, 0x06	; 6
-    12e4:	80 e8       	ldi	r24, 0x80	; 128
-    12e6:	81 83       	std	Z+1, r24	; 0x01
+    12d2:	e0 e0       	ldi	r30, 0x00	; 0
+    12d4:	f6 e0       	ldi	r31, 0x06	; 6
+    12d6:	80 e8       	ldi	r24, 0x80	; 128
+    12d8:	81 83       	std	Z+1, r24	; 0x01
 	PORTCFG.MPCMASK = PIN0_bm | PIN1_bm | PIN2_bm | PIN3_bm | PIN4_bm | PIN5_bm;
-    12e8:	a0 eb       	ldi	r26, 0xB0	; 176
-    12ea:	b0 e0       	ldi	r27, 0x00	; 0
-    12ec:	8f e3       	ldi	r24, 0x3F	; 63
-    12ee:	8c 93       	st	X, r24
+    12da:	a0 eb       	ldi	r26, 0xB0	; 176
+    12dc:	b0 e0       	ldi	r27, 0x00	; 0
+    12de:	8f e3       	ldi	r24, 0x3F	; 63
+    12e0:	8c 93       	st	X, r24
 	PORTA.PIN0CTRL = PORT_OPC_TOTEM_gc | PORT_ISC_INPUT_DISABLE_gc;
-    12f0:	87 e0       	ldi	r24, 0x07	; 7
-    12f2:	80 8b       	std	Z+16, r24	; 0x10
+    12e2:	87 e0       	ldi	r24, 0x07	; 7
+    12e4:	80 8b       	std	Z+16, r24	; 0x10
 	PORTA.PIN7CTRL = PORT_OPC_TOTEM_gc | PORT_INVEN_bm;
-    12f4:	80 e4       	ldi	r24, 0x40	; 64
-    12f6:	87 8b       	std	Z+23, r24	; 0x17
+    12e6:	80 e4       	ldi	r24, 0x40	; 64
+    12e8:	87 8b       	std	Z+23, r24	; 0x17
 	//Port C configuration: 0-1, 3-7 outputs
 	PORTC.DIRSET = PIN0_bm | PIN1_bm | PIN3_bm | PIN4_bm | PIN5_bm | PIN6_bm | PIN7_bm;
-    12f8:	8b ef       	ldi	r24, 0xFB	; 251
-    12fa:	80 93 41 06 	sts	0x0641, r24	; 0x800641 <__TEXT_REGION_LENGTH__+0x700641>
+    12ea:	8b ef       	ldi	r24, 0xFB	; 251
+    12ec:	80 93 41 06 	sts	0x0641, r24	; 0x800641 <__TEXT_REGION_LENGTH__+0x700641>
 	//Port D configuration: 0-7 inverted outputs
 	PORTD.DIRSET = PIN0_bm | PIN1_bm | PIN2_bm | PIN3_bm | PIN4_bm | PIN5_bm | PIN6_bm | PIN7_bm;
-    12fe:	e0 e6       	ldi	r30, 0x60	; 96
-    1300:	f6 e0       	ldi	r31, 0x06	; 6
-    1302:	8f ef       	ldi	r24, 0xFF	; 255
-    1304:	81 83       	std	Z+1, r24	; 0x01
+    12f0:	e0 e6       	ldi	r30, 0x60	; 96
+    12f2:	f6 e0       	ldi	r31, 0x06	; 6
+    12f4:	8f ef       	ldi	r24, 0xFF	; 255
+    12f6:	81 83       	std	Z+1, r24	; 0x01
 	PORTCFG.MPCMASK = PIN0_bm | PIN1_bm | PIN2_bm | PIN3_bm | PIN4_bm | PIN5_bm | PIN6_bm | PIN7_bm;
-    1306:	8c 93       	st	X, r24
+    12f8:	8c 93       	st	X, r24
 	PORTD.PIN0CTRL = PORT_OPC_TOTEM_gc | PORT_INVEN_bm | PORT_ISC_INPUT_DISABLE_gc;
-    1308:	87 e4       	ldi	r24, 0x47	; 71
-    130a:	80 8b       	std	Z+16, r24	; 0x10
+    12fa:	87 e4       	ldi	r24, 0x47	; 71
+    12fc:	80 8b       	std	Z+16, r24	; 0x10
 	//Clock configuration: 32MHz RC with DFLL from XOSC 32768Hz
 	OSC.XOSCCTRL = OSC_XOSCSEL_32KHz_gc;
-    130c:	e0 e5       	ldi	r30, 0x50	; 80
-    130e:	f0 e0       	ldi	r31, 0x00	; 0
-    1310:	82 e0       	ldi	r24, 0x02	; 2
-    1312:	82 83       	std	Z+2, r24	; 0x02
+    12fe:	e0 e5       	ldi	r30, 0x50	; 80
+    1300:	f0 e0       	ldi	r31, 0x00	; 0
+    1302:	82 e0       	ldi	r24, 0x02	; 2
+    1304:	82 83       	std	Z+2, r24	; 0x02
 	OSC.CTRL |= OSC_RC32MEN_bm | OSC_XOSCEN_bm;
-    1314:	80 81       	ld	r24, Z
-    1316:	8a 60       	ori	r24, 0x0A	; 10
-    1318:	80 83       	st	Z, r24
+    1306:	80 81       	ld	r24, Z
+    1308:	8a 60       	ori	r24, 0x0A	; 10
+    130a:	80 83       	st	Z, r24
 	while (!(OSC.STATUS & OSC_XOSCRDY_bm));
-    131a:	81 81       	ldd	r24, Z+1	; 0x01
-    131c:	83 ff       	sbrs	r24, 3
-    131e:	fd cf       	rjmp	.-6      	; 0x131a <_Z7mcuInitv+0x3a>
+    130c:	81 81       	ldd	r24, Z+1	; 0x01
+    130e:	83 ff       	sbrs	r24, 3
+    1310:	fd cf       	rjmp	.-6      	; 0x130c <_Z7mcuInitv+0x3a>
 	while (!(OSC.STATUS & OSC_RC32MRDY_bm));
-    1320:	e0 e5       	ldi	r30, 0x50	; 80
-    1322:	f0 e0       	ldi	r31, 0x00	; 0
-    1324:	81 81       	ldd	r24, Z+1	; 0x01
-    1326:	81 ff       	sbrs	r24, 1
-    1328:	fd cf       	rjmp	.-6      	; 0x1324 <_Z7mcuInitv+0x44>
+    1312:	e0 e5       	ldi	r30, 0x50	; 80
+    1314:	f0 e0       	ldi	r31, 0x00	; 0
+    1316:	81 81       	ldd	r24, Z+1	; 0x01
+    1318:	81 ff       	sbrs	r24, 1
+    131a:	fd cf       	rjmp	.-6      	; 0x1316 <_Z7mcuInitv+0x44>
 	OSC.DFLLCTRL = OSC_RC32MCREF_XOSC32K_gc;
-    132a:	a0 e5       	ldi	r26, 0x50	; 80
-    132c:	b0 e0       	ldi	r27, 0x00	; 0
-    132e:	82 e0       	ldi	r24, 0x02	; 2
-    1330:	16 96       	adiw	r26, 0x06	; 6
-    1332:	8c 93       	st	X, r24
-    1334:	16 97       	sbiw	r26, 0x06	; 6
+    131c:	a0 e5       	ldi	r26, 0x50	; 80
+    131e:	b0 e0       	ldi	r27, 0x00	; 0
+    1320:	82 e0       	ldi	r24, 0x02	; 2
+    1322:	16 96       	adiw	r26, 0x06	; 6
+    1324:	8c 93       	st	X, r24
+    1326:	16 97       	sbiw	r26, 0x06	; 6
 	DFLLRC32M.CTRL = DFLL_ENABLE_bm;
-    1336:	81 e0       	ldi	r24, 0x01	; 1
-    1338:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__TEXT_REGION_LENGTH__+0x700060>
+    1328:	81 e0       	ldi	r24, 0x01	; 1
+    132a:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__TEXT_REGION_LENGTH__+0x700060>
 	CCP = CCP_IOREG_gc;
-    133c:	98 ed       	ldi	r25, 0xD8	; 216
-    133e:	94 bf       	out	0x34, r25	; 52
+    132e:	98 ed       	ldi	r25, 0xD8	; 216
+    1330:	94 bf       	out	0x34, r25	; 52
 	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;
-    1340:	e0 e4       	ldi	r30, 0x40	; 64
-    1342:	f0 e0       	ldi	r31, 0x00	; 0
-    1344:	80 83       	st	Z, r24
+    1332:	e0 e4       	ldi	r30, 0x40	; 64
+    1334:	f0 e0       	ldi	r31, 0x00	; 0
+    1336:	80 83       	st	Z, r24
 	OSC.CTRL = OSC_RC32MEN_bm | OSC_XOSCEN_bm; //Disable unused clock sources
-    1346:	8a e0       	ldi	r24, 0x0A	; 10
-    1348:	8c 93       	st	X, r24
+    1338:	8a e0       	ldi	r24, 0x0A	; 10
+    133a:	8c 93       	st	X, r24
 	CLK.RTCCTRL = CLK_RTCSRC_TOSC_gc | CLK_RTCEN_bm; //1024Hz RTC clock source
-    134a:	83 e0       	ldi	r24, 0x03	; 3
-    134c:	83 83       	std	Z+3, r24	; 0x03
+    133c:	83 e0       	ldi	r24, 0x03	; 3
+    133e:	83 83       	std	Z+3, r24	; 0x03
 	while (RTC.STATUS & RTC_SYNCBUSY_bm);
-    134e:	e0 e0       	ldi	r30, 0x00	; 0
-    1350:	f4 e0       	ldi	r31, 0x04	; 4
-    1352:	81 81       	ldd	r24, Z+1	; 0x01
-    1354:	80 fd       	sbrc	r24, 0
-    1356:	fd cf       	rjmp	.-6      	; 0x1352 <_Z7mcuInitv+0x72>
+    1340:	e0 e0       	ldi	r30, 0x00	; 0
+    1342:	f4 e0       	ldi	r31, 0x04	; 4
+    1344:	81 81       	ldd	r24, Z+1	; 0x01
+    1346:	80 fd       	sbrc	r24, 0
+    1348:	fd cf       	rjmp	.-6      	; 0x1344 <_Z7mcuInitv+0x72>
 	CCP = CCP_IOREG_gc;
-    1358:	88 ed       	ldi	r24, 0xD8	; 216
-    135a:	84 bf       	out	0x34, r24	; 52
+    134a:	88 ed       	ldi	r24, 0xD8	; 216
+    134c:	84 bf       	out	0x34, r24	; 52
 	CLK.LOCK = CLK_LOCK_bm; //Disable further changes in clock system
-    135c:	81 e0       	ldi	r24, 0x01	; 1
-    135e:	80 93 42 00 	sts	0x0042, r24	; 0x800042 <__TEXT_REGION_LENGTH__+0x700042>
+    134e:	81 e0       	ldi	r24, 0x01	; 1
+    1350:	80 93 42 00 	sts	0x0042, r24	; 0x800042 <__TEXT_REGION_LENGTH__+0x700042>
 	//PMIC: enable interrupts
 	PMIC.CTRL = PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
-    1362:	27 e0       	ldi	r18, 0x07	; 7
-    1364:	20 93 a2 00 	sts	0x00A2, r18	; 0x8000a2 <__TEXT_REGION_LENGTH__+0x7000a2>
+    1354:	27 e0       	ldi	r18, 0x07	; 7
+    1356:	20 93 a2 00 	sts	0x00A2, r18	; 0x8000a2 <__TEXT_REGION_LENGTH__+0x7000a2>
 	//RTC configuration: 1024 / 2 = 512Hz clock, medium level interrupt
 	RTC.PER = 16; //32 overflows per second
-    1368:	e0 e0       	ldi	r30, 0x00	; 0
-    136a:	f4 e0       	ldi	r31, 0x04	; 4
-    136c:	40 e1       	ldi	r20, 0x10	; 16
-    136e:	50 e0       	ldi	r21, 0x00	; 0
-    1370:	42 87       	std	Z+10, r20	; 0x0a
-    1372:	53 87       	std	Z+11, r21	; 0x0b
+    135a:	e0 e0       	ldi	r30, 0x00	; 0
+    135c:	f4 e0       	ldi	r31, 0x04	; 4
+    135e:	40 e1       	ldi	r20, 0x10	; 16
+    1360:	50 e0       	ldi	r21, 0x00	; 0
+    1362:	42 87       	std	Z+10, r20	; 0x0a
+    1364:	53 87       	std	Z+11, r21	; 0x0b
 	RTC.INTCTRL = RTC_OVFINTLVL_MED_gc;
-    1374:	92 e0       	ldi	r25, 0x02	; 2
-    1376:	92 83       	std	Z+2, r25	; 0x02
+    1366:	92 e0       	ldi	r25, 0x02	; 2
+    1368:	92 83       	std	Z+2, r25	; 0x02
 	RTC.CTRL = RTC_PRESCALER_DIV2_gc;
-    1378:	90 83       	st	Z, r25
+    136a:	90 83       	st	Z, r25
 	RTC.CNT = 0;
-    137a:	10 86       	std	Z+8, r1	; 0x08
-    137c:	11 86       	std	Z+9, r1	; 0x09
+    136c:	10 86       	std	Z+8, r1	; 0x08
+    136e:	11 86       	std	Z+9, r1	; 0x09
 	//USARTC configuration: start / 9 data / 2 stop; 76.8kbps baud, multi-processor communication
 	USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm | USART_MPCM_bm;
-    137e:	e0 ec       	ldi	r30, 0xC0	; 192
-    1380:	f8 e0       	ldi	r31, 0x08	; 8
-    1382:	9a e1       	ldi	r25, 0x1A	; 26
-    1384:	93 83       	std	Z+3, r25	; 0x03
+    1370:	e0 ec       	ldi	r30, 0xC0	; 192
+    1372:	f8 e0       	ldi	r31, 0x08	; 8
+    1374:	9a e1       	ldi	r25, 0x1A	; 26
+    1376:	93 83       	std	Z+3, r25	; 0x03
 	USARTC0.CTRLC = USART_CMODE_ASYNCHRONOUS_gc | USART_SBMODE_bm | USART_CHSIZE_9BIT_gc;
-    1386:	9f e0       	ldi	r25, 0x0F	; 15
-    1388:	94 83       	std	Z+4, r25	; 0x04
+    1378:	9f e0       	ldi	r25, 0x0F	; 15
+    137a:	94 83       	std	Z+4, r25	; 0x04
 	USARTC0.BAUDCTRLA = 12 << USART_BSEL_gp;
-    138a:	9c e0       	ldi	r25, 0x0C	; 12
-    138c:	96 83       	std	Z+6, r25	; 0x06
+    137c:	9c e0       	ldi	r25, 0x0C	; 12
+    137e:	96 83       	std	Z+6, r25	; 0x06
 	USARTC0.BAUDCTRLB = 1 << USART_BSCALE_gp;
-    138e:	90 e1       	ldi	r25, 0x10	; 16
-    1390:	97 83       	std	Z+7, r25	; 0x07
+    1380:	90 e1       	ldi	r25, 0x10	; 16
+    1382:	97 83       	std	Z+7, r25	; 0x07
 	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_MED_gc;
-    1392:	30 e6       	ldi	r19, 0x60	; 96
-    1394:	32 83       	std	Z+2, r19	; 0x02
+    1384:	30 e6       	ldi	r19, 0x60	; 96
+    1386:	32 83       	std	Z+2, r19	; 0x02
 	//ADC configuration: 1MHz, 15bit oversampling
 	ADCA.CTRLA = ADC_ENABLE_bm;
-    1396:	e0 e0       	ldi	r30, 0x00	; 0
-    1398:	f2 e0       	ldi	r31, 0x02	; 2
-    139a:	80 83       	st	Z, r24
+    1388:	e0 e0       	ldi	r30, 0x00	; 0
+    138a:	f2 e0       	ldi	r31, 0x02	; 2
+    138c:	80 83       	st	Z, r24
 	ADCA.CTRLB = ADC_CONMODE_bm | ADC_RESOLUTION_MT12BIT_gc; //Signed mode
-    139c:	32 e1       	ldi	r19, 0x12	; 18
-    139e:	31 83       	std	Z+1, r19	; 0x01
+    138e:	32 e1       	ldi	r19, 0x12	; 18
+    1390:	31 83       	std	Z+1, r19	; 0x01
 	ADCA.REFCTRL = ADC_REFSEL_AREFA_gc;
-    13a0:	30 e2       	ldi	r19, 0x20	; 32
-    13a2:	32 83       	std	Z+2, r19	; 0x02
+    1392:	30 e2       	ldi	r19, 0x20	; 32
+    1394:	32 83       	std	Z+2, r19	; 0x02
 	ADCA.PRESCALER = ADC_PRESCALER_DIV32_gc;
-    13a4:	43 e0       	ldi	r20, 0x03	; 3
-    13a6:	44 83       	std	Z+4, r20	; 0x04
+    1396:	43 e0       	ldi	r20, 0x03	; 3
+    1398:	44 83       	std	Z+4, r20	; 0x04
 	ADCA.SAMPCTRL = 7 << ADC_SAMPVAL_gp;
-    13a8:	20 87       	std	Z+8, r18	; 0x08
+    139a:	20 87       	std	Z+8, r18	; 0x08
 	ADCA.CH0.CTRL = ADC_CH_INPUTMODE_SINGLEENDED_gc | ADC_CH_GAIN_1X_gc;
-    13aa:	80 a3       	std	Z+32, r24	; 0x20
+    139c:	80 a3       	std	Z+32, r24	; 0x20
 	ADCA.CH0.INTCTRL = ADC_CH_INTMODE_COMPLETE_gc | ADC_CH_INTLVL_LO_gc;
-    13ac:	82 a3       	std	Z+34, r24	; 0x22
+    139e:	82 a3       	std	Z+34, r24	; 0x22
 	ADCA.CH0.AVGCTRL = ADC_CH_SAMPNUM_16X_gc; //This will produce 15 bit result
-    13ae:	24 e0       	ldi	r18, 0x04	; 4
-    13b0:	24 a7       	std	Z+44, r18	; 0x2c
+    13a0:	24 e0       	ldi	r18, 0x04	; 4
+    13a2:	24 a7       	std	Z+44, r18	; 0x2c
 	//TCD5 configuration: 500kHz, 1199Hz overflow rate
 	TCD5.CTRLA = TC_CLKSEL_DIV64_gc;
-    13b2:	e0 e4       	ldi	r30, 0x40	; 64
-    13b4:	f9 e0       	ldi	r31, 0x09	; 9
-    13b6:	25 e0       	ldi	r18, 0x05	; 5
-    13b8:	20 83       	st	Z, r18
+    13a4:	e0 e4       	ldi	r30, 0x40	; 64
+    13a6:	f9 e0       	ldi	r31, 0x09	; 9
+    13a8:	25 e0       	ldi	r18, 0x05	; 5
+    13aa:	20 83       	st	Z, r18
 	TCD5.CTRLB = TC_WGMODE_NORMAL_gc;
-    13ba:	11 82       	std	Z+1, r1	; 0x01
+    13ac:	11 82       	std	Z+1, r1	; 0x01
 	TCD5.PERBUF = 417;
-    13bc:	41 ea       	ldi	r20, 0xA1	; 161
-    13be:	51 e0       	ldi	r21, 0x01	; 1
-    13c0:	46 ab       	std	Z+54, r20	; 0x36
-    13c2:	57 ab       	std	Z+55, r21	; 0x37
+    13ae:	41 ea       	ldi	r20, 0xA1	; 161
+    13b0:	51 e0       	ldi	r21, 0x01	; 1
+    13b2:	46 ab       	std	Z+54, r20	; 0x36
+    13b4:	57 ab       	std	Z+55, r21	; 0x37
 	TCD5.CTRLGCLR = TC5_STOP_bm;
-    13c4:	30 87       	std	Z+8, r19	; 0x08
+    13b6:	30 87       	std	Z+8, r19	; 0x08
 	//EDMA peripheral channel 0: USARTC read transfer
 	EDMA.CH0.CTRLB = EDMA_CH_TRNINTLVL_LO_gc;
-    13c6:	e0 e0       	ldi	r30, 0x00	; 0
-    13c8:	f1 e0       	ldi	r31, 0x01	; 1
-    13ca:	81 8b       	std	Z+17, r24	; 0x11
+    13b8:	e0 e0       	ldi	r30, 0x00	; 0
+    13ba:	f1 e0       	ldi	r31, 0x01	; 1
+    13bc:	81 8b       	std	Z+17, r24	; 0x11
 	EDMA.CH0.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
-    13cc:	31 e3       	ldi	r19, 0x31	; 49
-    13ce:	32 8b       	std	Z+18, r19	; 0x12
+    13be:	31 e3       	ldi	r19, 0x31	; 49
+    13c0:	32 8b       	std	Z+18, r19	; 0x12
 	EDMA.CH0.ADDR = (register16_t)iobuf;
-    13d0:	4c e9       	ldi	r20, 0x9C	; 156
-    13d2:	50 e2       	ldi	r21, 0x20	; 32
-    13d4:	40 8f       	std	Z+24, r20	; 0x18
-    13d6:	51 8f       	std	Z+25, r21	; 0x19
+    13c2:	4c e9       	ldi	r20, 0x9C	; 156
+    13c4:	50 e2       	ldi	r21, 0x20	; 32
+    13c6:	40 8f       	std	Z+24, r20	; 0x18
+    13c8:	51 8f       	std	Z+25, r21	; 0x19
 	EDMA.CH0.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_RXC_gc;
-    13d8:	4c e4       	ldi	r20, 0x4C	; 76
-    13da:	44 8b       	std	Z+20, r20	; 0x14
+    13ca:	4c e4       	ldi	r20, 0x4C	; 76
+    13cc:	44 8b       	std	Z+20, r20	; 0x14
 	//EDMA peripheral channel 1: USARTC write transfer
 	EDMA.CH1.CTRLB = EDMA_CH_TRNINTLVL_LO_gc; //Low-level interrupt
-    13dc:	81 a3       	std	Z+33, r24	; 0x21
+    13ce:	81 a3       	std	Z+33, r24	; 0x21
 	EDMA.CH1.ADDRCTRL = EDMA_CH_RELOAD_TRANSACTION_gc | EDMA_CH_DIR_INC_gc;
-    13de:	32 a3       	std	Z+34, r19	; 0x22
+    13d0:	32 a3       	std	Z+34, r19	; 0x22
 	EDMA.CH1.TRIGSRC = EDMA_CH_TRIGSRC_USARTC0_DRE_gc;
-    13e0:	8d e4       	ldi	r24, 0x4D	; 77
-    13e2:	84 a3       	std	Z+36, r24	; 0x24
+    13d2:	8d e4       	ldi	r24, 0x4D	; 77
+    13d4:	84 a3       	std	Z+36, r24	; 0x24
 	//EDMA: 1 standard and 2 peripheral channels
 	EDMA.CTRL = EDMA_ENABLE_bm | EDMA_CHMODE_STD2_gc | EDMA_DBUFMODE_DISABLE_gc | EDMA_PRIMODE_RR0123_gc;
-    13e4:	80 ea       	ldi	r24, 0xA0	; 160
-    13e6:	80 83       	st	Z, r24
+    13d6:	80 ea       	ldi	r24, 0xA0	; 160
+    13d8:	80 83       	st	Z, r24
 	//Power reduction
 	PR.PRGEN = PR_XCL_bm | PR_EVSYS_bm;
-    13e8:	e0 e7       	ldi	r30, 0x70	; 112
-    13ea:	f0 e0       	ldi	r31, 0x00	; 0
-    13ec:	82 e8       	ldi	r24, 0x82	; 130
-    13ee:	80 83       	st	Z, r24
+    13da:	e0 e7       	ldi	r30, 0x70	; 112
+    13dc:	f0 e0       	ldi	r31, 0x00	; 0
+    13de:	82 e8       	ldi	r24, 0x82	; 130
+    13e0:	80 83       	st	Z, r24
 	PR.PRPA = PR_DAC_bm | PR_AC_bm;
-    13f0:	21 83       	std	Z+1, r18	; 0x01
+    13e2:	21 83       	std	Z+1, r18	; 0x01
 	PR.PRPC = PR_TWI_bm | PR_SPI_bm | PR_HIRES_bm | PR_TC5_bm | PR_TC4_bm;
-    13f2:	8f e4       	ldi	r24, 0x4F	; 79
-    13f4:	83 83       	std	Z+3, r24	; 0x03
+    13e4:	8f e4       	ldi	r24, 0x4F	; 79
+    13e6:	83 83       	std	Z+3, r24	; 0x03
 	PR.PRPD = PR_USART0_bm;
-    13f6:	94 83       	std	Z+4, r25	; 0x04
+    13e8:	94 83       	std	Z+4, r25	; 0x04
 	sei();
-    13f8:	78 94       	sei
-    13fa:	08 95       	ret
+    13ea:	78 94       	sei
+    13ec:	08 95       	ret
 
-000013fc <main>:
+000013ee <main>:
 }
 
 int main(void)
 {
 	mcuInit();
-    13fc:	0e 94 70 09 	call	0x12e0	; 0x12e0 <_Z7mcuInitv>
+    13ee:	0e 94 69 09 	call	0x12d2	; 0x12d2 <_Z7mcuInitv>
 	eeprom_read_block(&channelOT, &savedCOT, sizeof(channelsOnTime));
-    1400:	48 e3       	ldi	r20, 0x38	; 56
-    1402:	50 e0       	ldi	r21, 0x00	; 0
-    1404:	61 e2       	ldi	r22, 0x21	; 33
-    1406:	70 e0       	ldi	r23, 0x00	; 0
-    1408:	84 ed       	ldi	r24, 0xD4	; 212
-    140a:	90 e2       	ldi	r25, 0x20	; 32
-    140c:	0e 94 8c 0a 	call	0x1518	; 0x1518 <eeprom_read_block>
+    13f2:	48 e3       	ldi	r20, 0x38	; 56
+    13f4:	50 e0       	ldi	r21, 0x00	; 0
+    13f6:	61 e2       	ldi	r22, 0x21	; 33
+    13f8:	70 e0       	ldi	r23, 0x00	; 0
+    13fa:	84 ed       	ldi	r24, 0xD4	; 212
+    13fc:	90 e2       	ldi	r25, 0x20	; 32
+    13fe:	0e 94 85 0a 	call	0x150a	; 0x150a <eeprom_read_block>
 	eeprom_read_block(iobuf, &savedConfig, sizeof(systemConfig) - 2);
-    1410:	4f e1       	ldi	r20, 0x1F	; 31
-    1412:	50 e0       	ldi	r21, 0x00	; 0
-    1414:	60 e0       	ldi	r22, 0x00	; 0
-    1416:	70 e0       	ldi	r23, 0x00	; 0
-    1418:	8c e9       	ldi	r24, 0x9C	; 156
-    141a:	90 e2       	ldi	r25, 0x20	; 32
-    141c:	0e 94 8c 0a 	call	0x1518	; 0x1518 <eeprom_read_block>
+    1402:	4f e1       	ldi	r20, 0x1F	; 31
+    1404:	50 e0       	ldi	r21, 0x00	; 0
+    1406:	60 e0       	ldi	r22, 0x00	; 0
+    1408:	70 e0       	ldi	r23, 0x00	; 0
+    140a:	8c e9       	ldi	r24, 0x9C	; 156
+    140c:	90 e2       	ldi	r25, 0x20	; 32
+    140e:	0e 94 85 0a 	call	0x150a	; 0x150a <eeprom_read_block>
 	((systemConfig*)iobuf)->overrideCfg = ((systemConfig*)iobuf)->groupConf = 0; //Ignore saved overrides
-    1420:	cc e9       	ldi	r28, 0x9C	; 156
-    1422:	d0 e2       	ldi	r29, 0x20	; 32
-    1424:	1d 8e       	std	Y+29, r1	; 0x1d
-    1426:	19 8a       	std	Y+17, r1	; 0x11
+    1412:	cc e9       	ldi	r28, 0x9C	; 156
+    1414:	d0 e2       	ldi	r29, 0x20	; 32
+    1416:	1d 8e       	std	Y+29, r1	; 0x1d
+    1418:	19 8a       	std	Y+17, r1	; 0x11
 	((systemConfig*)iobuf)->CRC16 = CalculateCRC16(iobuf, sizeof(systemConfig) - 2);
-    1428:	6f e1       	ldi	r22, 0x1F	; 31
-    142a:	ce 01       	movw	r24, r28
-    142c:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
-    1430:	8f 8f       	std	Y+31, r24	; 0x1f
-    1432:	98 a3       	std	Y+32, r25	; 0x20
+    141a:	6f e1       	ldi	r22, 0x1F	; 31
+    141c:	ce 01       	movw	r24, r28
+    141e:	0e 94 76 00 	call	0xec	; 0xec <_Z14CalculateCRC16Pva>
+    1422:	8f 8f       	std	Y+31, r24	; 0x1f
+    1424:	98 a3       	std	Y+32, r25	; 0x20
 	ApplyConfig();
-    1434:	0e 94 90 00 	call	0x120	; 0x120 <_Z11ApplyConfigv>
-    1438:	ff cf       	rjmp	.-2      	; 0x1438 <main+0x3c>
+    1426:	0e 94 90 00 	call	0x120	; 0x120 <_Z11ApplyConfigv>
+    142a:	ff cf       	rjmp	.-2      	; 0x142a <main+0x3c>
 
-0000143a <_GLOBAL__sub_I_gLevels>:
+0000142c <_GLOBAL__sub_I_gLevels>:
 	uint64_t _tickLastChg, _onTimeStamp;
 
 public:
 	LCport(uint8_t num, uint8_t count, uint8_t posA, uint8_t posB, uint8_t posC)
 	{
 		_linkCnt = count;
-    143a:	e0 e1       	ldi	r30, 0x10	; 16
-    143c:	f0 e2       	ldi	r31, 0x20	; 32
-    143e:	93 e0       	ldi	r25, 0x03	; 3
-    1440:	91 83       	std	Z+1, r25	; 0x01
+    142c:	e0 e1       	ldi	r30, 0x10	; 16
+    142e:	f0 e2       	ldi	r31, 0x20	; 32
+    1430:	93 e0       	ldi	r25, 0x03	; 3
+    1432:	91 83       	std	Z+1, r25	; 0x01
 		_link[0] = posA;
-    1442:	87 e0       	ldi	r24, 0x07	; 7
-    1444:	83 83       	std	Z+3, r24	; 0x03
+    1434:	87 e0       	ldi	r24, 0x07	; 7
+    1436:	83 83       	std	Z+3, r24	; 0x03
 		_link[1] = posB;
-    1446:	86 e0       	ldi	r24, 0x06	; 6
-    1448:	84 83       	std	Z+4, r24	; 0x04
+    1438:	86 e0       	ldi	r24, 0x06	; 6
+    143a:	84 83       	std	Z+4, r24	; 0x04
 		_link[2] = posC;
-    144a:	85 e0       	ldi	r24, 0x05	; 5
-    144c:	85 83       	std	Z+5, r24	; 0x05
+    143c:	85 e0       	ldi	r24, 0x05	; 5
+    143e:	85 83       	std	Z+5, r24	; 0x05
 		_linkNum = num;
-    144e:	12 82       	std	Z+2, r1	; 0x02
+    1440:	12 82       	std	Z+2, r1	; 0x02
 		_chActMask = 0x10 << num;
-    1450:	80 e1       	ldi	r24, 0x10	; 16
-    1452:	82 8b       	std	Z+18, r24	; 0x12
+    1442:	80 e1       	ldi	r24, 0x10	; 16
+    1444:	82 8b       	std	Z+18, r24	; 0x12
 	uint64_t _tickLastChg, _onTimeStamp;
 
 public:
 	LCport(uint8_t num, uint8_t count, uint8_t posA, uint8_t posB, uint8_t posC)
 	{
 		_linkCnt = count;
-    1454:	94 a3       	std	Z+36, r25	; 0x24
+    1446:	94 a3       	std	Z+36, r25	; 0x24
 		_link[0] = posA;
-    1456:	84 e0       	ldi	r24, 0x04	; 4
-    1458:	86 a3       	std	Z+38, r24	; 0x26
+    1448:	84 e0       	ldi	r24, 0x04	; 4
+    144a:	86 a3       	std	Z+38, r24	; 0x26
 		_link[1] = posB;
-    145a:	97 a3       	std	Z+39, r25	; 0x27
+    144c:	97 a3       	std	Z+39, r25	; 0x27
 		_link[2] = posC;
-    145c:	82 e0       	ldi	r24, 0x02	; 2
-    145e:	80 a7       	std	Z+40, r24	; 0x28
+    144e:	82 e0       	ldi	r24, 0x02	; 2
+    1450:	80 a7       	std	Z+40, r24	; 0x28
 		_linkNum = num;
-    1460:	21 e0       	ldi	r18, 0x01	; 1
-    1462:	25 a3       	std	Z+37, r18	; 0x25
+    1452:	21 e0       	ldi	r18, 0x01	; 1
+    1454:	25 a3       	std	Z+37, r18	; 0x25
 		_chActMask = 0x10 << num;
-    1464:	30 e2       	ldi	r19, 0x20	; 32
-    1466:	35 ab       	std	Z+53, r19	; 0x35
+    1456:	30 e2       	ldi	r19, 0x20	; 32
+    1458:	35 ab       	std	Z+53, r19	; 0x35
 	uint64_t _tickLastChg, _onTimeStamp;
 
 public:
 	LCport(uint8_t num, uint8_t count, uint8_t posA, uint8_t posB, uint8_t posC)
 	{
 		_linkCnt = count;
-    1468:	80 93 57 20 	sts	0x2057, r24	; 0x802057 <links+0x47>
+    145a:	80 93 57 20 	sts	0x2057, r24	; 0x802057 <links+0x47>
 		_link[0] = posA;
-    146c:	20 93 59 20 	sts	0x2059, r18	; 0x802059 <links+0x49>
+    145e:	20 93 59 20 	sts	0x2059, r18	; 0x802059 <links+0x49>
 		_link[1] = posB;
-    1470:	10 92 5a 20 	sts	0x205A, r1	; 0x80205a <links+0x4a>
+    1462:	10 92 5a 20 	sts	0x205A, r1	; 0x80205a <links+0x4a>
 		_link[2] = posC;
-    1474:	10 92 5b 20 	sts	0x205B, r1	; 0x80205b <links+0x4b>
+    1466:	10 92 5b 20 	sts	0x205B, r1	; 0x80205b <links+0x4b>
 		_linkNum = num;
-    1478:	80 93 58 20 	sts	0x2058, r24	; 0x802058 <links+0x48>
+    146a:	80 93 58 20 	sts	0x2058, r24	; 0x802058 <links+0x48>
 		_chActMask = 0x10 << num;
-    147c:	30 e4       	ldi	r19, 0x40	; 64
-    147e:	30 93 68 20 	sts	0x2068, r19	; 0x802068 <links+0x58>
+    146e:	30 e4       	ldi	r19, 0x40	; 64
+    1470:	30 93 68 20 	sts	0x2068, r19	; 0x802068 <links+0x58>
 	uint64_t _tickLastChg, _onTimeStamp;
 
 public:
 	LCport(uint8_t num, uint8_t count, uint8_t posA, uint8_t posB, uint8_t posC)
 	{
 		_linkCnt = count;
-    1482:	20 93 7a 20 	sts	0x207A, r18	; 0x80207a <links+0x6a>
+    1474:	20 93 7a 20 	sts	0x207A, r18	; 0x80207a <links+0x6a>
 		_link[0] = posA;
-    1486:	28 e0       	ldi	r18, 0x08	; 8
-    1488:	20 93 7c 20 	sts	0x207C, r18	; 0x80207c <links+0x6c>
+    1478:	28 e0       	ldi	r18, 0x08	; 8
+    147a:	20 93 7c 20 	sts	0x207C, r18	; 0x80207c <links+0x6c>
 		_link[1] = posB;
-    148c:	10 92 7d 20 	sts	0x207D, r1	; 0x80207d <links+0x6d>
+    147e:	10 92 7d 20 	sts	0x207D, r1	; 0x80207d <links+0x6d>
 		_link[2] = posC;
-    1490:	10 92 7e 20 	sts	0x207E, r1	; 0x80207e <links+0x6e>
+    1482:	10 92 7e 20 	sts	0x207E, r1	; 0x80207e <links+0x6e>
 		_linkNum = num;
-    1494:	90 93 7b 20 	sts	0x207B, r25	; 0x80207b <links+0x6b>
+    1486:	90 93 7b 20 	sts	0x207B, r25	; 0x80207b <links+0x6b>
 		_chActMask = 0x10 << num;
-    1498:	90 e8       	ldi	r25, 0x80	; 128
-    149a:	90 93 8b 20 	sts	0x208B, r25	; 0x80208b <links+0x7b>
+    148a:	90 e8       	ldi	r25, 0x80	; 128
+    148c:	90 93 8b 20 	sts	0x208B, r25	; 0x80208b <links+0x7b>
 	uint8_t _onTime, _fTime;
 	uint64_t _onTimeStamp;
 public:
 	Msen(uint8_t actLink)
 	{
 		_linkNum = actLink;
-    149e:	80 93 04 20 	sts	0x2004, r24	; 0x802004 <msenCh+0x2>
-    14a2:	08 95       	ret
+    1490:	80 93 04 20 	sts	0x2004, r24	; 0x802004 <msenCh+0x2>
+    1494:	08 95       	ret
 
-000014a4 <__divmodhi4>:
-    14a4:	97 fb       	bst	r25, 7
-    14a6:	07 2e       	mov	r0, r23
-    14a8:	16 f4       	brtc	.+4      	; 0x14ae <__divmodhi4+0xa>
-    14aa:	00 94       	com	r0
-    14ac:	07 d0       	rcall	.+14     	; 0x14bc <__divmodhi4_neg1>
-    14ae:	77 fd       	sbrc	r23, 7
-    14b0:	09 d0       	rcall	.+18     	; 0x14c4 <__divmodhi4_neg2>
-    14b2:	0e 94 72 0a 	call	0x14e4	; 0x14e4 <__udivmodhi4>
-    14b6:	07 fc       	sbrc	r0, 7
-    14b8:	05 d0       	rcall	.+10     	; 0x14c4 <__divmodhi4_neg2>
-    14ba:	3e f4       	brtc	.+14     	; 0x14ca <__divmodhi4_exit>
+00001496 <__divmodhi4>:
+    1496:	97 fb       	bst	r25, 7
+    1498:	07 2e       	mov	r0, r23
+    149a:	16 f4       	brtc	.+4      	; 0x14a0 <__divmodhi4+0xa>
+    149c:	00 94       	com	r0
+    149e:	07 d0       	rcall	.+14     	; 0x14ae <__divmodhi4_neg1>
+    14a0:	77 fd       	sbrc	r23, 7
+    14a2:	09 d0       	rcall	.+18     	; 0x14b6 <__divmodhi4_neg2>
+    14a4:	0e 94 6b 0a 	call	0x14d6	; 0x14d6 <__udivmodhi4>
+    14a8:	07 fc       	sbrc	r0, 7
+    14aa:	05 d0       	rcall	.+10     	; 0x14b6 <__divmodhi4_neg2>
+    14ac:	3e f4       	brtc	.+14     	; 0x14bc <__divmodhi4_exit>
 
-000014bc <__divmodhi4_neg1>:
-    14bc:	90 95       	com	r25
-    14be:	81 95       	neg	r24
-    14c0:	9f 4f       	sbci	r25, 0xFF	; 255
-    14c2:	08 95       	ret
+000014ae <__divmodhi4_neg1>:
+    14ae:	90 95       	com	r25
+    14b0:	81 95       	neg	r24
+    14b2:	9f 4f       	sbci	r25, 0xFF	; 255
+    14b4:	08 95       	ret
 
-000014c4 <__divmodhi4_neg2>:
-    14c4:	70 95       	com	r23
-    14c6:	61 95       	neg	r22
-    14c8:	7f 4f       	sbci	r23, 0xFF	; 255
+000014b6 <__divmodhi4_neg2>:
+    14b6:	70 95       	com	r23
+    14b8:	61 95       	neg	r22
+    14ba:	7f 4f       	sbci	r23, 0xFF	; 255
 
-000014ca <__divmodhi4_exit>:
-    14ca:	08 95       	ret
+000014bc <__divmodhi4_exit>:
+    14bc:	08 95       	ret
 
-000014cc <__adddi3_s8>:
-    14cc:	00 24       	eor	r0, r0
-    14ce:	a7 fd       	sbrc	r26, 7
-    14d0:	00 94       	com	r0
-    14d2:	2a 0f       	add	r18, r26
-    14d4:	30 1d       	adc	r19, r0
-    14d6:	40 1d       	adc	r20, r0
-    14d8:	50 1d       	adc	r21, r0
-    14da:	60 1d       	adc	r22, r0
-    14dc:	70 1d       	adc	r23, r0
-    14de:	80 1d       	adc	r24, r0
-    14e0:	90 1d       	adc	r25, r0
-    14e2:	08 95       	ret
+000014be <__adddi3_s8>:
+    14be:	00 24       	eor	r0, r0
+    14c0:	a7 fd       	sbrc	r26, 7
+    14c2:	00 94       	com	r0
+    14c4:	2a 0f       	add	r18, r26
+    14c6:	30 1d       	adc	r19, r0
+    14c8:	40 1d       	adc	r20, r0
+    14ca:	50 1d       	adc	r21, r0
+    14cc:	60 1d       	adc	r22, r0
+    14ce:	70 1d       	adc	r23, r0
+    14d0:	80 1d       	adc	r24, r0
+    14d2:	90 1d       	adc	r25, r0
+    14d4:	08 95       	ret
 
-000014e4 <__udivmodhi4>:
-    14e4:	aa 1b       	sub	r26, r26
-    14e6:	bb 1b       	sub	r27, r27
-    14e8:	51 e1       	ldi	r21, 0x11	; 17
-    14ea:	07 c0       	rjmp	.+14     	; 0x14fa <__udivmodhi4_ep>
+000014d6 <__udivmodhi4>:
+    14d6:	aa 1b       	sub	r26, r26
+    14d8:	bb 1b       	sub	r27, r27
+    14da:	51 e1       	ldi	r21, 0x11	; 17
+    14dc:	07 c0       	rjmp	.+14     	; 0x14ec <__udivmodhi4_ep>
 
-000014ec <__udivmodhi4_loop>:
-    14ec:	aa 1f       	adc	r26, r26
-    14ee:	bb 1f       	adc	r27, r27
-    14f0:	a6 17       	cp	r26, r22
-    14f2:	b7 07       	cpc	r27, r23
-    14f4:	10 f0       	brcs	.+4      	; 0x14fa <__udivmodhi4_ep>
-    14f6:	a6 1b       	sub	r26, r22
-    14f8:	b7 0b       	sbc	r27, r23
+000014de <__udivmodhi4_loop>:
+    14de:	aa 1f       	adc	r26, r26
+    14e0:	bb 1f       	adc	r27, r27
+    14e2:	a6 17       	cp	r26, r22
+    14e4:	b7 07       	cpc	r27, r23
+    14e6:	10 f0       	brcs	.+4      	; 0x14ec <__udivmodhi4_ep>
+    14e8:	a6 1b       	sub	r26, r22
+    14ea:	b7 0b       	sbc	r27, r23
 
-000014fa <__udivmodhi4_ep>:
-    14fa:	88 1f       	adc	r24, r24
-    14fc:	99 1f       	adc	r25, r25
-    14fe:	5a 95       	dec	r21
-    1500:	a9 f7       	brne	.-22     	; 0x14ec <__udivmodhi4_loop>
-    1502:	80 95       	com	r24
-    1504:	90 95       	com	r25
-    1506:	bc 01       	movw	r22, r24
-    1508:	cd 01       	movw	r24, r26
-    150a:	08 95       	ret
+000014ec <__udivmodhi4_ep>:
+    14ec:	88 1f       	adc	r24, r24
+    14ee:	99 1f       	adc	r25, r25
+    14f0:	5a 95       	dec	r21
+    14f2:	a9 f7       	brne	.-22     	; 0x14de <__udivmodhi4_loop>
+    14f4:	80 95       	com	r24
+    14f6:	90 95       	com	r25
+    14f8:	bc 01       	movw	r22, r24
+    14fa:	cd 01       	movw	r24, r26
+    14fc:	08 95       	ret
 
-0000150c <__tablejump2__>:
-    150c:	ee 0f       	add	r30, r30
-    150e:	ff 1f       	adc	r31, r31
-    1510:	05 90       	lpm	r0, Z+
-    1512:	f4 91       	lpm	r31, Z
-    1514:	e0 2d       	mov	r30, r0
-    1516:	09 94       	ijmp
+000014fe <__tablejump2__>:
+    14fe:	ee 0f       	add	r30, r30
+    1500:	ff 1f       	adc	r31, r31
+    1502:	05 90       	lpm	r0, Z+
+    1504:	f4 91       	lpm	r31, Z
+    1506:	e0 2d       	mov	r30, r0
+    1508:	09 94       	ijmp
 
-00001518 <eeprom_read_block>:
-    1518:	60 50       	subi	r22, 0x00	; 0
-    151a:	70 4f       	sbci	r23, 0xF0	; 240
-    151c:	0c 94 c9 0a 	jmp	0x1592	; 0x1592 <memcpy>
+0000150a <eeprom_read_block>:
+    150a:	60 50       	subi	r22, 0x00	; 0
+    150c:	70 4f       	sbci	r23, 0xF0	; 240
+    150e:	0c 94 c2 0a 	jmp	0x1584	; 0x1584 <memcpy>
 
-00001520 <eeprom_update_block>:
-    1520:	dc 01       	movw	r26, r24
-    1522:	a4 0f       	add	r26, r20
-    1524:	b5 1f       	adc	r27, r21
-    1526:	41 50       	subi	r20, 0x01	; 1
-    1528:	50 40       	sbci	r21, 0x00	; 0
-    152a:	48 f0       	brcs	.+18     	; 0x153e <eeprom_update_block+0x1e>
-    152c:	cb 01       	movw	r24, r22
-    152e:	84 0f       	add	r24, r20
-    1530:	95 1f       	adc	r25, r21
-    1532:	2e 91       	ld	r18, -X
-    1534:	0e 94 a1 0a 	call	0x1542	; 0x1542 <eeprom_update_r18>
-    1538:	41 50       	subi	r20, 0x01	; 1
-    153a:	50 40       	sbci	r21, 0x00	; 0
-    153c:	d0 f7       	brcc	.-12     	; 0x1532 <eeprom_update_block+0x12>
-    153e:	08 95       	ret
+00001512 <eeprom_update_block>:
+    1512:	dc 01       	movw	r26, r24
+    1514:	a4 0f       	add	r26, r20
+    1516:	b5 1f       	adc	r27, r21
+    1518:	41 50       	subi	r20, 0x01	; 1
+    151a:	50 40       	sbci	r21, 0x00	; 0
+    151c:	48 f0       	brcs	.+18     	; 0x1530 <eeprom_update_block+0x1e>
+    151e:	cb 01       	movw	r24, r22
+    1520:	84 0f       	add	r24, r20
+    1522:	95 1f       	adc	r25, r21
+    1524:	2e 91       	ld	r18, -X
+    1526:	0e 94 9a 0a 	call	0x1534	; 0x1534 <eeprom_update_r18>
+    152a:	41 50       	subi	r20, 0x01	; 1
+    152c:	50 40       	sbci	r21, 0x00	; 0
+    152e:	d0 f7       	brcc	.-12     	; 0x1524 <eeprom_update_block+0x12>
+    1530:	08 95       	ret
 
-00001540 <eeprom_update_byte>:
-    1540:	26 2f       	mov	r18, r22
+00001532 <eeprom_update_byte>:
+    1532:	26 2f       	mov	r18, r22
 
-00001542 <eeprom_update_r18>:
-    1542:	0e 94 c5 0a 	call	0x158a	; 0x158a <eeprom_mapen>
-    1546:	00 80       	ld	r0, Z
-    1548:	02 16       	cp	r0, r18
-    154a:	19 f0       	breq	.+6      	; 0x1552 <eeprom_update_r18+0x10>
-    154c:	0e 94 ac 0a 	call	0x1558	; 0x1558 <eeprom_write_r18>
-    1550:	01 97       	sbiw	r24, 0x01	; 1
-    1552:	01 97       	sbiw	r24, 0x01	; 1
-    1554:	08 95       	ret
+00001534 <eeprom_update_r18>:
+    1534:	0e 94 be 0a 	call	0x157c	; 0x157c <eeprom_mapen>
+    1538:	00 80       	ld	r0, Z
+    153a:	02 16       	cp	r0, r18
+    153c:	19 f0       	breq	.+6      	; 0x1544 <eeprom_update_r18+0x10>
+    153e:	0e 94 a5 0a 	call	0x154a	; 0x154a <eeprom_write_r18>
+    1542:	01 97       	sbiw	r24, 0x01	; 1
+    1544:	01 97       	sbiw	r24, 0x01	; 1
+    1546:	08 95       	ret
 
-00001556 <eeprom_write_byte>:
-    1556:	26 2f       	mov	r18, r22
+00001548 <eeprom_write_byte>:
+    1548:	26 2f       	mov	r18, r22
 
-00001558 <eeprom_write_r18>:
-    1558:	af 93       	push	r26
-    155a:	bf 93       	push	r27
-    155c:	e0 ec       	ldi	r30, 0xC0	; 192
-    155e:	f1 e0       	ldi	r31, 0x01	; 1
-    1560:	37 85       	ldd	r19, Z+15	; 0x0f
-    1562:	37 fd       	sbrc	r19, 7
-    1564:	fd cf       	rjmp	.-6      	; 0x1560 <eeprom_write_r18+0x8>
-    1566:	dc 01       	movw	r26, r24
-    1568:	a0 50       	subi	r26, 0x00	; 0
-    156a:	b0 4f       	sbci	r27, 0xF0	; 240
-    156c:	2c 93       	st	X, r18
-    156e:	25 e3       	ldi	r18, 0x35	; 53
-    1570:	22 87       	std	Z+10, r18	; 0x0a
-    1572:	28 ed       	ldi	r18, 0xD8	; 216
-    1574:	31 e0       	ldi	r19, 0x01	; 1
-    1576:	24 bf       	out	0x34, r18	; 52
-    1578:	33 87       	std	Z+11, r19	; 0x0b
-    157a:	01 96       	adiw	r24, 0x01	; 1
-    157c:	bf 91       	pop	r27
-    157e:	af 91       	pop	r26
-    1580:	08 95       	ret
+0000154a <eeprom_write_r18>:
+    154a:	af 93       	push	r26
+    154c:	bf 93       	push	r27
+    154e:	e0 ec       	ldi	r30, 0xC0	; 192
+    1550:	f1 e0       	ldi	r31, 0x01	; 1
+    1552:	37 85       	ldd	r19, Z+15	; 0x0f
+    1554:	37 fd       	sbrc	r19, 7
+    1556:	fd cf       	rjmp	.-6      	; 0x1552 <eeprom_write_r18+0x8>
+    1558:	dc 01       	movw	r26, r24
+    155a:	a0 50       	subi	r26, 0x00	; 0
+    155c:	b0 4f       	sbci	r27, 0xF0	; 240
+    155e:	2c 93       	st	X, r18
+    1560:	25 e3       	ldi	r18, 0x35	; 53
+    1562:	22 87       	std	Z+10, r18	; 0x0a
+    1564:	28 ed       	ldi	r18, 0xD8	; 216
+    1566:	31 e0       	ldi	r19, 0x01	; 1
+    1568:	24 bf       	out	0x34, r18	; 52
+    156a:	33 87       	std	Z+11, r19	; 0x0b
+    156c:	01 96       	adiw	r24, 0x01	; 1
+    156e:	bf 91       	pop	r27
+    1570:	af 91       	pop	r26
+    1572:	08 95       	ret
 
-00001582 <eeprom_read_byte>:
-    1582:	03 d0       	rcall	.+6      	; 0x158a <eeprom_mapen>
-    1584:	80 81       	ld	r24, Z
-    1586:	99 27       	eor	r25, r25
-    1588:	08 95       	ret
+00001574 <eeprom_read_byte>:
+    1574:	03 d0       	rcall	.+6      	; 0x157c <eeprom_mapen>
+    1576:	80 81       	ld	r24, Z
+    1578:	99 27       	eor	r25, r25
+    157a:	08 95       	ret
 
-0000158a <eeprom_mapen>:
-    158a:	fc 01       	movw	r30, r24
-    158c:	e0 50       	subi	r30, 0x00	; 0
-    158e:	f0 4f       	sbci	r31, 0xF0	; 240
-    1590:	08 95       	ret
+0000157c <eeprom_mapen>:
+    157c:	fc 01       	movw	r30, r24
+    157e:	e0 50       	subi	r30, 0x00	; 0
+    1580:	f0 4f       	sbci	r31, 0xF0	; 240
+    1582:	08 95       	ret
 
-00001592 <memcpy>:
-    1592:	fb 01       	movw	r30, r22
-    1594:	dc 01       	movw	r26, r24
-    1596:	02 c0       	rjmp	.+4      	; 0x159c <memcpy+0xa>
-    1598:	01 90       	ld	r0, Z+
-    159a:	0d 92       	st	X+, r0
-    159c:	41 50       	subi	r20, 0x01	; 1
-    159e:	50 40       	sbci	r21, 0x00	; 0
-    15a0:	d8 f7       	brcc	.-10     	; 0x1598 <memcpy+0x6>
-    15a2:	08 95       	ret
+00001584 <memcpy>:
+    1584:	fb 01       	movw	r30, r22
+    1586:	dc 01       	movw	r26, r24
+    1588:	02 c0       	rjmp	.+4      	; 0x158e <memcpy+0xa>
+    158a:	01 90       	ld	r0, Z+
+    158c:	0d 92       	st	X+, r0
+    158e:	41 50       	subi	r20, 0x01	; 1
+    1590:	50 40       	sbci	r21, 0x00	; 0
+    1592:	d8 f7       	brcc	.-10     	; 0x158a <memcpy+0x6>
+    1594:	08 95       	ret
 
-000015a4 <_exit>:
-    15a4:	f8 94       	cli
+00001596 <_exit>:
+    1596:	f8 94       	cli
 
-000015a6 <__stop_program>:
-    15a6:	ff cf       	rjmp	.-2      	; 0x15a6 <__stop_program>
+00001598 <__stop_program>:
+    1598:	ff cf       	rjmp	.-2      	; 0x1598 <__stop_program>
