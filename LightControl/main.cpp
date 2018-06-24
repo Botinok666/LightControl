@@ -1,7 +1,7 @@
 /* Air conditioning Mk1
  * Created: 24.11.2017 19:17:15
  * Version: 1.2
- * Programmed version: 1.1	*/
+ * Programmed version: 1.2	*/
 
 #include "AC.h"
 #include <avr/io.h>
@@ -14,6 +14,14 @@ volatile uint8_t tachCnt, txCnt, rxMode = 0, rxMark, amCnt;
 volatile uint16_t tachPrev, adcSum, cycles = 0;
 uint32_t tachSum;
 uint8_t *txBuf;
+
+union i16i8
+{
+	uint16_t ui16;
+	uint8_t ui8[2];
+	int16_t i16;
+	int8_t i8[2];
+};
 
 struct sysConfig
 {
@@ -42,7 +50,7 @@ union am2302 {
 		uint8_t checksum;
 	} frame;
 	uint8_t arr[sizeof(Frame)];
-};
+} AM2302;
 
 sysConfig EEMEM eConf = { 0xFF, 100, 400, 40, 80, 0 };
 
@@ -166,6 +174,33 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 		eeprom_update_block(&validConf, &eConf, sizeof(sysConfig));
 	if (lcycle == 4 || lcycle == 12) //Send start signal to the sensor
 	{
+		uint8_t delayz = 0, j;
+		for (j = 0; j < 4; j++)
+			delayz += AM2302.arr[j];
+		if (delayz != AM2302.arr[4])
+		{
+			tmpStatus.fanLevel = 10;
+			memcpy(&tmpStatus.insideRH, AM2302.arr, sizeof(am2302));
+		}
+		else
+		{
+			if (AM2302.frame.T < 0)
+				AM2302.frame.T = ~(AM2302.frame.T & 0x7FFF) + 1;
+			if (lcycle == 4)
+			{
+				tmpStatus.insideRH = AM2302.frame.RH;
+				tmpStatus.insideT = AM2302.frame.T;
+			}
+			else
+			{
+				tmpStatus.outsideRH = AM2302.frame.RH;
+				tmpStatus.outsideT = AM2302.frame.T;
+				FanRegulation();
+			}
+		}
+		for (j = 0; j < 5; j++)
+			AM2302.arr[j] = 0;
+
 		PORTB &= ~(1 << PORTB2);
 		DDRB |= (1 << DDB2); //Interface pulled low
 		TCCR0B = (1 << CS02); //28.8kHz, 34.72µs tick
@@ -173,7 +208,7 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 		OCR0B = 48; //~1.666ms delay
 		TIFR0 = (1 << TOV0) | (1 << OCF0B);
 		TIMSK0 = (1 << OCIE0B); //Enable interrupt
-		amCnt = -1; //Skip response signal		
+		amCnt = -1; //Skip response signal
 	}
 	lcycle &= 0xF; //Range 0-15
 	if (!lcycle)
@@ -182,7 +217,7 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 		//SelChA();
 		tachCnt = 0;
 		tachSum = 0;
-		TIMSK1 |= (1 << ICIE1);		
+		TIMSK1 |= (1 << ICIE1);
 	}
 	else if (lcycle == 8)
 	{
@@ -207,25 +242,32 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 	}
 	else
 		rs485busy = rxMark - 1;
-		
+
 	if (lcycle & 1)
-		return; //Skip half cycles
-	ADCSRA |= (1 << ADSC);
-	uint16_t level = validConf.fanLevelOverride != 0xFF ?
-		(((uint16_t)validConf.fanLevelOverride * PWM_max) >> 8) : validStatus.fanLevel;
-	if (OCR2A > level)
 	{
-		OCR2A--;
-		if (OCR2A < FanMin)
-			OCR2A = 0;
+		ADCSRA |= (1 << ADSC);
+		i16i8 u16u8;
+		if (validConf.fanLevelOverride == 0xFF)
+			u16u8.ui8[1] = validStatus.fanLevel;
+		else
+		{
+			u16u8.ui8[0] = validConf.fanLevelOverride;
+			u16u8.ui16 *= PWM_max;
+		}
+		if (OCR2AL > u16u8.ui8[1])
+		{
+			OCR2AL--;
+			if (OCR2AL < FanMin)
+				OCR2AL = 0;
+		}
+		else if (OCR2AL < u16u8.ui8[1])
+		{
+			OCR2AL++;
+			if (OCR2AL < FanMin)
+				OCR2AL = u16u8.ui8[1];
+		}
+		OCR2BL = ICR2L - OCR2AL;
 	}
-	else if (OCR2A < level)
-	{
-		OCR2A++;
-		if (OCR2A < FanMin)
-			OCR2A = level;
-	}
-	OCR2B = ICR2 - OCR2A;
 }
 
 ISR	(TIMER0_COMPB_vect)
@@ -248,48 +290,25 @@ ISR (TIMER0_OVF_vect)
 
 ISR (PCINT1_vect)
 {
-	static am2302 AM2302;
+	static uint8_t temp;
 	uint8_t delayz = TCNT0;
 	TCNT0 = 0; //Clear counter
 	if (PINB & (1 << PINB2))
 		return; //Skip rising edge interrupt
 	if (amCnt++ < 0)
-	{
-		for (uint8_t j = 0; j < 5; j++)
-			AM2302.arr[j] = 0;
 		return; //Clear array and that's all
-	}
 	if (amCnt < 40)
 	{
+		temp <<= 1;
 		if (delayz > 44) //High level held more than 48µs - logic one received
-			AM2302.arr[amCnt >> 3] |= (1 << (7 - (amCnt & 7)));
+			temp |= 1;
+		if ((amCnt & 7) == 7)
+			AM2302.arr[amCnt >> 3] = temp;
 	}
 	if (amCnt == 39)
 	{
 		TIMSK0 = 0; //Disable overflow interrupt
 		GIMSK = 0; //Disable pin change interrupt
-		delayz = 0;
-		for (uint8_t j = 0; j < 4; j++)
-			delayz += AM2302.arr[j];
-		if (delayz != AM2302.arr[4])
-		{
-			tmpStatus.fanLevel = 10;
-			memcpy(&tmpStatus.insideRH, AM2302.arr, sizeof(am2302));
-			return;
-		}
-		if (AM2302.frame.T < 0)
-			AM2302.frame.T = ~(AM2302.frame.T & 0x7FFF) + 1;
-			if (((uint8_t)cycles & 0xF) < 10)
-			{
-				tmpStatus.insideRH = AM2302.frame.RH;
-				tmpStatus.insideT = AM2302.frame.T;
-			}
-			else
-			{
-				tmpStatus.outsideRH = AM2302.frame.RH;
-				tmpStatus.outsideT = AM2302.frame.T;
-				FanRegulation();
-			}		
 	}
 }
 
@@ -327,13 +346,13 @@ void inline mcuInit()
 	//If fan is running for 4 poles, minimum measurable speed is 422rpm
 	TCCR1B = (1 << ICNC1) | (1 << ICES1) | (1 << CS11);
 	TIMSK1 = (1 << TOIE1);
-	//Timer 2: 7.3728MHz clock, fast PWM, top in ICR2, OC2A non-inverting (TOCC3), OC2B inverting (TOCC2)
+	//Timer 2: 7.3728MHz clock, phase and frequency correct PWM, top in ICR2
 	ICR2 = PWM_max; //25kHz PWM frequency
 	OCR2A = 0; //Non-inverting output: off
 	OCR2B = PWM_max; //Inverting output: off
-	TCCR2A = (1 << COM2A1) | (1 << COM2B1) | (1 << COM2B0) | (1 << WGM21);
-	TCCR2B = (1 << WGM23) | (1 << WGM22) | (1 << CS20);
-	TOCPMSA0 |= (1 << TOCC2S1) | (1 << TOCC3S1);
+	TCCR2A = (1 << COM2A1) | (1 << COM2B1) | (1 << COM2B0);
+	TCCR2B = (1 << WGM23) | (1 << CS20);
+	TOCPMSA0 |= (1 << TOCC2S1) | (1 << TOCC3S1); //OC2A non-inverting (TOCC3), OC2B inverting (TOCC2)
 	TOCPMCOE |= (1 << TOCC2OE) | (1 << TOCC3OE);
 	//ADC: 1.1V reference, 230.4kHz clock, ADC0 input, interrupt
 	ADMUXB = (1 << REFS0);
