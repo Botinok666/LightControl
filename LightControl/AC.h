@@ -5,7 +5,7 @@
 #ifndef AC_H_
 #define AC_H_
 
-#define F_CPU		3686400L
+#define F_CPU		7372800L
 #include <util/delay.h>
 
 #define PWM_freq	25000

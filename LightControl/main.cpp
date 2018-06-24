@@ -10,8 +10,8 @@
 #include <string.h>
 #include <util/crc16.h>
 
-volatile uint8_t tachCnt, txCnt, rxMode = 0, cycles;
-volatile uint16_t tachPrev, adcSum, eeSave = 0;
+volatile uint8_t tachCnt, txCnt, rxMode = 0, rxMark, amCnt;
+volatile uint16_t tachPrev, adcSum, cycles = 0;
 uint32_t tachSum;
 uint8_t *txBuf;
 
@@ -42,7 +42,7 @@ union am2302 {
 		uint8_t checksum;
 	} frame;
 	uint8_t arr[sizeof(Frame)];
-} AM2302data;
+};
 
 sysConfig EEMEM eConf = { 0xFF, 100, 400, 40, 80, 0 };
 
@@ -90,6 +90,12 @@ void FanRegulation()
 	}
 }
 
+uint16_t GetRPM()
+{
+	uint32_t temp = (F_CPU * 30 / 8) * (tachCnt - 1);
+	return (uint16_t)(temp / tachSum);
+}
+
 ISR (USART0_RX_vect)
 {
 	static char uCnt = 0;
@@ -105,10 +111,7 @@ ISR (USART0_RX_vect)
 			{
 				uCnt = sizeof(sysConfig); //Bytes to receive
 				rxBuf = (uint8_t*)&rcvdConf; //First byte address in structure
-				TCNT0 = 0;
-				TCCR0B = (1 << CS02); //14.4kHz clock
-				TIFR0 = (1 << OCF0B); //Clear interrupt flag
-				TIMSK0 = (1 << OCIE0B); //Enable packet lost interrupt
+				rxMark = (uint8_t)cycles;
 			}
 			else
 			{
@@ -136,8 +139,7 @@ ISR (USART0_RX_vect)
 		*rxBuf++ = data;
 		if (--uCnt == 0) //Packet received
 		{
-			TIMSK0 = 0; //Disable packet lost interrupt
-			TCCR0B = (1 << CS01); //460.8kHz clock
+			rxMode = 0;
 			if (CalculateCRC16(&rcvdConf, sizeof(sysConfig) - 2) == rcvdConf.CRC16) //CRC OK
 				memcpy(&validConf, &rcvdConf, sizeof(sysConfig));
 		}
@@ -156,146 +158,139 @@ ISR (USART0_TX_vect) //Transmit to RS485
 	}
 }
 
-ISR (TIMER0_COMPB_vect) //Packet lost interrupt
+ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 {
-	TIMSK0 = 0; //Disable packet lost interrupt
-	TCCR0B = (1 << CS01); //460.8kHz clock
-	UCSR0A = (1 << MPCM0);
-	rxMode = 0;
-}
-
-ISR (TIMER1_OVF_vect) //Occurs every 142.2ms
-{
-	if (cycles++ >= 15)
+	static uint8_t rs485busy = 0;
+	uint8_t lcycle = ((uint8_t)cycles++) & 0x1F; //Range 0-31
+	if (!cycles) //~77 minutes between updates
+		eeprom_update_block(&validConf, &eConf, sizeof(sysConfig));
+	if (lcycle == 4 || lcycle == 12) //Send start signal to the sensor
 	{
-		cycles = 0;
-		eeSave += 8;
-		if (eeSave == 0)
-			eeprom_update_block(&validConf, &eConf, sizeof(sysConfig));
+		PORTB &= ~(1 << PORTB2);
+		DDRB |= (1 << DDB2); //Interface pulled low
+		TCCR0B = (1 << CS02); //28.8kHz, 34.72µs tick
+		TCNT0 = 0;
+		OCR0B = 48; //~1.666ms delay
+		TIFR0 = (1 << TOV0) | (1 << OCF0B);
+		TIMSK0 = (1 << OCIE0B); //Enable interrupt
+		amCnt = -1; //Skip response signal		
 	}
-	switch (cycles)
+	lcycle &= 0xF; //Range 0-15
+	if (!lcycle)
 	{
-		case 0:
-		case 8:
+		tmpStatus.rpmFront = tachCnt > 1 ? GetRPM() : 0;
 		//SelChA();
 		tachCnt = 0;
 		tachSum = 0;
-		TIMSK1 |= (1 << ICIE1);
-	break;
-
-		case 3:
-		case 15:
-		PORTB &= ~(1 << PORTB2);
-		DDRB |= (1 << DDB2); //Interface pulled low
-		_delay_ms(1.666);
-		DDRB &= ~(1 << DDB2); //Interface released
-		PCMSK1 = (1 << PCINT10);
-		GIFR = (1 << PCIF1);
-		GIMSK = (1 << PCIE1);
-	break;
-
-		case 4:
-		case 12:
+		TIMSK1 |= (1 << ICIE1);		
+	}
+	else if (lcycle == 8)
+	{
+		tmpStatus.rpmRear = tachCnt > 1 ? GetRPM() : 0;
 		//SelChB();
 		tachCnt = 0;
 		tachSum = 0;
 		TIMSK1 |= (1 << ICIE1);
-	break;
+		tmpStatus.currentDraw = (adcSum << 3) / Idiv_x1mA;
+		adcSum = 0;
+	}
 
-		case 2:
-		case 6:
-		case 10:
-		case 14:
-		TIMSK1 &= ~(1 << ICIE1);
-		if (cycles == 2 || cycles == 10)
-			tmpStatus.rpmFront = 0;
+	if (rxMode == SetConfig) //We are currently receiving data packet
+	{
+		if (rs485busy == rxMark) //Second tick in a row detected
+		{
+			UCSR0A = (1 << MPCM0);
+			rxMode = 0;
+		}
 		else
-		{
-			tmpStatus.rpmRear = 0;
-			tmpStatus.currentDraw = (adcSum << 3) / Idiv_x1mA;
-			adcSum = 0;
-		}
-		if (tachCnt > 1)
-		{
-			uint32_t temp = (F_CPU / 8) * 30 * (tachCnt - 1);
-			temp /= tachSum;
-			if (cycles < 10)
-				tmpStatus.rpmFront = temp;
-			else
-				tmpStatus.rpmRear = temp;
-		}
-	break;
+			rs485busy = rxMark;
 	}
+	else
+		rs485busy = rxMark - 1;
+		
+	if (lcycle & 1)
+		return; //Skip half cycles
 	ADCSRA |= (1 << ADSC);
-	uint8_t level = validConf.fanLevelOverride < FanMax ?
+	uint16_t level = validConf.fanLevelOverride != 0xFF ?
 		(((uint16_t)validConf.fanLevelOverride * PWM_max) >> 8) : validStatus.fanLevel;
-	if (OCR2AL > level)
+	if (OCR2A > level)
 	{
-		OCR2AL--;
-		if (OCR2AL < FanMin)
-			OCR2AL = 0;
+		OCR2A--;
+		if (OCR2A < FanMin)
+			OCR2A = 0;
 	}
-	else if (OCR2AL < level)
+	else if (OCR2A < level)
 	{
-		OCR2AL++;
-		if (OCR2AL < FanMin)
-			OCR2AL = level;
+		OCR2A++;
+		if (OCR2A < FanMin)
+			OCR2A = level;
 	}
-	OCR2BL = ICR2L - OCR2AL;
+	OCR2B = ICR2 - OCR2A;
+}
+
+ISR	(TIMER0_COMPB_vect)
+{
+	DDRB &= ~(1 << DDB2); //Interface released
+	TCCR0B = (1 << CS01); //921.6kHz clock, 1 tick = 1.08µs
+	TCNT0 = 0;
+	TIMSK0 = (1 << TOIE0); //Now enable overflow interrupt, timeout 278µs
+	PCMSK1 = (1 << PCINT10); //PINB2 as pin change interrupt source
+	GIFR = (1 << PCIF1);
+	GIMSK = (1 << PCIE1); //Enable pin change interrupt
+}
+
+ISR (TIMER0_OVF_vect)
+{
+	TIMSK0 = 0; //Disable overflow interrupt
+	GIMSK = 0; //Disable pin change interrupt
+	tmpStatus.fanLevel = 1; //Sensor not responded code
 }
 
 ISR (PCINT1_vect)
 {
-	GIMSK = 0;
-	_delay_us(80);
-	//Check start condition 2
-	tmpStatus.fanLevel = 1;
-	if(!(PINB & (1 << PINB2)))
-		return;
-	_delay_us(80);
-	//read the data
-	for (uint8_t j = 0; j < 5; j++) //read 5 byte
+	static am2302 AM2302;
+	uint8_t delayz = TCNT0;
+	TCNT0 = 0; //Clear counter
+	if (PINB & (1 << PINB2))
+		return; //Skip rising edge interrupt
+	if (amCnt++ < 0)
 	{
-		uint8_t result = 0;
-		for (uint8_t i = 0; i < 8; i++) //read every bit
+		for (uint8_t j = 0; j < 5; j++)
+			AM2302.arr[j] = 0;
+		return; //Clear array and that's all
+	}
+	if (amCnt < 40)
+	{
+		if (delayz > 44) //High level held more than 48µs - logic one received
+			AM2302.arr[amCnt >> 3] |= (1 << (7 - (amCnt & 7)));
+	}
+	if (amCnt == 39)
+	{
+		TIMSK0 = 0; //Disable overflow interrupt
+		GIMSK = 0; //Disable pin change interrupt
+		delayz = 0;
+		for (uint8_t j = 0; j < 4; j++)
+			delayz += AM2302.arr[j];
+		if (delayz != AM2302.arr[4])
 		{
-			uint8_t timeoutcounter = 0;
-			while (!(PINB & (1 << PINB2))) //wait for an high input
-			{
-				_delay_us(10);
-				if (++timeoutcounter > 5) //timeout
-					return;
-			}
-			_delay_us(30);
-			if (PINB & (1 << PINB2)) //if input is high after 30 us, get result
-				result |= (1 << (7 - i));
-			timeoutcounter = 0;
-			while (PINB & (1 << PINB2)) //wait until input get low (non blocking)
-			{
-				_delay_us(10);
-				if (++timeoutcounter > 5) //timeout
-					return;
-			}
+			tmpStatus.fanLevel = 10;
+			memcpy(&tmpStatus.insideRH, AM2302.arr, sizeof(am2302));
+			return;
 		}
-		AM2302data.arr[j] = result;
+		if (AM2302.frame.T < 0)
+			AM2302.frame.T = ~(AM2302.frame.T & 0x7FFF) + 1;
+			if (((uint8_t)cycles & 0xF) < 10)
+			{
+				tmpStatus.insideRH = AM2302.frame.RH;
+				tmpStatus.insideT = AM2302.frame.T;
+			}
+			else
+			{
+				tmpStatus.outsideRH = AM2302.frame.RH;
+				tmpStatus.outsideT = AM2302.frame.T;
+				FanRegulation();
+			}		
 	}
-	tmpStatus.fanLevel = 2;
-	if ((uint8_t)(AM2302data.arr[0] + AM2302data.arr[1] + AM2302data.arr[2] + AM2302data.arr[3]) != AM2302data.arr[4])
-		return;
-	if (AM2302data.frame.T < 0)
-		AM2302data.frame.T = ~(AM2302data.frame.T & 0x7FFF) + 1;
-	if (cycles == 3)
-	{
-		tmpStatus.insideRH = AM2302data.frame.RH;
-		tmpStatus.insideT = AM2302data.frame.T;
-	}
-	else
-	{
-		tmpStatus.outsideRH = AM2302data.frame.RH;
-		tmpStatus.outsideT = AM2302data.frame.T;
-		FanRegulation();
-	}
-	tmpStatus.fanLevel = 3;
 }
 
 ISR (TIMER1_CAPT_vect)
@@ -324,20 +319,15 @@ void inline mcuInit()
 	//Port A outputs: U0TX, PWMA, PWMB, U0EN, SEL
 	DDRA = (1 << DDA1) | (1 << DDA3) | (1 << DDA4) | (1 << DDA5) | (1 << DDA6);
 	//USART 0: 76.8kbps, frame bits: start / 9 data / 2 stop, multi-processor communication
-	UBRR0 = 2; //Actual maximum transfer rate: 6400Bps
+	UBRR0 = 5; //Actual maximum transfer rate: 6400Bps
 	UCSR0B = (1 << RXCIE0) | (1 << TXCIE0) | (1 << RXEN0) | (1 << TXEN0) | (1 << UCSZ02);
 	UCSR0C = (1 << USBS0) | (1 << UCSZ01) | (1 << UCSZ00);
 	UCSR0A = (1 << MPCM0);
-	//Timer 0: 460.8kHz clock, CTC on OCR0A
-	//TCCR0A = (1 << WGM01);
-	TCCR0B = (1 << CS01); //1 tick = 2.17µs
-	//OCR0A = 0xFE;
-	OCR0B = (sizeof(sysStatus) > sizeof(sysConfig) ? sizeof(sysStatus) : sizeof(sysConfig)) * 234 / 69; //Equals 57
-	//Timer 1: 460.8kHz clock, input capture on leading edge, noise filtering, OVF interrupt
-	//If fan is running for 4 poles, minimum measurable speed is 211rpm
+	//Timer 1: 921.6kHz clock, input capture on leading edge, noise filtering, OVF interrupt
+	//If fan is running for 4 poles, minimum measurable speed is 422rpm
 	TCCR1B = (1 << ICNC1) | (1 << ICES1) | (1 << CS11);
 	TIMSK1 = (1 << TOIE1);
-	//Timer 2: 3.6864MHz clock, fast PWM, top in ICR2, OC2A non-inverting (TOCC3), OC2B inverting (TOCC2)
+	//Timer 2: 7.3728MHz clock, fast PWM, top in ICR2, OC2A non-inverting (TOCC3), OC2B inverting (TOCC2)
 	ICR2 = PWM_max; //25kHz PWM frequency
 	OCR2A = 0; //Non-inverting output: off
 	OCR2B = PWM_max; //Inverting output: off
@@ -345,7 +335,7 @@ void inline mcuInit()
 	TCCR2B = (1 << WGM23) | (1 << WGM22) | (1 << CS20);
 	TOCPMSA0 |= (1 << TOCC2S1) | (1 << TOCC3S1);
 	TOCPMCOE |= (1 << TOCC2OE) | (1 << TOCC3OE);
-	//ADC: 1.1V reference, 115.2kHz clock, ADC0 input, interrupt
+	//ADC: 1.1V reference, 230.4kHz clock, ADC0 input, interrupt
 	ADMUXB = (1 << REFS0);
 	ADCSRA = (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS0);
 	DIDR0 = (1 << ADC0D);
