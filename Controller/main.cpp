@@ -1,8 +1,6 @@
 /* Controller.cpp
  * Created: 12.01.2018 11:30:55
- * Version: 1.0 */
-
-#define RXC_EDMA
+ * Version: 1.1 */
 
 #include "LC.h"
 #include <avr/io.h>
@@ -29,7 +27,7 @@ struct systemConfig
 	uint8_t overrideLvl, overrideCfg; //Config: bits 0-7: mask for channels 0-7
 	uint8_t fadeRate[4], linkDelay[4];
 	uint8_t msenOnTime, msenLowTime, msenLowLvl;
-	uint8_t groupConf; //bit 2: override channel 8, bit 3: save to EEPROM
+	uint8_t groupConf; //bit 4: override channel 8, bit 3: save to EEPROM
 	uint8_t rtcCorrect; //Value in ppm, sign-and-magnitude representation
 
 	uint16_t CRC16;
@@ -89,8 +87,8 @@ public:
 		for (uint8_t i = 0; i < _linkCnt; i++)
 		{
 			pos = _link[i];
-			if ((pos < 8 && validConf.overrideCfg == (1 << pos)) || 
-				(pos == 8 && validConf.groupConf == (1 << 4)))
+			if ((pos < 8 && (validConf.overrideCfg & (1 << pos))) || 
+				(pos >= 8 && (validConf.groupConf & (1 << 4))))
 			{
 				if (_lvl[i] == gLevels[pos]) //Refresh saved ticks value only if no dimming in the process right now
 					_tickLastChg = sysState.sysTick;
@@ -143,21 +141,22 @@ public:
 	{
 		int16_t ticksEl = (int16_t)(sysState.sysTick - _tickLastChg); //Elapsed ticks since beginning of dim
 		int16_t delta = (((ticksEl + 1) * _fadeRate) >> 5) - ((ticksEl * _fadeRate) >> 5); //Number of steps
-		if (_chActMask != PIN4_bm)
-			PORTC.OUTCLR = _chActMask;
+		PORTC.OUTCLR = _chActMask;
 		for (int8_t i = 0; i < _linkCnt; i++)
 		{
 			uint8_t s = _dir ? i : _linkCnt - i - 1; //Direction '1' means forward
 			uint8_t j = _link[s];
 			int16_t tempLvl = gLevels[j] - _lvl[s]; //Difference between actual and set levels
+			bool changed = false;
 			if (tempLvl && ticksEl >= i * _linkDelay)
 			{
 				if (tempLvl > 0) //Level needs to be lowered
 				{
 					tempLvl -= ((tempLvl > delta) ? delta : tempLvl) - (int16_t)_lvl[s];
-					if (!tempLvl) //Actual level became zero
+					if ((uint8_t)tempLvl < _minLvl[s]) //Actual level became zero
 					{
-						tempLvl -= (int16_t)_fadeRate << 2; //Subtract 4x fade steps, so off/on delay will be 4s
+						changed = true;
+						tempLvl = -1 * ((int16_t)_fadeRate << 2); //Subtract 4x fade steps, so off/on delay will be 4s
 						channelOT.linkOnTime[j] += (uint32_t)(sysState.sysTick - _onTimeStamp) >> 5; //Add seconds
 						channelOT.linkSwCnt[j]++; //Increment switch counter
 					}
@@ -166,20 +165,23 @@ public:
 				{
 					tempLvl += ((-tempLvl > delta) ? delta : -tempLvl) + (int16_t)_lvl[s];
 					if (!gLevels[j] && tempLvl > 0) //Lamp has been switched on - remember ticks
+					{
+						if ((uint8_t)tempLvl < _minLvl[s])
+							tempLvl = _minLvl[s];
 						_onTimeStamp = sysState.sysTick;
+					}
 				}
 				gLevels[j] = tempLvl;
-				if (tempLvl >= 0)
+				if (tempLvl >= 0 || changed)
 				{
 					gLevelChg |= 1 << j;
-					if (_chActMask != PIN4_bm)
-						PORTC.OUTSET = _chActMask; //Switch on activity LED
+					PORTC.OUTSET = _chActMask; //Switch on activity LED
 				}
 			}
 		}
 	}
 } links[4] = { LCport(0, 3, 7, 6, 5), LCport(1, 3, 4, 3, 2),
-#ifndef BOARD_A
+#ifdef BOARD_A
 LCport(2, 1, 1, 0, 0),
 #else
 LCport(2, 2, 1, 0, 0),
@@ -289,7 +291,7 @@ void ApplyConfig()
 	for (uint8_t i = 0; i < 4; i++)
 		links[i].setParams();
 	msenCh.setParams();
-	if (validConf.groupConf & 0x08) //Bit 3 is set: save config to EEPROM
+	if (validConf.groupConf & (1 << 3)) //Bit 3 is set: save config to EEPROM
 		eeprom_update_block(&validConf, &savedConfig, sizeof(systemConfig));
 	RTC.CALIB = validConf.rtcCorrect;
 }
@@ -297,7 +299,6 @@ void ApplyConfig()
 ISR(RTC_OVF_vect)
 {
 	sysState.sysTick++;
-	static uint8_t rs485busy = 0;
 	uint8_t i;
 	for (i = 0; i < 4; i++)
 		links[i].updateLevel();
@@ -343,25 +344,14 @@ ISR(RTC_OVF_vect)
 	if (((uint32_t)sysState.sysTick & 0x7FFFF) == 0) //Save state to EEPROM every 4.5 hrs
 		eeprom_update_block(&channelOT, &savedCOT, sizeof(channelsOnTime));
 
-	if (rxMode == SetConfig) //We are currently receiving data packet
+	if (rxMode == SetConfig && 2 < ++rxMark) //We are currently receiving data packet
 	{
-		if (rs485busy == rxMark) //Second tick in a row detected
-		{
-			rxMode = 0; //Packet considered lost
-			USARTC0.CTRLB |= USART_MPCM_bm; //Set MPCM bit
-			#ifdef RXC_EDMA
-			channelOT.linkSwCnt[1] = EDMA.CH0.TRFCNTL;
-			EDMA.CH0.CTRLA = 0;
-			while (EDMA.CH0.CTRLB & EDMA_CH_CHBUSY_bm);
-			USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_HI_gc;
-			//PORTC.OUTCLR = PIN4_bm;
-			#endif
-		}
-		else
-			rs485busy = rxMark;
+		EDMA.CH0.CTRLA = 0;
+		rxMode = 0; //Packet considered lost
+		USARTC0.CTRLB |= USART_MPCM_bm; //Set MPCM bit
+		USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_HI_gc;
+		while (EDMA.CH0.CTRLB & EDMA_CH_CHBUSY_bm);
 	}
-	else
-		rs485busy = rxMark - 1;
 	framePtr = DSI8xFrames;
 	TCD5.INTFLAGS |= TC5_OVFIF_bm;
 	TCD5.INTCTRLA = TC_OVFINTLVL_HI_gc;
@@ -407,10 +397,6 @@ ISR(ADCA_CH0_vect)
 
 ISR(USARTC0_RXC_vect) //Data received from RS485
 {
-	#ifndef RXC_EDMA
-	static uint8_t uCnt;
-	static uint8_t *rxBuf;
-	#endif
 	uint8_t data = USARTC0.DATA;
 	if (USARTC0.CTRLB & USART_MPCM_bm) //Address listening mode
 	{
@@ -420,17 +406,11 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 			rxMode = data;
 			if (data == SetConfig)
 			{
-				rxMark = (uint8_t)sysState.sysTick;
-				#ifdef RXC_EDMA
+				rxMark = 0;
 				EDMA.CH0.ADDR = (register16_t)iobuf;
-				EDMA.CH0.TRFCNT = sizeof(systemConfig) - 3; //Bytes to receive into iobuf
+				EDMA.CH0.TRFCNT = sizeof(systemConfig); //Bytes to receive into iobuf
 				EDMA.CH0.CTRLA = EDMA_CH_ENABLE_bm | EDMA_CH_SINGLE_bm;
 				USARTC0.CTRLA = USART_RXCINTLVL_OFF_gc; //Disable interrupt
-				PORTC.OUTSET = PIN4_bm;
-				#else
-				uCnt = sizeof(systemConfig);
-				rxBuf = iobuf; //First byte address in structure
-				#endif
 			}
 			else //Data transmit request
 			{
@@ -460,34 +440,19 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 		else
 			rxMode = 0;
 	}
-	#ifndef RXC_EDMA
-	else if (rxMode == SetConfig)
-	{
-		*rxBuf++ = data;
-		if (--uCnt == 0) //Packet received
-		{
-			rxMode = 0;
-			USARTC0.CTRLB |= USART_MPCM_bm; //Set MPCM bit
-			if (CalculateCRC16(iobuf, sizeof(systemConfig) - 2) == ((systemConfig*)iobuf)->CRC16)
-				ApplyConfig();
-		}
-	}
-	#endif
 }
 
-#ifdef RXC_EDMA
 ISR(EDMA_CH0_vect)
 {
 	rxMode = 0;
 	USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm | USART_MPCM_bm; //Set MPCM bit
 	USARTC0.CTRLA = USART_DRIE_bm | USART_RXCINTLVL_MED_gc;
-	if (CalculateCRC16(iobuf, sizeof(systemConfig) - 2) == ((systemConfig*)iobuf)->CRC16)
+	uint16_t crc = CalculateCRC16(iobuf, sizeof(systemConfig) - 2);
+	if (crc == ((systemConfig*)iobuf)->CRC16)
 		ApplyConfig();
 	EDMA.CH0.CTRLA = 0;
 	EDMA.CH0.CTRLB = EDMA_CH_TRNIF_bm | EDMA_CH_ERRIF_bm | EDMA_CH_TRNINTLVL_LO_gc;
-	PORTC.OUTCLR = PIN4_bm;
 }
-#endif
 
 ISR(EDMA_CH1_vect) //Packet has been sent completely over RS485
 {
@@ -536,7 +501,7 @@ inline void mcuInit()
 	//PMIC: enable interrupts
 	PMIC.CTRL = PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
 	//RTC configuration: 1024 / 2 = 512Hz clock, medium level interrupt
-	RTC.PER = 16; //32 overflows per second
+	RTC.PER = 15; //32 overflows per second
 	RTC.INTCTRL = RTC_OVFINTLVL_MED_gc;
 	RTC.CTRL = RTC_PRESCALER_DIV2_gc;
 	RTC.CNT = 0;

@@ -7,11 +7,12 @@
 
 #define F_CPU		7372800L
 #include <util/delay.h>
+#define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
 
 #define PWM_freq	25000
 #define PWM_max		(F_CPU / (2L * PWM_freq))
-#define FanMin		((25 * PWM_max) >> 8)
-#define FanMax		((250 * PWM_max) >> 8)
+#define FanMin		((24 * PWM_max) / 100)
+#define FanMax		((92 * PWM_max) / 100)
 
 #define CmdLC		0x11
 #define GetStatus	0x11

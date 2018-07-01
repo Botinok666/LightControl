@@ -1,7 +1,7 @@
 /* Air conditioning Mk1
  * Created: 24.11.2017 19:17:15
- * Version: 1.2
- * Programmed version: 1.2	*/
+ * Version: 1.4
+ * Programmed version: 1.4	*/
 
 #include "AC.h"
 #include <avr/io.h>
@@ -10,18 +10,10 @@
 #include <string.h>
 #include <util/crc16.h>
 
-volatile uint8_t tachCnt, txCnt, rxMode = 0, rxMark, amCnt;
+volatile uint8_t tachCnt, tachOvf, txCnt, rxMode = 0, rxMark, amCnt, fanLvl;
 volatile uint16_t tachPrev, adcSum, cycles = 0;
 uint32_t tachSum;
 uint8_t *txBuf;
-
-union i16i8
-{
-	uint16_t ui16;
-	uint8_t ui8[2];
-	int16_t i16;
-	int8_t i8[2];
-};
 
 struct sysConfig
 {
@@ -30,7 +22,7 @@ struct sysConfig
 	int16_t minDeltaT, dDeltaT;
 
 	uint16_t CRC16;
-} validConf, rcvdConf;
+} validConf;
 
 struct sysStatus
 {
@@ -41,7 +33,7 @@ struct sysStatus
 	int16_t insideT, outsideT;
 
 	uint16_t CRC16;
-} validStatus, tmpStatus;
+} tmpStatus;
 
 union am2302 {
 	struct Frame {
@@ -52,7 +44,8 @@ union am2302 {
 	uint8_t arr[sizeof(Frame)];
 } AM2302;
 
-sysConfig EEMEM eConf = { 0xFF, 100, 400, 40, 80, 0 };
+sysConfig EEMEM eConf = { 0xFF, 100, 300, 40, 50, 0 };
+uint8_t iobuf[MAX(sizeof(sysConfig), sizeof(sysStatus))];
 
 void inline U0TXen()
 {
@@ -69,45 +62,49 @@ uint16_t CalculateCRC16(void *arr, int8_t count)
 	return CRC16;
 }
 
-void FanRegulation()
+int16_t FanLevel(int16_t dT, int16_t dRH)
 {
-	//Upper bounds for regulation
-	int16_t dT = tmpStatus.insideT - tmpStatus.outsideT - validConf.minDeltaT;
-	int16_t dRH = tmpStatus.insideRH - tmpStatus.outsideRH - validConf.minDeltaRH;
 	int16_t A = (FanMax - FanMin) * dT / validConf.dDeltaT;
 	int16_t B = (FanMax - FanMin) * dRH / validConf.dDeltaRH;
 	if (B > A)
 		A = B;
-	A += FanMin;
-	if (A > tmpStatus.fanLevel) //At least one of upper bounds is above
-	{
-		//tmpStatus.fanLevel = A > FanMax ? FanMax : A; //Increase level
-	}
+	return A + FanMin;	
+}
+
+void FanRegulation()
+{
+	//Upper bounds for regulation
+	if (validConf.fanLevelOverride != 0xFF)
+		return;
+	int16_t dT = tmpStatus.insideT - tmpStatus.outsideT - validConf.minDeltaT;
+	int16_t dRH = tmpStatus.insideRH - tmpStatus.outsideRH - validConf.minDeltaRH;
+	uint8_t A = FanLevel(dT, dRH);
+	if (A > fanLvl) //At least one of upper bounds is above
+		fanLvl = A > FanMax ? FanMax : A; //Increase level
 	else
 	{
 		//Lower bounds for regulation
 		dT -= validConf.minDeltaT >> 3;
 		dRH -= validConf.minDeltaRH >> 3;
-		A = (FanMax - FanMin) * dT / validConf.dDeltaT;
-		B = (FanMax - FanMin) * dRH / validConf.dDeltaRH;
-		if (B > A)
-			A = B;
-		A += FanMin;
-		//if (A < tmpStatus.fanLevel) //Both lower bounds are below
-		//	tmpStatus.fanLevel = A > FanMin ? A : 0; //Decrease level
+		A = FanLevel(dT, dRH);
+		if (A < fanLvl) //Both lower bounds are below
+			fanLvl = A > FanMin ? A : 0; //Decrease level
 	}
 }
 
 uint16_t GetRPM()
 {
-	uint32_t temp = (F_CPU * 30 / 8) * (tachCnt - 1);
+	while (tachOvf--)
+		tachSum += 0xffff;
+	tachSum -= tachPrev;
+	uint32_t temp = (F_CPU * 60 / 8) * (tachCnt - 1);
 	return (uint16_t)(temp / tachSum);
 }
 
 ISR (USART0_RX_vect)
 {
-	static char uCnt = 0;
-	static uint8_t *rxBuf = (uint8_t*)&rcvdConf;
+	static char uCnt;
+	static uint8_t *rxBuf;
 	uint8_t data = UDR0;
 	if (UCSR0A & (1 << MPCM0)) //Address listening mode
 	{
@@ -118,23 +115,23 @@ ISR (USART0_RX_vect)
 			if (data == SetConfig)
 			{
 				uCnt = sizeof(sysConfig); //Bytes to receive
-				rxBuf = (uint8_t*)&rcvdConf; //First byte address in structure
-				rxMark = (uint8_t)cycles;
+				rxBuf = iobuf; //First byte address in structure
+				rxMark = 0;
 			}
 			else
 			{
 				U0TXen();
 				if (rxMode == GetConfig)
 				{
-					txCnt = sizeof(sysConfig) - 1; //Because one byte will be send right there
+					txCnt = sizeof(sysConfig) - 1; //Because one byte will be send right after
 					txBuf = (uint8_t*)&validConf;
 				}
 				else //Get status
 				{
+					txBuf = iobuf;
 					tmpStatus.CRC16 = CalculateCRC16(&tmpStatus, sizeof(sysStatus) - 2);
-					memcpy(&validStatus, &tmpStatus, sizeof(sysStatus));
+					memcpy(iobuf, &tmpStatus, sizeof(sysStatus));
 					txCnt = sizeof(sysStatus) - 1;
-					txBuf = (uint8_t*)&validStatus;
 				}
 				UDR0 = *txBuf++; //Send first byte
 			}
@@ -145,11 +142,22 @@ ISR (USART0_RX_vect)
 	else if (rxMode == SetConfig)
 	{
 		*rxBuf++ = data;
-		if (--uCnt == 0) //Packet received
+		if (!--uCnt) //Packet received
 		{
 			rxMode = 0;
-			if (CalculateCRC16(&rcvdConf, sizeof(sysConfig) - 2) == rcvdConf.CRC16) //CRC OK
-				memcpy(&validConf, &rcvdConf, sizeof(sysConfig));
+			if (CalculateCRC16(iobuf, sizeof(sysConfig) - 2) == ((sysConfig*)iobuf)->CRC16) //CRC OK
+			{
+				memcpy(&validConf, iobuf, sizeof(sysConfig));
+				if (validConf.fanLevelOverride != 0xFF)
+				{
+					fanLvl = validConf.fanLevelOverride;
+					if (fanLvl < FanMin)
+						fanLvl = 0;
+					else if (fanLvl > FanMax)
+						fanLvl = FanMax;
+				}
+			}
+			UCSR0A = (1 << MPCM0); //Set MPCM bit
 		}
 	}
 }
@@ -168,25 +176,19 @@ ISR (USART0_TX_vect) //Transmit to RS485
 
 ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 {
-	static uint8_t rs485busy = 0;
-	uint8_t lcycle = ((uint8_t)cycles++) & 0x1F; //Range 0-31
+	uint8_t lcycle = ((uint8_t)cycles++) & 0x3F; //Range 0-63
 	if (!cycles) //~77 minutes between updates
 		eeprom_update_block(&validConf, &eConf, sizeof(sysConfig));
-	if (lcycle == 4 || lcycle == 12) //Send start signal to the sensor
+	if (lcycle == 44 || lcycle == 52) //Send start signal to the sensor
 	{
 		uint8_t delayz = 0, j;
 		for (j = 0; j < 4; j++)
 			delayz += AM2302.arr[j];
-		if (delayz != AM2302.arr[4])
-		{
-			tmpStatus.fanLevel = 10;
-			memcpy(&tmpStatus.insideRH, AM2302.arr, sizeof(am2302));
-		}
-		else
+		if (delayz == AM2302.arr[4])
 		{
 			if (AM2302.frame.T < 0)
 				AM2302.frame.T = ~(AM2302.frame.T & 0x7FFF) + 1;
-			if (lcycle == 4)
+			if (lcycle == 44)
 			{
 				tmpStatus.insideRH = AM2302.frame.RH;
 				tmpStatus.insideT = AM2302.frame.T;
@@ -198,8 +200,6 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 				FanRegulation();
 			}
 		}
-		for (j = 0; j < 5; j++)
-			AM2302.arr[j] = 0;
 
 		PORTB &= ~(1 << PORTB2);
 		DDRB |= (1 << DDB2); //Interface pulled low
@@ -214,58 +214,43 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 	if (!lcycle)
 	{
 		tmpStatus.rpmFront = tachCnt > 1 ? GetRPM() : 0;
-		//SelChA();
+		SelChA();
 		tachCnt = 0;
-		tachSum = 0;
 		TIMSK1 |= (1 << ICIE1);
 	}
 	else if (lcycle == 8)
 	{
 		tmpStatus.rpmRear = tachCnt > 1 ? GetRPM() : 0;
-		//SelChB();
+		SelChB();
 		tachCnt = 0;
-		tachSum = 0;
 		TIMSK1 |= (1 << ICIE1);
 		tmpStatus.currentDraw = (adcSum << 3) / Idiv_x1mA;
 		adcSum = 0;
 	}
 
-	if (rxMode == SetConfig) //We are currently receiving data packet
+	if (rxMode == SetConfig && 2 < ++rxMark) //We are currently receiving data packet
 	{
-		if (rs485busy == rxMark) //Second tick in a row detected
-		{
-			UCSR0A = (1 << MPCM0);
-			rxMode = 0;
-		}
-		else
-			rs485busy = rxMark;
+		UCSR0A = (1 << MPCM0);
+		rxMode = 0;
 	}
-	else
-		rs485busy = rxMark - 1;
 
 	if (lcycle & 1)
-	{
 		ADCSRA |= (1 << ADSC);
-		i16i8 u16u8;
-		if (validConf.fanLevelOverride == 0xFF)
-			u16u8.ui8[1] = validStatus.fanLevel;
-		else
-		{
-			u16u8.ui8[0] = validConf.fanLevelOverride;
-			u16u8.ui16 *= PWM_max;
-		}
-		if (OCR2AL > u16u8.ui8[1])
+	if ((lcycle & 3) == 3)
+	{
+		if (OCR2AL > fanLvl)
 		{
 			OCR2AL--;
 			if (OCR2AL < FanMin)
 				OCR2AL = 0;
 		}
-		else if (OCR2AL < u16u8.ui8[1])
+		else if (OCR2AL < fanLvl)
 		{
 			OCR2AL++;
 			if (OCR2AL < FanMin)
-				OCR2AL = u16u8.ui8[1];
+				OCR2AL = FanMin;
 		}
+		tmpStatus.fanLevel = OCR2AL;
 		OCR2BL = ICR2L - OCR2AL;
 	}
 }
@@ -285,7 +270,6 @@ ISR (TIMER0_OVF_vect)
 {
 	TIMSK0 = 0; //Disable overflow interrupt
 	GIMSK = 0; //Disable pin change interrupt
-	tmpStatus.fanLevel = 1; //Sensor not responded code
 }
 
 ISR (PCINT1_vect)
@@ -296,11 +280,11 @@ ISR (PCINT1_vect)
 	if (PINB & (1 << PINB2))
 		return; //Skip rising edge interrupt
 	if (amCnt++ < 0)
-		return; //Clear array and that's all
+		return;
 	if (amCnt < 40)
 	{
 		temp <<= 1;
-		if (delayz > 44) //High level held more than 48µs - logic one received
+		if (delayz > 46) //High level held more than 48µs - logic one received
 			temp |= 1;
 		if ((amCnt & 7) == 7)
 			AM2302.arr[amCnt >> 3] = temp;
@@ -314,16 +298,13 @@ ISR (PCINT1_vect)
 
 ISR (TIMER1_CAPT_vect)
 {
-	if (tachCnt++ > 0)
-	{
-		if (ICR1 < tachPrev)
-			tachSum += 0xFFFF - tachPrev + ICR1;
-		else
-			tachSum += ICR1 - tachPrev;
-	}
-	if (tachCnt > 7)
+	if (!tachCnt++)
+		tachPrev = ICR1;
+	else
+		tachSum = ICR1;
+	if (tachCnt > 7) //8 points is enough
 		TIMSK1 &= ~(1 << ICIE1);
-	tachPrev = ICR1;
+	tachOvf = (char)cycles & 7;
 }
 
 ISR (ADC_vect)
@@ -343,7 +324,6 @@ void inline mcuInit()
 	UCSR0C = (1 << USBS0) | (1 << UCSZ01) | (1 << UCSZ00);
 	UCSR0A = (1 << MPCM0);
 	//Timer 1: 921.6kHz clock, input capture on leading edge, noise filtering, OVF interrupt
-	//If fan is running for 4 poles, minimum measurable speed is 422rpm
 	TCCR1B = (1 << ICNC1) | (1 << ICES1) | (1 << CS11);
 	TIMSK1 = (1 << TOIE1);
 	//Timer 2: 7.3728MHz clock, phase and frequency correct PWM, top in ICR2

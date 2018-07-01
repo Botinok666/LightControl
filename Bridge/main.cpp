@@ -1,7 +1,7 @@
 /* Bridge.cpp
  * Created: 26.11.2017 22:13:12
- * Version: 1.1
- * Programmed version: 1.1	*/
+ * Version: 1.2
+ * Programmed version: 1.2	*/
 
 #include "Bridge.h"
 #include <avr/io.h>
@@ -10,7 +10,7 @@
 uint8_t uBuf[64];
 volatile bool u1rx = false;
 volatile uint8_t destAddr;
-volatile uint8_t *u1rxBuf = uBuf, *u0txBuf = uBuf;
+volatile uint8_t rxIdx, txIdx;
 
 ISR (USART0_RX_vect) //Data from RS485
 {
@@ -22,15 +22,11 @@ ISR (USART0_TX_vect) //Data into RS485
 	if (UCSR0B & (1 << TXB80)) //Address has been transmitted
 	{
 		UCSR0B &= ~(1 << TXB80); //Clear 9th bit
-		if ((destAddr & 0x0F) == 3) //Lower nibble equals 3: set config
-			UDR0 = *u0txBuf++; //Send first byte from buffer
-		else
+		if ((destAddr & 0x0F) != 3) //Lower nibble equals 3: set config
 			U0RXen(); //Enable receiver (we will receive some data)
 	}
-	else if (u0txBuf <= u1rxBuf) //Transmit all data
-		UDR0 = *u0txBuf++;
-	else //All data has been transmitted
-		U0RXen(); //Enable receiver (set bus into idle mode)
+	else if (txIdx < rxIdx) //Transmit data from RasPi
+		UDR0 = uBuf[txIdx++];
 }
 
 ISR (USART1_RX_vect) //Data from RasPi
@@ -45,23 +41,26 @@ ISR (USART1_RX_vect) //Data from RasPi
 		if ((destAddr & 0x0F) == 3) //Lower nibble equals 3: set config
 		{
 			u1rx = true;
-			u0txBuf = u1rxBuf = uBuf; //We will receive other data from RasPi and send it over RS485
+			txIdx = rxIdx = 0; //We will receive other data from RasPi and send it over RS485
 			TCNT0 = 0;
-			TIFR0 |= (1 << TOV0);
-			TIMSK0 |= (1 << TOIE0);
+			TIFR0 = (1 << OCF0B);
+			TIMSK0 = (1 << OCIE0B);
 		}
 	}
 	else
 	{
 		TCNT0 = 0;
-		*u1rxBuf++ = UDR1;
+		uBuf[rxIdx++] = UDR1;
+		if ((UCSR0A & (1 << UDRE0)) && txIdx < rxIdx)
+			UDR0 = uBuf[txIdx++];
 	}
 }
 
-ISR (TIMER0_OVF_vect) //555µs timeout
+ISR (TIMER0_COMPB_vect) //2.66ms timeout
 {
-	TIMSK0 &= ~(1 << TOIE0);
+	TIMSK0 = 0;
 	u1rx = false; //Receiving from RasPi was finished
+	U0RXen(); //Enable receiver (set bus into idle mode)
 }
 
 inline void mcuInit()
@@ -76,8 +75,9 @@ inline void mcuInit()
 	//USART 1: 76.8kbps, frame bits: start / 8 data / no parity / 1 stop
 	UBRR1 = 2; //Actual maximum transfer rate: 7680Bps
 	UCSR1B = (1 << RXCIE1) | (1 << RXEN1) | (1 << TXEN1); //RX interrupt enabled
-	//Timer 0: 460.8kHz clock
-	TCCR0B = (1 << CS01);
+	//Timer 0: 57.6kHz clock
+	TCCR0B = (1 << CS01) | (1 << CS00); //~17.36µs tick
+	OCR0B = 154; //~2.66ms timeout
 	//Power reduction
 	PRR = (1 << PRTWI) | (1 << PRSPI) | (1 << PRTIM1) | (1 << PRTIM2) | (1 << PRADC);
 	sei();
