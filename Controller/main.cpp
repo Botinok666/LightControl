@@ -1,6 +1,6 @@
 /* Controller.cpp
  * Created: 12.01.2018 11:30:55
- * Version: 1.1 */
+ * Version: 1.3 */
 
 #include "LC.h"
 #include <avr/io.h>
@@ -23,10 +23,10 @@ union i16i8
 
 struct systemConfig
 {
-	uint8_t minLvl[8], maxLvl[8];
+	uint8_t minLvl[8];
 	uint8_t overrideLvl, overrideCfg; //Config: bits 0-7: mask for channels 0-7
 	uint8_t fadeRate[4], linkDelay[4];
-	uint8_t msenOnTime, msenLowTime, msenLowLvl;
+	uint8_t msenOnTime, msenOnLvl, msenLowTime, msenLowLvl;
 	uint8_t groupConf; //bit 4: override channel 8, bit 3: save to EEPROM
 	uint8_t rtcCorrect; //Value in ppm, sign-and-magnitude representation
 
@@ -39,7 +39,8 @@ struct systemState
 	uint8_t setLevels[9];
 	uint8_t linkLevels[4];
 	uint8_t linksMask; //Bits 0-3: valid analog signal from link 1-4; bits 4-7: non-zero level at link 1-4
-
+	uint8_t msenLevel;
+	
 	uint16_t CRC16;
 } sysState;
 
@@ -56,17 +57,15 @@ uint8_t iobuf[MAX(sizeof(systemConfig), MAX(sizeof(systemState), sizeof(channels
 class LCport
 {
 private:
-	bool _dir; //Direction of group delay
 	uint8_t _linkCnt, _linkNum, _link[3]; //Positions in common array for light levels
 	uint8_t _lvl[3]; //Actual light levels, range: 0…255
-	uint8_t _minLvl[3]; //Minimum light levels, range: 1…223
-	uint8_t _difLvl[3]; //Regulation difference, range: 0/32…254 (0 - always off)
 	uint8_t _fadeRate; //Steps per second, range: 32…160 (settling time 0…100%: 8…1.6s)
 	int16_t _linkDelay; //Delay between links, range: 1…64 (time: 0.031…2s)
 	uint8_t _chActMask; //Mask for driving channel activity LED
 	uint64_t _tickLastChg, _onTimeStamp;
 
 public:
+	bool direction, msenCtrl; //Direction of group delay, is it controlled by motion sense
 	LCport(uint8_t num, uint8_t count, uint8_t posA, uint8_t posB, uint8_t posC)
 	{
 		_linkCnt = count;
@@ -87,29 +86,13 @@ public:
 		for (uint8_t i = 0; i < _linkCnt; i++)
 		{
 			pos = _link[i];
-			if ((pos < 8 && (validConf.overrideCfg & (1 << pos))) || 
-				(pos >= 8 && (validConf.groupConf & (1 << 4))))
+			if ((pos < 8 && (validConf.overrideCfg & (1 << pos))) || (pos >= 8 && (validConf.groupConf & (1 << 4))))
 			{
 				if (_lvl[i] == gLevels[pos]) //Refresh saved ticks value only if no dimming in the process right now
 					_tickLastChg = sysState.sysTick;
 				_lvl[i] = validConf.overrideLvl;
 			}
-			min = pos > 7 ? 4 : validConf.minLvl[pos];
-			max = pos > 7 ? 63 : validConf.maxLvl[pos];
-			_minLvl[i] = (min < 222) ? min + 1 : 223;
-			_difLvl[i] = max;
-			if (max > _minLvl[i])
-			{
-				max -= _minLvl[i];
-				_difLvl[i] = (max >= 32) ? max : 32;
-			}
 		}
-	}
-
-	void setLevel(uint8_t level, bool direction) //Accepts level in the range 0…255
-	{
-		_dir = direction;
-		setLevel(level);
 	}
 
 	void setLevel(uint8_t level) //Accepts level in the range 0…255
@@ -119,18 +102,22 @@ public:
 		int16_t tempLvl = (int16_t)oLvl - level;
 		if (-3 < tempLvl && tempLvl < 3 && ((level == 0) == (0 == oLvl)))
 			return;
+		if (!msenCtrl)
+			direction = oLvl > level;
 		sysState.linkLevels[_linkNum] = level;
 
 		for (uint8_t i = 0; i < _linkCnt; i++)
 		{
-			dimInProcess |= (_lvl[i] != gLevels[_link[i]]);
-			if (!level || !_difLvl[i]) //Set zero level directly
+			uint8_t j = _link[i];
+			uint8_t min = j < 8 ? validConf.minLvl[j] : 0x05;
+			dimInProcess |= (_lvl[i] != gLevels[j]);
+			if (!level) //Set zero level directly
 				_lvl[i] = 0;
 			else //Convert non-zero value to the actual range
 			{
 				uint16_t temp = level;
-				temp *= _difLvl[i];
-				_lvl[i] = (uint8_t)(temp >> 8) + _minLvl[i];
+				temp *= 0xFF - min;
+				_lvl[i] = (uint8_t)(temp >> 8) + min;
 			}
 		}
 		if (!dimInProcess) //Refresh saved ticks value only if no dimming in the process right now
@@ -144,30 +131,34 @@ public:
 		PORTC.OUTCLR = _chActMask;
 		for (int8_t i = 0; i < _linkCnt; i++)
 		{
-			uint8_t s = _dir ? i : _linkCnt - i - 1; //Direction '1' means forward
+			uint8_t s = direction ? i : _linkCnt - i - 1; //Direction '1' means forward
 			uint8_t j = _link[s];
+			uint8_t min = j < 8 ? validConf.minLvl[j] : 0x05;
+			if (_lvl[s] < min)
+				_lvl[s] = 0;
 			int16_t tempLvl = gLevels[j] - _lvl[s]; //Difference between actual and set levels
 			bool changed = false;
 			if (tempLvl && ticksEl >= i * _linkDelay)
 			{
 				if (tempLvl > 0) //Level needs to be lowered
 				{
-					tempLvl -= ((tempLvl > delta) ? delta : tempLvl) - (int16_t)_lvl[s];
-					if ((uint8_t)tempLvl < _minLvl[s]) //Actual level became zero
+					tempLvl -= ((tempLvl > delta) ? delta : tempLvl) - _lvl[s];
+					if (tempLvl < min) //Actual level became zero
 					{
 						changed = true;
-						tempLvl = -1 * ((int16_t)_fadeRate << 2); //Subtract 4x fade steps, so off/on delay will be 4s
+						msenCtrl = false;
+						tempLvl = -((int16_t)_fadeRate << 2); //Subtract 4x fade steps, so off/on delay will be 4s
 						channelOT.linkOnTime[j] += (uint32_t)(sysState.sysTick - _onTimeStamp) >> 5; //Add seconds
 						channelOT.linkSwCnt[j]++; //Increment switch counter
 					}
 				}
 				else //Level needs to be raised
 				{
-					tempLvl += ((-tempLvl > delta) ? delta : -tempLvl) + (int16_t)_lvl[s];
+					tempLvl += ((-tempLvl > delta) ? delta : -tempLvl) + _lvl[s];
 					if (!gLevels[j] && tempLvl > 0) //Lamp has been switched on - remember ticks
 					{
-						if ((uint8_t)tempLvl < _minLvl[s])
-							tempLvl = _minLvl[s];
+						if (tempLvl < min)
+							tempLvl = min;
 						_onTimeStamp = sysState.sysTick;
 					}
 				}
@@ -192,14 +183,16 @@ class Msen
 {
 private:
 	bool cntDown, ltEnt;
-	uint8_t _linkNum;
+	uint8_t _linkMask;
+	LCport *_linkAddr;
 	uint8_t _lvl;
-	uint8_t _onTime, _fTime;
+	uint16_t _onTime, _fTime;
 	uint64_t _onTimeStamp;
 public:
 	Msen(uint8_t actLink)
 	{
-		_linkNum = actLink;
+		_linkMask = 0x10 << actLink;
+		_linkAddr = &links[actLink];
 	};
 	void setParams()
 	{
@@ -208,24 +201,32 @@ public:
 	}
 	void setLevel(uint8_t level)
 	{
-		if (level < MSEN_VALID_MIN || !validConf.msenOnTime || (sysState.linksMask & (0x10 << _linkNum)))
+		sysState.msenLevel = level;
+		if (level < MSEN_VALID_MIN || !validConf.msenOnTime || (sysState.linksMask & _linkMask))
 		{
 			_lvl = 0; //MSEN disconnected, disabled (by zero on time) or there is non-zero level from link
-			cntDown = false;
+			_linkAddr->msenCtrl = cntDown = false;
 			return;
 		}
-		if (level > MSEN_SEN1_TRIG && _lvl == MSEN_VALID_MIN) //Off to on transition
+		if (level > MSEN_SEN1_TRIG)
 		{
+			if (_lvl < MSEN_SEN1_TRIG) //Off to on transition
+			{
+				_linkAddr->msenCtrl = true;
+				_linkAddr->direction = level > MSEN_SEN2_TRIG;
+				_linkAddr->setLevel(validConf.msenOnLvl); //Start from max light level
+				ltEnt = cntDown = false;				
+			}
 			_lvl = level;
-			links[_linkNum].setLevel(255, level > MSEN_SEN2_TRIG); //Start from max light level
-			ltEnt = cntDown = false;
-			return;
 		}
-		if (level < MSEN_SEN1_TRIG && _lvl > level) //On to off transition
+		else
 		{
+			if (_lvl > level) //On to off transition
+			{
+				_onTimeStamp = sysState.sysTick;
+				cntDown = true;
+			}
 			_lvl = MSEN_VALID_MIN;
-			_onTimeStamp = sysState.sysTick;
-			cntDown = true;
 		}
 	}
 	void updateLevel()
@@ -236,12 +237,13 @@ public:
 			if (ton > _fTime)
 			{
 				ltEnt = cntDown = false;
-				links[_linkNum].setLevel(0); //Both on and low time are expired, shut down the lamp
+				_linkAddr->setLevel(0); //Both on and low time are expired, turn off the lamp
 			}
-			else if (!ltEnt && _onTime)
+			else if (!ltEnt && ton > _onTime)
 			{
 				ltEnt = true;
-				links[_linkNum].setLevel(validConf.msenLowLvl);
+				_linkAddr->direction ^= true;
+				_linkAddr->setLevel(validConf.msenLowLvl);
 			}
 		}
 	}
@@ -249,10 +251,10 @@ public:
 
 channelsOnTime EEMEM savedCOT;
 systemConfig EEMEM savedConfig = {
-{5,5,5,5,5,5,5,5}, {255,255,255,255,255,255,255,255},	//Min, max levels
+{5,5,5,5,5,5,5,5},	//Min levels
 0, 0,	//Override level and config
 {96,96,96,160}, {28,28,28,1},	//Fade rate 2.6s, link delay 0.87s
-0, 30, 96,	//Motion sensor on time, low time, low level
+0, 255, 30, 96,	//Motion sensor on time, on level, low time, low level
 0, 0, 0};	//groupConfig, rtcCorrect, CRC16
 
 void inline UCTXen()
@@ -284,7 +286,7 @@ void ApplyConfig()
 	{
 		uint8_t j = temp->overrideCfg & 0xF; //Update on-time of link
 		channelOT.linkOnTime[j] = *((uint32_t*)temp->minLvl);
-		channelOT.linkSwCnt[j] = *((uint16_t*)temp->maxLvl);
+		channelOT.linkSwCnt[j] = *((uint16_t*)temp->fadeRate);
 		return;
 	}
 	memcpy(&validConf, iobuf, sizeof(systemConfig));
@@ -385,7 +387,7 @@ ISR(ADCA_CH0_vect)
 	else if (sAdcCnt < 4)
 		sysState.linksMask &= ~(0x11 << sAdcCnt); //Clear 'valid' and 'non-zero' bits
 	else //sAdcCnt == 4: MSEN channel
-		msenCh.setLevel((uint8_t)(result >> 6));
+		msenCh.setLevel(result < 0 ? 0 : result >> 6);
 
 	sAdcCnt++;
 	ADCA.CH0.MUXCTRL = (sAdcCnt + 1) << ADC_CH_MUXPOS_gp;
