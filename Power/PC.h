@@ -15,9 +15,9 @@
 #define TSEN_MAX	1614
 
 #define PWM_freq	25000
-#define PWM_max		(F_CPU / PWM_freq - 1)
-#define FanMin		((25 * PWM_max) >> 8)
-#define FanMax		((250 * PWM_max) >> 8)
+#define PWM_max		(F_CPU / (2L * PWM_freq))
+#define FanMin		((25 * PWM_max) / 100)
+#define FanMax		((95 * PWM_max) / 100)
 
 #define DC_to_Load		(PORTA |= (1 << PORTA7))
 #define AC_to_Load		(PORTA &= (1 << PORTA7))
@@ -29,8 +29,6 @@
 #define BMS_Sel_A		(PORTA &= ~(1 << PORTA1))
 #define BMS_Sel_B		(PORTA |= (1 << PORTA1))
 #define BMS_B_Selected	(PORTA & (1 << PORTA1))
-#define Cooler_On		(PORTB |= (1 << PORTB1))
-#define Cooler_Off		(PORTB &= ~(1 << PORTB1))
 #define Charger_On		(PORTB |= (1 << PORTB0))
 #define Charger_Off		(PORTB &= ~(1 << PORTB0))
 

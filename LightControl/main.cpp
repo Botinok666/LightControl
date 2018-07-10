@@ -186,6 +186,12 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 			delayz += AM2302.arr[j];
 		if (delayz == AM2302.arr[4])
 		{
+			j = AM2302.arr[1]; //Big endian to little endian conversion
+			AM2302.arr[1] = AM2302.arr[0];
+			AM2302.arr[0] = j;
+			j = AM2302.arr[3];
+			AM2302.arr[3] = AM2302.arr[2];
+			AM2302.arr[2] = j;
 			if (AM2302.frame.T < 0)
 				AM2302.frame.T = ~(AM2302.frame.T & 0x7FFF) + 1;
 			if (lcycle == 44)
@@ -208,7 +214,7 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 		OCR0B = 48; //~1.666ms delay
 		TIFR0 = (1 << TOV0) | (1 << OCF0B);
 		TIMSK0 = (1 << OCIE0B); //Enable interrupt
-		amCnt = -1; //Skip response signal
+		amCnt = -2; //Skip response signal
 	}
 	lcycle &= 0xF; //Range 0-15
 	if (!lcycle)
@@ -279,9 +285,7 @@ ISR (PCINT1_vect)
 	TCNT0 = 0; //Clear counter
 	if (PINB & (1 << PINB2))
 		return; //Skip rising edge interrupt
-	if (amCnt++ < 0)
-		return;
-	if (amCnt < 40)
+	if (0 <= amCnt && amCnt < 40)
 	{
 		temp <<= 1;
 		if (delayz > 46) //High level held more than 48µs - logic one received
@@ -289,7 +293,7 @@ ISR (PCINT1_vect)
 		if ((amCnt & 7) == 7)
 			AM2302.arr[amCnt >> 3] = temp;
 	}
-	if (amCnt == 39)
+	if (++amCnt == 40)
 	{
 		TIMSK0 = 0; //Disable overflow interrupt
 		GIMSK = 0; //Disable pin change interrupt

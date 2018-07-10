@@ -8,15 +8,16 @@
 #include <avr/power.h>
 
 int16_t adcResult[2] = { 0, 0 };
-int8_t adcCnt = -1;
-uint8_t toffCnt = 0, iclCnt = 6;
+volatile int8_t adcCnt = -1;
+volatile uint8_t iclCnt = 6;
+volatile uint16_t toffCnt = 0;
 
-ISR(ADC_vect)
+ISR (ADC_vect)
 {
 	adcResult[adcCnt & 1] += ADC;
 }
 
-ISR(TIM0_COMPA_vect)
+ISR (TIM0_COMPA_vect)
 {
 	if (!Is_Battery_discharged && !We_Are_OffLine)
 	{
@@ -26,18 +27,35 @@ ISR(TIM0_COMPA_vect)
 		DC_MOS_On;
 		iclCnt = 6;
 		Set_ChargeReq_flag;
+		TCNT0 = 0;
 	}
-	Set_Tick_flag;
 	toffCnt = 0;
+
+	TIFR0 = (1 << OCF0B);
+	TIMSK0 = (1 << OCIE0B); //Enable 10ms period interrupt
 }
 
-ISR(ANA_COMP_vect) //Comparator toggle
+ISR (TIM0_COMPB_vect)
 {
-	TCNT0 = 0; //Clear timer 0
-	if (ACSR & (1 << ACO)) //Rising edge
+	TCNT0 = 0;
+	Set_Tick_flag;
+}
+
+ISR (ANA_COMP_vect) //Comparator toggle
+{
+	if (ACSR & (1 << ACO)) //Rising edge: mains voltage below threshold
 	{
+		TCNT0 = 0; //Clear timer 0
+		TIFR0 = (1 << OCF0A);
+		TIMSK0 = (1 << OCIE0A); //Enable timeout interrupt
+	}
+	else //Falling edge: mains voltage above threshold
+	{
+		TIMSK0 = 0; //Disable timeout interrupt
+		TIFR0 = (1 << OCF0A);
+
 		Set_Tick_flag;
-		if (toffCnt < 250) //~2.5s delay
+		if (toffCnt < 500) //~5s delay
 			toffCnt++;
 		else
 		{
@@ -54,29 +72,28 @@ ISR(ANA_COMP_vect) //Comparator toggle
 inline void mcuInit()
 {
 	cli();
-	//Clock: 4MHz
-	clock_prescale_set(clock_div_2);
+	//Clock: 8MHz
+	clock_prescale_set(clock_div_1);
 	//Port A: pin 1 - BMS select, pin 4 - DC switch, pin 5 - cooler PWM, pin 6 - HB LED, pin 7 - main switch
 	DDRA = (1 << DDA1) | (1 << DDA4) | (1 << DDA5) | (1 << DDA6) | (1 << DDA7);
-	//Port B: pin 0 - charger switch, pin 1 - cooler switch, pin 2 - ICL switch
-	DDRB = (1 << DDB0) | (1 << DDB1) | (1 << DDB2);
-	//Timer 0: 3906Hz, CTC, interrupt on OC0A
-	TCCR0A = (1 << WGM01);
+	//Port B: pin 0 - charger switch, pin 2 - ICL switch
+	DDRB = (1 << DDB0) | (1 << DDB2);
+	//Timer 0: 7812Hz, interrupt on OC0A
 	TCCR0B = (1 << CS02) | (1 << CS00);
-	OCR0A = 40; //10.24ms timeout
-	TIMSK0 = (1 << OCIE0A);
-	//Timer 1: 4MHz, fast PWM with top in ICR1
-	TCCR1A = (1 << COM1A1) | (1 << COM1B1) | (1 << WGM11);
-	TCCR1B = (1 << WGM12) | (1 << WGM13) | (1 << CS10);
+	OCR0A = 13; //1.79ms timeout: ~140VAC minimum input voltage
+	OCR0B = 77; //10ms period
+	//Timer 1: 8MHz, phase and frequency correct PWM with top in ICR1
+	TCCR1A = (1 << COM1A1) | (1 << COM1B1);
+	TCCR1B = (1 << WGM13) | (1 << CS10);
 	ICR1 = PWM_max;
 	OCR1A = 0; //HB LED is off
 	OCR1B = 0; //Cooler is off
-	//Analog comparator: 1.1v on AIN+, interrupt
+	//Analog comparator: 1.1v on AIN0, interrupt on toggle
 	ACSR = (1 << ACBG) | (1 << ACIE);
 	//Digital input disable: THS0, AC detection, battery sense
 	DIDR0 = (1 << ADC0D) | (1 << ADC2D) | (1 << ADC3D);
 	//ADC: 3.3v reference, 125kHz, interrupt
-	ADCSRA = (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS0);
+	ADCSRA = (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS1);
 	//Power reduction: USI
 	PRR = (1 << PRUSI);
 	sei();
@@ -134,10 +151,6 @@ int main(void)
 					if ((uint16_t)m < OCR1B)
 						OCR1B = m < FanMin ? 0 : m;
 				}
-				if (OCR1B)
-					Cooler_On;
-				else
-					Cooler_Off;
 
 				if (adcResult[1] < DC_MIN && We_Are_OffLine) //Check battery voltage
 				{
