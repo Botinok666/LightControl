@@ -66,9 +66,7 @@ int16_t FanLevel(int16_t dT, int16_t dRH)
 {
 	int16_t A = (FanMax - FanMin) * dT / validConf.dDeltaT;
 	int16_t B = (FanMax - FanMin) * dRH / validConf.dDeltaRH;
-	if (B > A)
-		A = B;
-	return A + FanMin;	
+	return A > B ? A : B;	
 }
 
 void FanRegulation()
@@ -78,15 +76,15 @@ void FanRegulation()
 		return;
 	int16_t dT = tmpStatus.insideT - tmpStatus.outsideT - validConf.minDeltaT;
 	int16_t dRH = tmpStatus.insideRH - tmpStatus.outsideRH - validConf.minDeltaRH;
-	uint8_t A = FanLevel(dT, dRH);
-	if (A > fanLvl) //At least one of upper bounds is above
+	int16_t A = FanLevel(dT, dRH) + FanMin;
+	if ((fanLvl >= FanMin && A > fanLvl) || (fanLvl < FanMin && A > FanMin)) //At least one of upper bounds is above
 		fanLvl = A > FanMax ? FanMax : A; //Increase level
 	else
 	{
 		//Lower bounds for regulation
 		dT -= validConf.minDeltaT >> 3;
 		dRH -= validConf.minDeltaRH >> 3;
-		A = FanLevel(dT, dRH);
+		A = FanLevel(dT, dRH) + FanMin;
 		if (A < fanLvl) //Both lower bounds are below
 			fanLvl = A > FanMin ? A : 0; //Decrease level
 	}
@@ -184,14 +182,14 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 		uint8_t delayz = 0, j;
 		for (j = 0; j < 4; j++)
 			delayz += AM2302.arr[j];
-		if (delayz == AM2302.arr[4])
+		j = AM2302.arr[1]; //Big endian to little endian conversion
+		AM2302.arr[1] = AM2302.arr[0];
+		AM2302.arr[0] = j;
+		j = AM2302.arr[3];
+		AM2302.arr[3] = AM2302.arr[2];
+		AM2302.arr[2] = j;
+		if (delayz == AM2302.arr[4] && AM2302.frame.RH != 0)
 		{
-			j = AM2302.arr[1]; //Big endian to little endian conversion
-			AM2302.arr[1] = AM2302.arr[0];
-			AM2302.arr[0] = j;
-			j = AM2302.arr[3];
-			AM2302.arr[3] = AM2302.arr[2];
-			AM2302.arr[2] = j;
 			if (AM2302.frame.T < 0)
 				AM2302.frame.T = ~(AM2302.frame.T & 0x7FFF) + 1;
 			if (lcycle == 44)
@@ -276,6 +274,7 @@ ISR (TIMER0_OVF_vect)
 {
 	TIMSK0 = 0; //Disable overflow interrupt
 	GIMSK = 0; //Disable pin change interrupt
+	memset(&AM2302, 0, sizeof(am2302));
 }
 
 ISR (PCINT1_vect)

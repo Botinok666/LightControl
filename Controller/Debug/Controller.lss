@@ -1592,7 +1592,7 @@ ISR(RTC_OVF_vect)
 
 	if (rxMode == SetConfig && 2 < ++rxMark) //We are currently receiving data packet
      9b2:	80 91 44 21 	lds	r24, 0x2144	; 0x802144 <rxMode>
-     9b6:	83 33       	cpi	r24, 0x33	; 51
+     9b6:	83 32       	cpi	r24, 0x23	; 35
      9b8:	b9 f4       	brne	.+46     	; 0x9e8 <__LOCK_REGION_LENGTH__+0x5e8>
      9ba:	80 91 43 21 	lds	r24, 0x2143	; 0x802143 <rxMark>
      9be:	8f 5f       	subi	r24, 0xFF	; 255
@@ -2725,7 +2725,7 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
     10b2:	74 c0       	rjmp	.+232    	; 0x119c <__vector_23+0x11a>
 	{
 		if (CmdLC <= data && data <= CmdUC)
-    10b4:	9f ec       	ldi	r25, 0xCF	; 207
+    10b4:	9f ed       	ldi	r25, 0xDF	; 223
     10b6:	98 0f       	add	r25, r24
     10b8:	94 30       	cpi	r25, 0x04	; 4
     10ba:	08 f0       	brcs	.+2      	; 0x10be <__vector_23+0x3c>
@@ -2738,7 +2738,7 @@ ISR(USARTC0_RXC_vect) //Data received from RS485
 			rxMode = data;
     10c4:	80 93 44 21 	sts	0x2144, r24	; 0x802144 <rxMode>
 			if (data == SetConfig)
-    10c8:	83 33       	cpi	r24, 0x33	; 51
+    10c8:	83 32       	cpi	r24, 0x23	; 35
     10ca:	89 f4       	brne	.+34     	; 0x10ee <__vector_23+0x6c>
 			{
 				rxMark = 0;
@@ -2788,7 +2788,7 @@ void inline UCTXen()
 				UCTXen();
 				if (rxMode == GetConfig)
     1100:	80 91 44 21 	lds	r24, 0x2144	; 0x802144 <rxMode>
-    1104:	82 33       	cpi	r24, 0x32	; 50
+    1104:	82 32       	cpi	r24, 0x22	; 34
     1106:	59 f4       	brne	.+22     	; 0x111e <__vector_23+0x9c>
 				{
 					EDMA.CH1.TRFCNT = sizeof(systemConfig) + 3;
@@ -2807,7 +2807,7 @@ void inline UCTXen()
 				}
 				else if (rxMode == GetStatus) //Get state
     111e:	80 91 44 21 	lds	r24, 0x2144	; 0x802144 <rxMode>
-    1122:	81 33       	cpi	r24, 0x31	; 49
+    1122:	81 32       	cpi	r24, 0x21	; 33
     1124:	c9 f4       	brne	.+50     	; 0x1158 <__vector_23+0xd6>
 				{
 					memcpy(iobuf, &sysState, sizeof(systemState));
@@ -3352,7 +3352,7 @@ public:
 	LCport(uint8_t num, uint8_t count, uint8_t posA, uint8_t posB, uint8_t posC)
 	{
 		_linkCnt = count;
-    1448:	24 af       	std	Z+60, r18	; 0x3c
+    1448:	94 af       	std	Z+60, r25	; 0x3c
 		_link[0] = posA;
     144a:	96 af       	std	Z+62, r25	; 0x3e
 		_link[1] = posB;
