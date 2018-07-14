@@ -82,8 +82,8 @@ void FanRegulation()
 	else
 	{
 		//Lower bounds for regulation
-		dT -= validConf.minDeltaT >> 3;
-		dRH -= validConf.minDeltaRH >> 3;
+		dT += validConf.minDeltaT >> 3;
+		dRH += validConf.minDeltaRH >> 3;
 		A = FanLevel(dT, dRH) + FanMin;
 		if (A < fanLvl) //Both lower bounds are below
 			fanLvl = A > FanMin ? A : 0; //Decrease level

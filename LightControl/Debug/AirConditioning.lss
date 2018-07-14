@@ -17,19 +17,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   6 .debug_aranges 000000e8  00000000  00000000  00000bb8  2**3
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   000011bf  00000000  00000000  00000ca0  2**0
+  7 .debug_info   000011e0  00000000  00000000  00000ca0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00000a70  00000000  00000000  00001e5f  2**0
+  8 .debug_abbrev 00000a70  00000000  00000000  00001e80  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00000a8f  00000000  00000000  000028cf  2**0
+  9 .debug_line   00000a8f  00000000  00000000  000028f0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  000002ac  00000000  00000000  00003360  2**2
+ 10 .debug_frame  000002ac  00000000  00000000  00003380  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00000701  00000000  00000000  0000360c  2**0
+ 11 .debug_str    00000701  00000000  00000000  0000362c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00000a2d  00000000  00000000  00003d0d  2**0
+ 12 .debug_loc    00000a75  00000000  00000000  00003d2d  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000078  00000000  00000000  0000473a  2**0
+ 13 .debug_ranges 00000078  00000000  00000000  000047a2  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -379,8 +379,8 @@ void FanRegulation()
  226:	44 f4       	brge	.+16     	; 0x238 <__stack+0x39>
  228:	0f c0       	rjmp	.+30     	; 0x248 <__stack+0x49>
 		//Lower bounds for regulation
-		dT -= validConf.minDeltaT >> 3;
-		dRH -= validConf.minDeltaRH >> 3;
+		dT += validConf.minDeltaT >> 3;
+		dRH += validConf.minDeltaRH >> 3;
 		A = FanLevel(dT, dRH) + FanMin;
 		if (A < fanLvl) //Both lower bounds are below
 			fanLvl = A > FanMin ? A : 0; //Decrease level
@@ -406,27 +406,27 @@ void FanRegulation()
 	else
 	{
 		//Lower bounds for regulation
-		dT -= validConf.minDeltaT >> 3;
-		dRH -= validConf.minDeltaRH >> 3;
+		dT += validConf.minDeltaT >> 3;
+		dRH += validConf.minDeltaRH >> 3;
 		A = FanLevel(dT, dRH) + FanMin;
- 248:	d5 94       	asr	r13
- 24a:	c7 94       	ror	r12
- 24c:	d5 94       	asr	r13
- 24e:	c7 94       	ror	r12
- 250:	d5 94       	asr	r13
- 252:	c7 94       	ror	r12
- 254:	be 01       	movw	r22, r28
- 256:	6c 19       	sub	r22, r12
- 258:	7d 09       	sbc	r23, r13
- 25a:	f5 94       	asr	r15
- 25c:	e7 94       	ror	r14
- 25e:	f5 94       	asr	r15
- 260:	e7 94       	ror	r14
- 262:	f5 94       	asr	r15
- 264:	e7 94       	ror	r14
- 266:	c8 01       	movw	r24, r16
- 268:	8e 19       	sub	r24, r14
- 26a:	9f 09       	sbc	r25, r15
+ 248:	b6 01       	movw	r22, r12
+ 24a:	75 95       	asr	r23
+ 24c:	67 95       	ror	r22
+ 24e:	75 95       	asr	r23
+ 250:	67 95       	ror	r22
+ 252:	75 95       	asr	r23
+ 254:	67 95       	ror	r22
+ 256:	6c 0f       	add	r22, r28
+ 258:	7d 1f       	adc	r23, r29
+ 25a:	c7 01       	movw	r24, r14
+ 25c:	95 95       	asr	r25
+ 25e:	87 95       	ror	r24
+ 260:	95 95       	asr	r25
+ 262:	87 95       	ror	r24
+ 264:	95 95       	asr	r25
+ 266:	87 95       	ror	r24
+ 268:	80 0f       	add	r24, r16
+ 26a:	91 1f       	adc	r25, r17
  26c:	1e df       	rcall	.-452    	; 0xaa <_Z8FanLevelii>
  26e:	83 96       	adiw	r24, 0x23	; 35
  270:	ac 01       	movw	r20, r24

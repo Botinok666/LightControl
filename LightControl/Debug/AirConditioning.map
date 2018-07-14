@@ -589,13 +589,13 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x11bf
+.debug_info     0x00000000     0x11e0
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x75c C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25/crtattiny441.o
- .debug_info    0x0000075c      0x85b main.o
- .debug_info    0x00000fb7       0xad C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25\libattiny441.a(eerd_block.o)
- .debug_info    0x00001064       0xae C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25\libattiny441.a(eeupd_block.o)
- .debug_info    0x00001112       0xad C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25\libattiny441.a(eeupd_byte.o)
+ .debug_info    0x0000075c      0x87c main.o
+ .debug_info    0x00000fd8       0xad C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25\libattiny441.a(eerd_block.o)
+ .debug_info    0x00001085       0xae C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25\libattiny441.a(eeupd_block.o)
+ .debug_info    0x00001133       0xad C:/Program Files (x86)/Atmel/Studio/7.0/Packs/Atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny441/avr25\libattiny441.a(eeupd_byte.o)
 
 .debug_abbrev   0x00000000      0xa70
  *(.debug_abbrev)
@@ -623,9 +623,9 @@ END GROUP
  .debug_str     0x000002a5      0x45c main.o
                                 0x4b6 (size before relaxing)
 
-.debug_loc      0x00000000      0xa2d
+.debug_loc      0x00000000      0xa75
  *(.debug_loc)
- .debug_loc     0x00000000      0xa2d main.o
+ .debug_loc     0x00000000      0xa75 main.o
 
 .debug_macinfo
  *(.debug_macinfo)
