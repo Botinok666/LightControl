@@ -11,6 +11,7 @@ int16_t adcResult[2] = { 0, 0 };
 volatile int8_t adcCnt = -1;
 volatile uint8_t iclCnt = 6;
 volatile uint16_t toffCnt = 0;
+volatile bool TickFlag = false, Discharged = false, ChargeReq = true;
 
 ISR (ADC_vect)
 {
@@ -19,54 +20,52 @@ ISR (ADC_vect)
 
 ISR (TIM0_COMPA_vect)
 {
-	if (!Is_Battery_discharged && !We_Are_OffLine)
+	if (!Discharged && !We_Are_OffLine)
 	{
 		ICL_Active;
+		_delay_ms(5); //Release time of ICL relay
 		DC_to_Load;
-		_delay_ms(5); //Release time of ICL
 		DC_MOS_On;
 		iclCnt = 6;
-		Set_ChargeReq_flag;
+		ChargeReq = true;
 		TCNT0 = 0;
+		ACSR = (1 << ACBG) | (1 << ACIE) | (1 << ACI); //Prevent immediate firing of ACMP interrupt
 	}
 	toffCnt = 0;
 
-	TIFR0 = (1 << OCF0B);
-	TIMSK0 = (1 << OCIE0B); //Enable 10ms period interrupt
+	TIFR0 = (1 << OCF0B) | (1 << OCF0A);
+	TIMSK0 = (1 << OCIE0B); //Disable timeout and enable 10ms interrupt
 }
 
 ISR (TIM0_COMPB_vect)
 {
 	TCNT0 = 0;
-	Set_Tick_flag;
+	TickFlag = true;
 }
 
 ISR (ANA_COMP_vect) //Comparator toggle
 {
 	if (ACSR & (1 << ACO)) //Rising edge: mains voltage below threshold
-	{
-		TCNT0 = 0; //Clear timer 0
-		TIFR0 = (1 << OCF0A);
-		TIMSK0 = (1 << OCIE0A); //Enable timeout interrupt
-	}
+		TIMSK0 = (1 << OCIE0A); //Disable 10ms and enable timeout interrupt
 	else //Falling edge: mains voltage above threshold
 	{
-		TIMSK0 = 0; //Disable timeout interrupt
-		TIFR0 = (1 << OCF0A);
-
-		Set_Tick_flag;
+		TickFlag = true;
 		if (toffCnt < 500) //~5s delay
 			toffCnt++;
 		else
 		{
 			ICL_Active;
-			_delay_ms(5);
+			_delay_ms(5); //Release time of ICL relay
 			DC_MOS_Off;
-			_delay_ms(5);
 			AC_to_Load;
 			iclCnt = 6;
+			ACSR = (1 << ACBG) | (1 << ACIE) | (1 << ACI); //Prevent immediate firing of ACMP interrupt
+			OCR1BL = (FanMax + FanMin) >> 1;
 		}
+		TIMSK0 = 0; //Disable timeout and 10ms interrupts
 	}
+	TCNT0 = 0; //Clear timer 0
+	TIFR0 = (1 << OCF0B) | (1 << OCF0A);
 }
 
 inline void mcuInit()
@@ -103,14 +102,14 @@ int main(void)
 {
 	uint32_t chrgCnt = 5;
 	int32_t k;
-	int16_t m, cmax = 127;
-	uint8_t sysTick = 0;
-	int8_t hb = 0;
+	int16_t m;
+	uint8_t sysTick = 0, fanLvl = FanMin;
+	int8_t hb;
 	mcuInit();
     /* Replace with your application code */
     while (true)
 	{
-		while (!Is_Tick_set);
+		while (!TickFlag);
 		sysTick++; //~10ms period
 		if (iclCnt > 0)
 		{
@@ -121,42 +120,41 @@ int main(void)
 		if (!(sysTick & 7)) //~80ms period
 		{
 			//Heartbeat LED
-			m = hb++;
-			m = (m * m) >> 8;
-			OCR1A = m > cmax ? cmax : m;
+			//m = hb++;
+			//OCR1A = (m * m) >> 8;
 			if (++adcCnt > 7) //Each channel has been sampled four times
 			{
-				//Top level for HB LED
+				//Output level for LED for testing purpose
 				m = adcResult[0] - TSEN_ZERO;
-				k = m * 128;
-				k /= TSEN_MIN - TSEN_ZERO; //0…60°C range
-				cmax = (int16_t)k > 127 ? 127 : k;
+				k = m * PWM_max;
+				k /= TSEN_MIN - TSEN_ZERO; //0…50°C range
+				OCR1A = (int16_t)k > PWM_max ? PWM_max : k;
 				//Cooler regulation
-				adcResult[0] -= TSEN_MIN;
+				adcResult[0] -= TSEN_MIN; //dT
 				k = adcResult[0] * (FanMax - FanMin);
 				k /= TSEN_MAX - TSEN_MIN; //Upper bound of regulation
-				m = (int16_t)k + FanMin;
-				if (m < 0)
-					m = 0;
-				if ((uint16_t)m > OCR1B)
-					OCR1B = m > FanMax ? FanMax : m;
+				m = (int16_t)k + FanMin; //A
+				if (m > fanLvl)
+					fanLvl = m > FanMax ? FanMax : m;
 				else
 				{
-					adcResult[0] -= (TSEN_MAX - TSEN_MIN) >> 3; //Add 12.5% hysteresis
+					adcResult[0] += (TSEN_MAX - TSEN_MIN) >> 3; //Add 12.5% hysteresis
 					k = adcResult[0] * (FanMax - FanMin);
 					k /= TSEN_MAX - TSEN_MIN; //Lower bound of regulation
-					m = (int16_t)k + FanMin;
-					if (m < 0)
-						m = 0;
-					if ((uint16_t)m < OCR1B)
-						OCR1B = m < FanMin ? 0 : m;
+					m = (int16_t)k + FanMin; //A
+					if (m < fanLvl)
+						fanLvl = m < FanMin ? FanMin : m;
 				}
+				if (OCR1BL > fanLvl)
+					OCR1BL--;
+				else if (OCR1BL < fanLvl)
+					OCR1BL++;
 
 				if (adcResult[1] < DC_MIN && We_Are_OffLine) //Check battery voltage
 				{
-					Set_Discharged_flag;
+					Discharged = true;
 					ICL_Active;
-					_delay_ms(5); //Maximum relay release time
+					_delay_ms(5); //ICL relay release time
 					DC_MOS_Off;
 				}
 
@@ -174,20 +172,20 @@ int main(void)
 						Charger_On; //Power on the charger
 						chrgCnt = 6;
 					}
-					else if (BMS_B_Selected) //Happens when BMS 2 finished charge cycle
+					else if (BMS_B_Selected) //Happens when BMS 2 finishes charge cycle
 						BMS_Sel_A;
 				}
 				else if (!We_Are_OffLine)
 				{
 					if (adcResult[1] < (DC_MIN >> 1)) //To detect continuous low level
 						chrgCnt--;
-					if (chrgCnt == 0) //Charge for selected BMS finished
+					if (chrgCnt == 0) //Charge for the selected BMS finished
 					{
 						Charger_Off;
 						if (BMS_B_Selected)
 						{
 							chrgCnt = 135000; //1.5 days delay
-							Clear_Discharged_flag;
+							Discharged = false;
 						}
 						else
 							chrgCnt = 5;
@@ -197,9 +195,9 @@ int main(void)
 				adcResult[0] = adcResult[1] = 0;
 			}
 
-			if (Is_Charge_Required)
+			if (ChargeReq)
 			{
-				Clear_ChargeReq_flag;
+				ChargeReq = false;
 				chrgCnt = 6; //Set minimum delay
 			}
 			//ADC conversion routine
@@ -210,6 +208,6 @@ int main(void)
 			ADCSRA |= (1 << ADSC); //Start conversion
 		}
 
-		Clear_Tick_flag;
+		TickFlag = false;
 	}
 }

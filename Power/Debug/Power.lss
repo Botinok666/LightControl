@@ -3,31 +3,31 @@ Power.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000004fa  00000000  00000000  00000094  2**1
+  0 .text         0000051c  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000002  00800060  000004fa  0000058e  2**0
+  1 .data         00000004  00800060  0000051c  000005b0  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000006  00800062  00800062  00000590  2**0
+  2 .bss          00000008  00800064  00800064  000005b4  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000590  2**0
+  3 .comment      00000030  00000000  00000000  000005b4  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000005c0  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000005e4  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000048  00000000  00000000  000005fc  2**0
+  5 .debug_aranges 00000048  00000000  00000000  00000620  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   000007ff  00000000  00000000  00000644  2**0
+  6 .debug_info   00000804  00000000  00000000  00000668  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 000005b9  00000000  00000000  00000e43  2**0
+  7 .debug_abbrev 000005c6  00000000  00000000  00000e6c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   000005bd  00000000  00000000  000013fc  2**0
+  8 .debug_line   000005b7  00000000  00000000  00001432  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000000d8  00000000  00000000  000019bc  2**2
+  9 .debug_frame  000000dc  00000000  00000000  000019ec  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000044e  00000000  00000000  00001a94  2**0
+ 10 .debug_str    00000473  00000000  00000000  00001ac8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000004ee  00000000  00000000  00001ee2  2**0
+ 11 .debug_loc    00000435  00000000  00000000  00001f3b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000038  00000000  00000000  000023d0  2**0
+ 12 .debug_ranges 00000038  00000000  00000000  00002370  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -43,9 +43,9 @@ Disassembly of section .text:
    e:	22 c0       	rjmp	.+68     	; 0x54 <__bad_interrupt>
   10:	21 c0       	rjmp	.+66     	; 0x54 <__bad_interrupt>
   12:	48 c0       	rjmp	.+144    	; 0xa4 <__vector_9>
-  14:	70 c0       	rjmp	.+224    	; 0xf6 <__vector_10>
+  14:	77 c0       	rjmp	.+238    	; 0x104 <__vector_10>
   16:	1e c0       	rjmp	.+60     	; 0x54 <__bad_interrupt>
-  18:	7a c0       	rjmp	.+244    	; 0x10e <__vector_12>
+  18:	85 c0       	rjmp	.+266    	; 0x124 <__vector_12>
   1a:	1d c0       	rjmp	.+58     	; 0x56 <__vector_13>
   1c:	1b c0       	rjmp	.+54     	; 0x54 <__bad_interrupt>
   1e:	1a c0       	rjmp	.+52     	; 0x54 <__bad_interrupt>
@@ -61,18 +61,18 @@ Disassembly of section .text:
   2a:	10 e0       	ldi	r17, 0x00	; 0
   2c:	a0 e6       	ldi	r26, 0x60	; 96
   2e:	b0 e0       	ldi	r27, 0x00	; 0
-  30:	ea ef       	ldi	r30, 0xFA	; 250
-  32:	f4 e0       	ldi	r31, 0x04	; 4
+  30:	ec e1       	ldi	r30, 0x1C	; 28
+  32:	f5 e0       	ldi	r31, 0x05	; 5
   34:	02 c0       	rjmp	.+4      	; 0x3a <__do_copy_data+0x10>
   36:	05 90       	lpm	r0, Z+
   38:	0d 92       	st	X+, r0
-  3a:	a2 36       	cpi	r26, 0x62	; 98
+  3a:	a4 36       	cpi	r26, 0x64	; 100
   3c:	b1 07       	cpc	r27, r17
   3e:	d9 f7       	brne	.-10     	; 0x36 <__do_copy_data+0xc>
 
 00000040 <__do_clear_bss>:
   40:	20 e0       	ldi	r18, 0x00	; 0
-  42:	a2 e6       	ldi	r26, 0x62	; 98
+  42:	a4 e6       	ldi	r26, 0x64	; 100
   44:	b0 e0       	ldi	r27, 0x00	; 0
   46:	01 c0       	rjmp	.+2      	; 0x4a <.do_clear_bss_start>
 
@@ -80,19 +80,19 @@ Disassembly of section .text:
   48:	1d 92       	st	X+, r1
 
 0000004a <.do_clear_bss_start>:
-  4a:	a8 36       	cpi	r26, 0x68	; 104
+  4a:	ac 36       	cpi	r26, 0x6C	; 108
   4c:	b2 07       	cpc	r27, r18
   4e:	e1 f7       	brne	.-8      	; 0x48 <.do_clear_bss_loop>
-  50:	c4 d0       	rcall	.+392    	; 0x1da <main>
-  52:	51 c2       	rjmp	.+1186   	; 0x4f6 <_exit>
+  50:	ce d0       	rcall	.+412    	; 0x1ee <main>
+  52:	62 c2       	rjmp	.+1220   	; 0x518 <_exit>
 
 00000054 <__bad_interrupt>:
   54:	d5 cf       	rjmp	.-86     	; 0x0 <__vectors>
 
 00000056 <__vector_13>:
-volatile int8_t adcCnt = -1;
 volatile uint8_t iclCnt = 6;
 volatile uint16_t toffCnt = 0;
+volatile bool TickFlag = false, Discharged = false, ChargeReq = true;
 
 ISR (ADC_vect)
 {
@@ -110,13 +110,13 @@ ISR (ADC_vect)
 	adcResult[adcCnt & 1] += ADC;
   6c:	84 b1       	in	r24, 0x04	; 4
   6e:	95 b1       	in	r25, 0x05	; 5
-  70:	20 91 61 00 	lds	r18, 0x0061	; 0x800061 <adcCnt>
+  70:	20 91 62 00 	lds	r18, 0x0062	; 0x800062 <adcCnt>
   74:	e2 2f       	mov	r30, r18
   76:	e1 70       	andi	r30, 0x01	; 1
   78:	f0 e0       	ldi	r31, 0x00	; 0
   7a:	ee 0f       	add	r30, r30
   7c:	ff 1f       	adc	r31, r31
-  7e:	ec 59       	subi	r30, 0x9C	; 156
+  7e:	e8 59       	subi	r30, 0x98	; 152
   80:	ff 4f       	sbci	r31, 0xFF	; 255
   82:	20 81       	ld	r18, Z
   84:	31 81       	ldd	r19, Z+1	; 0x01
@@ -148,849 +148,828 @@ ISR (TIM0_COMPA_vect)
   ac:	11 24       	eor	r1, r1
   ae:	8f 93       	push	r24
   b0:	9f 93       	push	r25
-	if (!Is_Battery_discharged && !We_Are_OffLine)
-  b2:	99 99       	sbic	0x13, 1	; 19
-  b4:	02 c0       	rjmp	.+4      	; 0xba <__vector_9+0x16>
-  b6:	df 9b       	sbis	0x1b, 7	; 27
-  b8:	08 c0       	rjmp	.+16     	; 0xca <__vector_9+0x26>
-		DC_MOS_On;
+	if (!Discharged && !We_Are_OffLine)
+  b2:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <__data_end>
+  b6:	81 11       	cpse	r24, r1
+  b8:	02 c0       	rjmp	.+4      	; 0xbe <__vector_9+0x1a>
+  ba:	df 9b       	sbis	0x1b, 7	; 27
+  bc:	09 c0       	rjmp	.+18     	; 0xd0 <__vector_9+0x2c>
 		iclCnt = 6;
-		Set_ChargeReq_flag;
+		ChargeReq = true;
 		TCNT0 = 0;
+		ACSR = (1 << ACBG) | (1 << ACIE) | (1 << ACI); //Prevent immediate firing of ACMP interrupt
 	}
 	toffCnt = 0;
-  ba:	10 92 63 00 	sts	0x0063, r1	; 0x800063 <__data_end+0x1>
-  be:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <__data_end>
+  be:	10 92 67 00 	sts	0x0067, r1	; 0x800067 <toffCnt+0x1>
+  c2:	10 92 66 00 	sts	0x0066, r1	; 0x800066 <toffCnt>
 
-	TIFR0 = (1 << OCF0B);
-  c2:	84 e0       	ldi	r24, 0x04	; 4
-  c4:	88 bf       	out	0x38, r24	; 56
-	TIMSK0 = (1 << OCIE0B); //Enable 10ms period interrupt
-  c6:	89 bf       	out	0x39, r24	; 57
+	TIFR0 = (1 << OCF0B) | (1 << OCF0A);
+  c6:	86 e0       	ldi	r24, 0x06	; 6
+  c8:	88 bf       	out	0x38, r24	; 56
+	TIMSK0 = (1 << OCIE0B); //Disable timeout and enable 10ms interrupt
+  ca:	84 e0       	ldi	r24, 0x04	; 4
+  cc:	89 bf       	out	0x39, r24	; 57
 }
-  c8:	0f c0       	rjmp	.+30     	; 0xe8 <__stack+0x9>
+  ce:	13 c0       	rjmp	.+38     	; 0xf6 <__stack+0x17>
 
 ISR (TIM0_COMPA_vect)
 {
-	if (!Is_Battery_discharged && !We_Are_OffLine)
+	if (!Discharged && !We_Are_OffLine)
 	{
 		ICL_Active;
-  ca:	c2 98       	cbi	0x18, 2	; 24
-		DC_to_Load;
-  cc:	df 9a       	sbi	0x1b, 7	; 27
+  d0:	c2 98       	cbi	0x18, 2	; 24
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
-  ce:	87 e8       	ldi	r24, 0x87	; 135
-  d0:	93 e1       	ldi	r25, 0x13	; 19
-  d2:	01 97       	sbiw	r24, 0x01	; 1
-  d4:	f1 f7       	brne	.-4      	; 0xd2 <__vector_9+0x2e>
-  d6:	00 c0       	rjmp	.+0      	; 0xd8 <__vector_9+0x34>
-  d8:	00 00       	nop
-		_delay_ms(5); //Release time of ICL
+  d2:	8f e0       	ldi	r24, 0x0F	; 15
+  d4:	97 e2       	ldi	r25, 0x27	; 39
+  d6:	01 97       	sbiw	r24, 0x01	; 1
+  d8:	f1 f7       	brne	.-4      	; 0xd6 <__vector_9+0x32>
+  da:	00 c0       	rjmp	.+0      	; 0xdc <__vector_9+0x38>
+  dc:	00 00       	nop
+		_delay_ms(5); //Release time of ICL relay
+		DC_to_Load;
+  de:	df 9a       	sbi	0x1b, 7	; 27
 		DC_MOS_On;
-  da:	dc 9a       	sbi	0x1b, 4	; 27
+  e0:	dc 9a       	sbi	0x1b, 4	; 27
 		iclCnt = 6;
-  dc:	86 e0       	ldi	r24, 0x06	; 6
-  de:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__data_start>
-		Set_ChargeReq_flag;
-  e2:	9a 9a       	sbi	0x13, 2	; 19
+  e2:	86 e0       	ldi	r24, 0x06	; 6
+  e4:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <iclCnt>
+		ChargeReq = true;
+  e8:	81 e0       	ldi	r24, 0x01	; 1
+  ea:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <ChargeReq>
 		TCNT0 = 0;
-  e4:	12 be       	out	0x32, r1	; 50
-  e6:	e9 cf       	rjmp	.-46     	; 0xba <__vector_9+0x16>
+  ee:	12 be       	out	0x32, r1	; 50
+		ACSR = (1 << ACBG) | (1 << ACIE) | (1 << ACI); //Prevent immediate firing of ACMP interrupt
+  f0:	88 e5       	ldi	r24, 0x58	; 88
+  f2:	88 b9       	out	0x08, r24	; 8
+  f4:	e4 cf       	rjmp	.-56     	; 0xbe <__vector_9+0x1a>
 	}
 	toffCnt = 0;
 
-	TIFR0 = (1 << OCF0B);
-	TIMSK0 = (1 << OCIE0B); //Enable 10ms period interrupt
+	TIFR0 = (1 << OCF0B) | (1 << OCF0A);
+	TIMSK0 = (1 << OCIE0B); //Disable timeout and enable 10ms interrupt
 }
-  e8:	9f 91       	pop	r25
-  ea:	8f 91       	pop	r24
-  ec:	0f 90       	pop	r0
-  ee:	0f be       	out	0x3f, r0	; 63
-  f0:	0f 90       	pop	r0
-  f2:	1f 90       	pop	r1
-  f4:	18 95       	reti
+  f6:	9f 91       	pop	r25
+  f8:	8f 91       	pop	r24
+  fa:	0f 90       	pop	r0
+  fc:	0f be       	out	0x3f, r0	; 63
+  fe:	0f 90       	pop	r0
+ 100:	1f 90       	pop	r1
+ 102:	18 95       	reti
 
-000000f6 <__vector_10>:
+00000104 <__vector_10>:
 
 ISR (TIM0_COMPB_vect)
 {
-  f6:	1f 92       	push	r1
-  f8:	0f 92       	push	r0
-  fa:	0f b6       	in	r0, 0x3f	; 63
-  fc:	0f 92       	push	r0
-  fe:	11 24       	eor	r1, r1
+ 104:	1f 92       	push	r1
+ 106:	0f 92       	push	r0
+ 108:	0f b6       	in	r0, 0x3f	; 63
+ 10a:	0f 92       	push	r0
+ 10c:	11 24       	eor	r1, r1
+ 10e:	8f 93       	push	r24
 	TCNT0 = 0;
- 100:	12 be       	out	0x32, r1	; 50
-	Set_Tick_flag;
- 102:	98 9a       	sbi	0x13, 0	; 19
+ 110:	12 be       	out	0x32, r1	; 50
+	TickFlag = true;
+ 112:	81 e0       	ldi	r24, 0x01	; 1
+ 114:	80 93 65 00 	sts	0x0065, r24	; 0x800065 <TickFlag>
 }
- 104:	0f 90       	pop	r0
- 106:	0f be       	out	0x3f, r0	; 63
- 108:	0f 90       	pop	r0
- 10a:	1f 90       	pop	r1
- 10c:	18 95       	reti
+ 118:	8f 91       	pop	r24
+ 11a:	0f 90       	pop	r0
+ 11c:	0f be       	out	0x3f, r0	; 63
+ 11e:	0f 90       	pop	r0
+ 120:	1f 90       	pop	r1
+ 122:	18 95       	reti
 
-0000010e <__vector_12>:
+00000124 <__vector_12>:
 
 ISR (ANA_COMP_vect) //Comparator toggle
 {
- 10e:	1f 92       	push	r1
- 110:	0f 92       	push	r0
- 112:	0f b6       	in	r0, 0x3f	; 63
- 114:	0f 92       	push	r0
- 116:	11 24       	eor	r1, r1
- 118:	2f 93       	push	r18
- 11a:	8f 93       	push	r24
- 11c:	9f 93       	push	r25
+ 124:	1f 92       	push	r1
+ 126:	0f 92       	push	r0
+ 128:	0f b6       	in	r0, 0x3f	; 63
+ 12a:	0f 92       	push	r0
+ 12c:	11 24       	eor	r1, r1
+ 12e:	2f 93       	push	r18
+ 130:	8f 93       	push	r24
+ 132:	9f 93       	push	r25
 	if (ACSR & (1 << ACO)) //Rising edge: mains voltage below threshold
- 11e:	45 9b       	sbis	0x08, 5	; 8
- 120:	05 c0       	rjmp	.+10     	; 0x12c <__vector_12+0x1e>
-	{
-		TCNT0 = 0; //Clear timer 0
- 122:	12 be       	out	0x32, r1	; 50
-		TIFR0 = (1 << OCF0A);
- 124:	82 e0       	ldi	r24, 0x02	; 2
- 126:	88 bf       	out	0x38, r24	; 56
-		TIMSK0 = (1 << OCIE0A); //Enable timeout interrupt
- 128:	89 bf       	out	0x39, r24	; 57
- 12a:	29 c0       	rjmp	.+82     	; 0x17e <__vector_12+0x70>
-	}
+ 134:	45 9b       	sbis	0x08, 5	; 8
+ 136:	03 c0       	rjmp	.+6      	; 0x13e <__vector_12+0x1a>
+		TIMSK0 = (1 << OCIE0A); //Disable 10ms and enable timeout interrupt
+ 138:	82 e0       	ldi	r24, 0x02	; 2
+ 13a:	89 bf       	out	0x39, r24	; 57
+ 13c:	27 c0       	rjmp	.+78     	; 0x18c <__vector_12+0x68>
 	else //Falling edge: mains voltage above threshold
 	{
-		TIMSK0 = 0; //Disable timeout interrupt
- 12c:	19 be       	out	0x39, r1	; 57
-		TIFR0 = (1 << OCF0A);
- 12e:	82 e0       	ldi	r24, 0x02	; 2
- 130:	88 bf       	out	0x38, r24	; 56
-
-		Set_Tick_flag;
- 132:	98 9a       	sbi	0x13, 0	; 19
+		TickFlag = true;
+ 13e:	81 e0       	ldi	r24, 0x01	; 1
+ 140:	80 93 65 00 	sts	0x0065, r24	; 0x800065 <TickFlag>
 		if (toffCnt < 500) //~5s delay
- 134:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__data_end>
- 138:	90 91 63 00 	lds	r25, 0x0063	; 0x800063 <__data_end+0x1>
- 13c:	84 3f       	cpi	r24, 0xF4	; 244
- 13e:	91 40       	sbci	r25, 0x01	; 1
- 140:	50 f4       	brcc	.+20     	; 0x156 <__vector_12+0x48>
+ 144:	80 91 66 00 	lds	r24, 0x0066	; 0x800066 <toffCnt>
+ 148:	90 91 67 00 	lds	r25, 0x0067	; 0x800067 <toffCnt+0x1>
+ 14c:	84 3f       	cpi	r24, 0xF4	; 244
+ 14e:	91 40       	sbci	r25, 0x01	; 1
+ 150:	50 f4       	brcc	.+20     	; 0x166 <__vector_12+0x42>
 			toffCnt++;
- 142:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__data_end>
- 146:	90 91 63 00 	lds	r25, 0x0063	; 0x800063 <__data_end+0x1>
- 14a:	01 96       	adiw	r24, 0x01	; 1
- 14c:	90 93 63 00 	sts	0x0063, r25	; 0x800063 <__data_end+0x1>
- 150:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <__data_end>
- 154:	14 c0       	rjmp	.+40     	; 0x17e <__vector_12+0x70>
+ 152:	80 91 66 00 	lds	r24, 0x0066	; 0x800066 <toffCnt>
+ 156:	90 91 67 00 	lds	r25, 0x0067	; 0x800067 <toffCnt+0x1>
+ 15a:	01 96       	adiw	r24, 0x01	; 1
+ 15c:	90 93 67 00 	sts	0x0067, r25	; 0x800067 <toffCnt+0x1>
+ 160:	80 93 66 00 	sts	0x0066, r24	; 0x800066 <toffCnt>
+ 164:	12 c0       	rjmp	.+36     	; 0x18a <__vector_12+0x66>
 		else
 		{
 			ICL_Active;
- 156:	c2 98       	cbi	0x18, 2	; 24
- 158:	87 e8       	ldi	r24, 0x87	; 135
- 15a:	93 e1       	ldi	r25, 0x13	; 19
- 15c:	01 97       	sbiw	r24, 0x01	; 1
- 15e:	f1 f7       	brne	.-4      	; 0x15c <__vector_12+0x4e>
- 160:	00 c0       	rjmp	.+0      	; 0x162 <__vector_12+0x54>
- 162:	00 00       	nop
-			_delay_ms(5);
+ 166:	c2 98       	cbi	0x18, 2	; 24
+ 168:	8f e0       	ldi	r24, 0x0F	; 15
+ 16a:	97 e2       	ldi	r25, 0x27	; 39
+ 16c:	01 97       	sbiw	r24, 0x01	; 1
+ 16e:	f1 f7       	brne	.-4      	; 0x16c <__vector_12+0x48>
+ 170:	00 c0       	rjmp	.+0      	; 0x172 <__vector_12+0x4e>
+ 172:	00 00       	nop
+			_delay_ms(5); //Release time of ICL relay
 			DC_MOS_Off;
- 164:	dc 98       	cbi	0x1b, 4	; 27
- 166:	87 e8       	ldi	r24, 0x87	; 135
- 168:	93 e1       	ldi	r25, 0x13	; 19
- 16a:	01 97       	sbiw	r24, 0x01	; 1
- 16c:	f1 f7       	brne	.-4      	; 0x16a <__vector_12+0x5c>
- 16e:	00 c0       	rjmp	.+0      	; 0x170 <__vector_12+0x62>
- 170:	00 00       	nop
-			_delay_ms(5);
+ 174:	dc 98       	cbi	0x1b, 4	; 27
 			AC_to_Load;
- 172:	8b b3       	in	r24, 0x1b	; 27
- 174:	80 78       	andi	r24, 0x80	; 128
- 176:	8b bb       	out	0x1b, r24	; 27
+ 176:	8b b3       	in	r24, 0x1b	; 27
+ 178:	80 78       	andi	r24, 0x80	; 128
+ 17a:	8b bb       	out	0x1b, r24	; 27
 			iclCnt = 6;
- 178:	86 e0       	ldi	r24, 0x06	; 6
- 17a:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__data_start>
+ 17c:	86 e0       	ldi	r24, 0x06	; 6
+ 17e:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <iclCnt>
+			ACSR = (1 << ACBG) | (1 << ACIE) | (1 << ACI); //Prevent immediate firing of ACMP interrupt
+ 182:	88 e5       	ldi	r24, 0x58	; 88
+ 184:	88 b9       	out	0x08, r24	; 8
+			OCR1BL = (FanMax + FanMin) >> 1;
+ 186:	80 e6       	ldi	r24, 0x60	; 96
+ 188:	88 bd       	out	0x28, r24	; 40
 		}
+		TIMSK0 = 0; //Disable timeout and 10ms interrupts
+ 18a:	19 be       	out	0x39, r1	; 57
 	}
+	TCNT0 = 0; //Clear timer 0
+ 18c:	12 be       	out	0x32, r1	; 50
+	TIFR0 = (1 << OCF0B) | (1 << OCF0A);
+ 18e:	86 e0       	ldi	r24, 0x06	; 6
+ 190:	88 bf       	out	0x38, r24	; 56
 }
- 17e:	9f 91       	pop	r25
- 180:	8f 91       	pop	r24
- 182:	2f 91       	pop	r18
- 184:	0f 90       	pop	r0
- 186:	0f be       	out	0x3f, r0	; 63
- 188:	0f 90       	pop	r0
- 18a:	1f 90       	pop	r1
- 18c:	18 95       	reti
+ 192:	9f 91       	pop	r25
+ 194:	8f 91       	pop	r24
+ 196:	2f 91       	pop	r18
+ 198:	0f 90       	pop	r0
+ 19a:	0f be       	out	0x3f, r0	; 63
+ 19c:	0f 90       	pop	r0
+ 19e:	1f 90       	pop	r1
+ 1a0:	18 95       	reti
 
-0000018e <_Z7mcuInitv>:
+000001a2 <_Z7mcuInitv>:
 
 inline void mcuInit()
 {
 	cli();
- 18e:	f8 94       	cli
+ 1a2:	f8 94       	cli
         "out __SREG__, __tmp_reg__"
         : /* no outputs */
         : "d" (__tmp),
           "I" (_SFR_IO_ADDR(CLKPR)),
           "d" (__x)
         : "r0");
- 190:	90 e0       	ldi	r25, 0x00	; 0
- 192:	80 e8       	ldi	r24, 0x80	; 128
- 194:	0f b6       	in	r0, 0x3f	; 63
- 196:	f8 94       	cli
- 198:	86 bd       	out	0x26, r24	; 38
- 19a:	96 bd       	out	0x26, r25	; 38
- 19c:	0f be       	out	0x3f, r0	; 63
+ 1a4:	90 e0       	ldi	r25, 0x00	; 0
+ 1a6:	80 e8       	ldi	r24, 0x80	; 128
+ 1a8:	0f b6       	in	r0, 0x3f	; 63
+ 1aa:	f8 94       	cli
+ 1ac:	86 bd       	out	0x26, r24	; 38
+ 1ae:	96 bd       	out	0x26, r25	; 38
+ 1b0:	0f be       	out	0x3f, r0	; 63
 	//Clock: 8MHz
 	clock_prescale_set(clock_div_1);
 	//Port A: pin 1 - BMS select, pin 4 - DC switch, pin 5 - cooler PWM, pin 6 - HB LED, pin 7 - main switch
 	DDRA = (1 << DDA1) | (1 << DDA4) | (1 << DDA5) | (1 << DDA6) | (1 << DDA7);
- 19e:	82 ef       	ldi	r24, 0xF2	; 242
- 1a0:	8a bb       	out	0x1a, r24	; 26
+ 1b2:	82 ef       	ldi	r24, 0xF2	; 242
+ 1b4:	8a bb       	out	0x1a, r24	; 26
 	//Port B: pin 0 - charger switch, pin 2 - ICL switch
 	DDRB = (1 << DDB0) | (1 << DDB2);
- 1a2:	85 e0       	ldi	r24, 0x05	; 5
- 1a4:	87 bb       	out	0x17, r24	; 23
+ 1b6:	85 e0       	ldi	r24, 0x05	; 5
+ 1b8:	87 bb       	out	0x17, r24	; 23
 	//Timer 0: 7812Hz, interrupt on OC0A
 	TCCR0B = (1 << CS02) | (1 << CS00);
- 1a6:	83 bf       	out	0x33, r24	; 51
+ 1ba:	83 bf       	out	0x33, r24	; 51
 	OCR0A = 13; //1.79ms timeout: ~140VAC minimum input voltage
- 1a8:	8d e0       	ldi	r24, 0x0D	; 13
- 1aa:	86 bf       	out	0x36, r24	; 54
+ 1bc:	8d e0       	ldi	r24, 0x0D	; 13
+ 1be:	86 bf       	out	0x36, r24	; 54
 	OCR0B = 77; //10ms period
- 1ac:	9d e4       	ldi	r25, 0x4D	; 77
- 1ae:	9c bf       	out	0x3c, r25	; 60
+ 1c0:	9d e4       	ldi	r25, 0x4D	; 77
+ 1c2:	9c bf       	out	0x3c, r25	; 60
 	//Timer 1: 8MHz, phase and frequency correct PWM with top in ICR1
 	TCCR1A = (1 << COM1A1) | (1 << COM1B1);
- 1b0:	90 ea       	ldi	r25, 0xA0	; 160
- 1b2:	9f bd       	out	0x2f, r25	; 47
+ 1c4:	90 ea       	ldi	r25, 0xA0	; 160
+ 1c6:	9f bd       	out	0x2f, r25	; 47
 	TCCR1B = (1 << WGM13) | (1 << CS10);
- 1b4:	91 e1       	ldi	r25, 0x11	; 17
- 1b6:	9e bd       	out	0x2e, r25	; 46
+ 1c8:	91 e1       	ldi	r25, 0x11	; 17
+ 1ca:	9e bd       	out	0x2e, r25	; 46
 	ICR1 = PWM_max;
- 1b8:	20 e5       	ldi	r18, 0x50	; 80
- 1ba:	30 e0       	ldi	r19, 0x00	; 0
- 1bc:	35 bd       	out	0x25, r19	; 37
- 1be:	24 bd       	out	0x24, r18	; 36
+ 1cc:	20 ea       	ldi	r18, 0xA0	; 160
+ 1ce:	30 e0       	ldi	r19, 0x00	; 0
+ 1d0:	35 bd       	out	0x25, r19	; 37
+ 1d2:	24 bd       	out	0x24, r18	; 36
 	OCR1A = 0; //HB LED is off
- 1c0:	1b bc       	out	0x2b, r1	; 43
- 1c2:	1a bc       	out	0x2a, r1	; 42
+ 1d4:	1b bc       	out	0x2b, r1	; 43
+ 1d6:	1a bc       	out	0x2a, r1	; 42
 	OCR1B = 0; //Cooler is off
- 1c4:	19 bc       	out	0x29, r1	; 41
- 1c6:	18 bc       	out	0x28, r1	; 40
+ 1d8:	19 bc       	out	0x29, r1	; 41
+ 1da:	18 bc       	out	0x28, r1	; 40
 	//Analog comparator: 1.1v on AIN0, interrupt on toggle
 	ACSR = (1 << ACBG) | (1 << ACIE);
- 1c8:	98 e4       	ldi	r25, 0x48	; 72
- 1ca:	98 b9       	out	0x08, r25	; 8
+ 1dc:	98 e4       	ldi	r25, 0x48	; 72
+ 1de:	98 b9       	out	0x08, r25	; 8
 	//Digital input disable: THS0, AC detection, battery sense
 	DIDR0 = (1 << ADC0D) | (1 << ADC2D) | (1 << ADC3D);
- 1cc:	81 b9       	out	0x01, r24	; 1
+ 1e0:	81 b9       	out	0x01, r24	; 1
 	//ADC: 3.3v reference, 125kHz, interrupt
 	ADCSRA = (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS1);
- 1ce:	8e e8       	ldi	r24, 0x8E	; 142
- 1d0:	86 b9       	out	0x06, r24	; 6
+ 1e2:	8e e8       	ldi	r24, 0x8E	; 142
+ 1e4:	86 b9       	out	0x06, r24	; 6
 	//Power reduction: USI
 	PRR = (1 << PRUSI);
- 1d2:	82 e0       	ldi	r24, 0x02	; 2
- 1d4:	80 b9       	out	0x00, r24	; 0
+ 1e6:	82 e0       	ldi	r24, 0x02	; 2
+ 1e8:	80 b9       	out	0x00, r24	; 0
 	sei();
- 1d6:	78 94       	sei
- 1d8:	08 95       	ret
+ 1ea:	78 94       	sei
+ 1ec:	08 95       	ret
 
-000001da <main>:
+000001ee <main>:
 	uint32_t chrgCnt = 5;
 	int32_t k;
-	int16_t m, cmax = 127;
-	uint8_t sysTick = 0;
-	int8_t hb = 0;
+	int16_t m;
+	uint8_t sysTick = 0, fanLvl = FanMin;
+	int8_t hb;
 	mcuInit();
- 1da:	d9 df       	rcall	.-78     	; 0x18e <_Z7mcuInitv>
-{
-	uint32_t chrgCnt = 5;
-	int32_t k;
-	int16_t m, cmax = 127;
-	uint8_t sysTick = 0;
-	int8_t hb = 0;
- 1dc:	60 e0       	ldi	r22, 0x00	; 0
+ 1ee:	d9 df       	rcall	.-78     	; 0x1a2 <_Z7mcuInitv>
 int main(void)
 {
 	uint32_t chrgCnt = 5;
 	int32_t k;
-	int16_t m, cmax = 127;
-	uint8_t sysTick = 0;
- 1de:	c0 e0       	ldi	r28, 0x00	; 0
-
-int main(void)
-{
-	uint32_t chrgCnt = 5;
-	int32_t k;
-	int16_t m, cmax = 127;
- 1e0:	0f 2e       	mov	r0, r31
- 1e2:	ff e7       	ldi	r31, 0x7F	; 127
- 1e4:	4f 2e       	mov	r4, r31
- 1e6:	51 2c       	mov	r5, r1
- 1e8:	f0 2d       	mov	r31, r0
+	int16_t m;
+	uint8_t sysTick = 0, fanLvl = FanMin;
+ 1f0:	d8 e2       	ldi	r29, 0x28	; 40
+ 1f2:	c0 e0       	ldi	r28, 0x00	; 0
 	sei();
 }
 
 int main(void)
 {
 	uint32_t chrgCnt = 5;
- 1ea:	0f 2e       	mov	r0, r31
- 1ec:	f5 e0       	ldi	r31, 0x05	; 5
- 1ee:	8f 2e       	mov	r8, r31
- 1f0:	91 2c       	mov	r9, r1
- 1f2:	a1 2c       	mov	r10, r1
- 1f4:	b1 2c       	mov	r11, r1
- 1f6:	f0 2d       	mov	r31, r0
-			}
-			//ADC conversion routine
-			if (adcCnt & 1)
-				ADMUX = 0; //ADC0 - THS0
-			else
-				ADMUX = (1 << MUX0) | (1 << MUX1); //ADC3 - battery voltage
- 1f8:	0f 2e       	mov	r0, r31
- 1fa:	f3 e0       	ldi	r31, 0x03	; 3
- 1fc:	7f 2e       	mov	r7, r31
- 1fe:	f0 2d       	mov	r31, r0
-			m = (m * m) >> 8;
-			OCR1A = m > cmax ? cmax : m;
+ 1f4:	0f 2e       	mov	r0, r31
+ 1f6:	f5 e0       	ldi	r31, 0x05	; 5
+ 1f8:	4f 2e       	mov	r4, r31
+ 1fa:	51 2c       	mov	r5, r1
+ 1fc:	61 2c       	mov	r6, r1
+ 1fe:	71 2c       	mov	r7, r1
+ 200:	f0 2d       	mov	r31, r0
+			//m = hb++;
+			//OCR1A = (m * m) >> 8;
 			if (++adcCnt > 7) //Each channel has been sampled four times
 			{
-				//Top level for HB LED
+				//Output level for LED for testing purpose
 				m = adcResult[0] - TSEN_ZERO;
- 200:	0f 2e       	mov	r0, r31
- 202:	f4 e6       	ldi	r31, 0x64	; 100
- 204:	2f 2e       	mov	r2, r31
- 206:	f0 e0       	ldi	r31, 0x00	; 0
- 208:	3f 2e       	mov	r3, r31
- 20a:	f0 2d       	mov	r31, r0
-					k /= TSEN_MAX - TSEN_MIN; //Lower bound of regulation
-					m = (int16_t)k + FanMin;
-					if (m < 0)
-						m = 0;
-					if ((uint16_t)m < OCR1B)
-						OCR1B = m < FanMin ? 0 : m;
- 20c:	61 2c       	mov	r6, r1
-	int8_t hb = 0;
+ 202:	0f 2e       	mov	r0, r31
+ 204:	f8 e6       	ldi	r31, 0x68	; 104
+ 206:	2f 2e       	mov	r2, r31
+ 208:	f0 e0       	ldi	r31, 0x00	; 0
+ 20a:	3f 2e       	mov	r3, r31
+ 20c:	f0 2d       	mov	r31, r0
+	int8_t hb;
 	mcuInit();
     /* Replace with your application code */
     while (true)
 	{
-		while (!Is_Tick_set);
- 20e:	98 9b       	sbis	0x13, 0	; 19
- 210:	fe cf       	rjmp	.-4      	; 0x20e <main+0x34>
+		while (!TickFlag);
+ 20e:	80 91 65 00 	lds	r24, 0x0065	; 0x800065 <TickFlag>
+ 212:	88 23       	and	r24, r24
+ 214:	e1 f3       	breq	.-8      	; 0x20e <main+0x20>
 		sysTick++; //~10ms period
- 212:	cf 5f       	subi	r28, 0xFF	; 255
+ 216:	cf 5f       	subi	r28, 0xFF	; 255
 		if (iclCnt > 0)
- 214:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <__data_start>
- 218:	88 23       	and	r24, r24
- 21a:	41 f0       	breq	.+16     	; 0x22c <main+0x52>
+ 218:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <iclCnt>
+ 21c:	88 23       	and	r24, r24
+ 21e:	41 f0       	breq	.+16     	; 0x230 <main+0x42>
 		{
 			if (--iclCnt == 0)
- 21c:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <__data_start>
- 220:	81 50       	subi	r24, 0x01	; 1
- 222:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__data_start>
- 226:	81 11       	cpse	r24, r1
- 228:	01 c0       	rjmp	.+2      	; 0x22c <main+0x52>
+ 220:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <iclCnt>
+ 224:	81 50       	subi	r24, 0x01	; 1
+ 226:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <iclCnt>
+ 22a:	81 11       	cpse	r24, r1
+ 22c:	01 c0       	rjmp	.+2      	; 0x230 <main+0x42>
 				ICL_Shunted;
- 22a:	c2 9a       	sbi	0x18, 2	; 24
+ 22e:	c2 9a       	sbi	0x18, 2	; 24
 		}
 
 		if (!(sysTick & 7)) //~80ms period
- 22c:	8c 2f       	mov	r24, r28
- 22e:	87 70       	andi	r24, 0x07	; 7
- 230:	09 f0       	breq	.+2      	; 0x234 <main+0x5a>
- 232:	06 c1       	rjmp	.+524    	; 0x440 <__LOCK_REGION_LENGTH__+0x40>
+ 230:	8c 2f       	mov	r24, r28
+ 232:	87 70       	andi	r24, 0x07	; 7
+ 234:	09 f0       	breq	.+2      	; 0x238 <main+0x4a>
+ 236:	23 c1       	rjmp	.+582    	; 0x47e <__LOCK_REGION_LENGTH__+0x7e>
 		{
 			//Heartbeat LED
-			m = hb++;
- 234:	d1 e0       	ldi	r29, 0x01	; 1
- 236:	d6 0f       	add	r29, r22
- 238:	06 2e       	mov	r0, r22
- 23a:	00 0c       	add	r0, r0
- 23c:	77 0b       	sbc	r23, r23
-			m = (m * m) >> 8;
- 23e:	cb 01       	movw	r24, r22
- 240:	0b d1       	rcall	.+534    	; 0x458 <__mulhi3>
-			OCR1A = m > cmax ? cmax : m;
- 242:	89 2f       	mov	r24, r25
- 244:	99 0f       	add	r25, r25
- 246:	99 0b       	sbc	r25, r25
- 248:	48 16       	cp	r4, r24
- 24a:	59 06       	cpc	r5, r25
- 24c:	0c f4       	brge	.+2      	; 0x250 <main+0x76>
- 24e:	c2 01       	movw	r24, r4
- 250:	9b bd       	out	0x2b, r25	; 43
- 252:	8a bd       	out	0x2a, r24	; 42
+			//m = hb++;
+			//OCR1A = (m * m) >> 8;
 			if (++adcCnt > 7) //Each channel has been sampled four times
- 254:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <adcCnt>
- 258:	8f 5f       	subi	r24, 0xFF	; 255
- 25a:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <adcCnt>
- 25e:	88 30       	cpi	r24, 0x08	; 8
- 260:	0c f4       	brge	.+2      	; 0x264 <main+0x8a>
- 262:	db c0       	rjmp	.+438    	; 0x41a <__LOCK_REGION_LENGTH__+0x1a>
+ 238:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <adcCnt>
+ 23c:	8f 5f       	subi	r24, 0xFF	; 255
+ 23e:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <adcCnt>
+ 242:	88 30       	cpi	r24, 0x08	; 8
+ 244:	0c f4       	brge	.+2      	; 0x248 <main+0x5a>
+ 246:	05 c1       	rjmp	.+522    	; 0x452 <__LOCK_REGION_LENGTH__+0x52>
 			{
-				//Top level for HB LED
+				//Output level for LED for testing purpose
 				m = adcResult[0] - TSEN_ZERO;
- 264:	f1 01       	movw	r30, r2
- 266:	00 81       	ld	r16, Z
- 268:	11 81       	ldd	r17, Z+1	; 0x01
-				k = m * 128;
- 26a:	b8 01       	movw	r22, r16
- 26c:	6d 56       	subi	r22, 0x6D	; 109
- 26e:	72 40       	sbci	r23, 0x02	; 2
- 270:	76 95       	lsr	r23
- 272:	76 2f       	mov	r23, r22
- 274:	66 27       	eor	r22, r22
- 276:	77 95       	ror	r23
- 278:	67 95       	ror	r22
- 27a:	07 2e       	mov	r0, r23
- 27c:	00 0c       	add	r0, r0
- 27e:	88 0b       	sbc	r24, r24
- 280:	99 0b       	sbc	r25, r25
-				k /= TSEN_MIN - TSEN_ZERO; //0…60°C range
-				cmax = (int16_t)k > 127 ? 127 : k;
- 282:	28 ee       	ldi	r18, 0xE8	; 232
- 284:	32 e0       	ldi	r19, 0x02	; 2
- 286:	40 e0       	ldi	r20, 0x00	; 0
- 288:	50 e0       	ldi	r21, 0x00	; 0
- 28a:	f7 d0       	rcall	.+494    	; 0x47a <__divmodsi4>
- 28c:	29 01       	movw	r4, r18
- 28e:	20 38       	cpi	r18, 0x80	; 128
- 290:	31 05       	cpc	r19, r1
- 292:	2c f0       	brlt	.+10     	; 0x29e <main+0xc4>
- 294:	0f 2e       	mov	r0, r31
- 296:	ff e7       	ldi	r31, 0x7F	; 127
- 298:	4f 2e       	mov	r4, r31
- 29a:	f0 2d       	mov	r31, r0
- 29c:	51 2c       	mov	r5, r1
+				k = m * PWM_max;
+ 248:	f1 01       	movw	r30, r2
+ 24a:	80 81       	ld	r24, Z
+ 24c:	91 81       	ldd	r25, Z+1	; 0x01
+ 24e:	8d 56       	subi	r24, 0x6D	; 109
+ 250:	92 40       	sbci	r25, 0x02	; 2
+ 252:	09 2e       	mov	r0, r25
+ 254:	00 0c       	add	r0, r0
+ 256:	aa 0b       	sbc	r26, r26
+ 258:	bb 0b       	sbc	r27, r27
+ 25a:	88 0f       	add	r24, r24
+ 25c:	99 1f       	adc	r25, r25
+ 25e:	aa 1f       	adc	r26, r26
+ 260:	bb 1f       	adc	r27, r27
+ 262:	88 0f       	add	r24, r24
+ 264:	99 1f       	adc	r25, r25
+ 266:	aa 1f       	adc	r26, r26
+ 268:	bb 1f       	adc	r27, r27
+ 26a:	88 0f       	add	r24, r24
+ 26c:	99 1f       	adc	r25, r25
+ 26e:	aa 1f       	adc	r26, r26
+ 270:	bb 1f       	adc	r27, r27
+ 272:	88 0f       	add	r24, r24
+ 274:	99 1f       	adc	r25, r25
+ 276:	aa 1f       	adc	r26, r26
+ 278:	bb 1f       	adc	r27, r27
+ 27a:	88 0f       	add	r24, r24
+ 27c:	99 1f       	adc	r25, r25
+ 27e:	aa 1f       	adc	r26, r26
+ 280:	bb 1f       	adc	r27, r27
+ 282:	ac 01       	movw	r20, r24
+ 284:	bd 01       	movw	r22, r26
+ 286:	44 0f       	add	r20, r20
+ 288:	55 1f       	adc	r21, r21
+ 28a:	66 1f       	adc	r22, r22
+ 28c:	77 1f       	adc	r23, r23
+ 28e:	44 0f       	add	r20, r20
+ 290:	55 1f       	adc	r21, r21
+ 292:	66 1f       	adc	r22, r22
+ 294:	77 1f       	adc	r23, r23
+ 296:	8c 01       	movw	r16, r24
+ 298:	9d 01       	movw	r18, r26
+ 29a:	04 0f       	add	r16, r20
+ 29c:	15 1f       	adc	r17, r21
+ 29e:	26 1f       	adc	r18, r22
+ 2a0:	37 1f       	adc	r19, r23
+ 2a2:	c9 01       	movw	r24, r18
+ 2a4:	b8 01       	movw	r22, r16
+				k /= TSEN_MIN - TSEN_ZERO; //0…50°C range
+ 2a6:	2c e6       	ldi	r18, 0x6C	; 108
+ 2a8:	32 e0       	ldi	r19, 0x02	; 2
+ 2aa:	40 e0       	ldi	r20, 0x00	; 0
+ 2ac:	50 e0       	ldi	r21, 0x00	; 0
+ 2ae:	f6 d0       	rcall	.+492    	; 0x49c <__divmodsi4>
+				OCR1A = (int16_t)k > PWM_max ? PWM_max : k;
+ 2b0:	21 3a       	cpi	r18, 0xA1	; 161
+ 2b2:	31 05       	cpc	r19, r1
+ 2b4:	14 f0       	brlt	.+4      	; 0x2ba <main+0xcc>
+ 2b6:	20 ea       	ldi	r18, 0xA0	; 160
+ 2b8:	30 e0       	ldi	r19, 0x00	; 0
+ 2ba:	3b bd       	out	0x2b, r19	; 43
+ 2bc:	2a bd       	out	0x2a, r18	; 42
 				//Cooler regulation
-				adcResult[0] -= TSEN_MIN;
- 29e:	c8 01       	movw	r24, r16
- 2a0:	85 55       	subi	r24, 0x55	; 85
- 2a2:	95 40       	sbci	r25, 0x05	; 5
- 2a4:	f1 01       	movw	r30, r2
- 2a6:	91 83       	std	Z+1, r25	; 0x01
- 2a8:	80 83       	st	Z, r24
+				adcResult[0] -= TSEN_MIN; //dT
+ 2be:	f1 01       	movw	r30, r2
+ 2c0:	00 81       	ld	r16, Z
+ 2c2:	11 81       	ldd	r17, Z+1	; 0x01
+ 2c4:	68 01       	movw	r12, r16
+ 2c6:	f9 ed       	ldi	r31, 0xD9	; 217
+ 2c8:	cf 1a       	sub	r12, r31
+ 2ca:	f4 e0       	ldi	r31, 0x04	; 4
+ 2cc:	df 0a       	sbc	r13, r31
 				k = adcResult[0] * (FanMax - FanMin);
- 2aa:	09 2e       	mov	r0, r25
- 2ac:	00 0c       	add	r0, r0
- 2ae:	aa 0b       	sbc	r26, r26
- 2b0:	bb 0b       	sbc	r27, r27
- 2b2:	6c 01       	movw	r12, r24
- 2b4:	7d 01       	movw	r14, r26
- 2b6:	cc 0c       	add	r12, r12
- 2b8:	dd 1c       	adc	r13, r13
- 2ba:	ee 1c       	adc	r14, r14
- 2bc:	ff 1c       	adc	r15, r15
- 2be:	cc 0c       	add	r12, r12
- 2c0:	dd 1c       	adc	r13, r13
- 2c2:	ee 1c       	adc	r14, r14
- 2c4:	ff 1c       	adc	r15, r15
- 2c6:	cc 0c       	add	r12, r12
- 2c8:	dd 1c       	adc	r13, r13
- 2ca:	ee 1c       	adc	r14, r14
- 2cc:	ff 1c       	adc	r15, r15
- 2ce:	c8 1a       	sub	r12, r24
- 2d0:	d9 0a       	sbc	r13, r25
- 2d2:	ea 0a       	sbc	r14, r26
- 2d4:	fb 0a       	sbc	r15, r27
- 2d6:	cc 0c       	add	r12, r12
- 2d8:	dd 1c       	adc	r13, r13
- 2da:	ee 1c       	adc	r14, r14
- 2dc:	ff 1c       	adc	r15, r15
- 2de:	cc 0c       	add	r12, r12
- 2e0:	dd 1c       	adc	r13, r13
- 2e2:	ee 1c       	adc	r14, r14
- 2e4:	ff 1c       	adc	r15, r15
- 2e6:	cc 0c       	add	r12, r12
- 2e8:	dd 1c       	adc	r13, r13
- 2ea:	ee 1c       	adc	r14, r14
- 2ec:	ff 1c       	adc	r15, r15
+ 2ce:	c6 01       	movw	r24, r12
+ 2d0:	0d 2c       	mov	r0, r13
+ 2d2:	00 0c       	add	r0, r0
+ 2d4:	aa 0b       	sbc	r26, r26
+ 2d6:	bb 0b       	sbc	r27, r27
+ 2d8:	4c 01       	movw	r8, r24
+ 2da:	5d 01       	movw	r10, r26
+ 2dc:	88 0c       	add	r8, r8
+ 2de:	99 1c       	adc	r9, r9
+ 2e0:	aa 1c       	adc	r10, r10
+ 2e2:	bb 1c       	adc	r11, r11
+ 2e4:	88 0c       	add	r8, r8
+ 2e6:	99 1c       	adc	r9, r9
+ 2e8:	aa 1c       	adc	r10, r10
+ 2ea:	bb 1c       	adc	r11, r11
+ 2ec:	88 0c       	add	r8, r8
+ 2ee:	99 1c       	adc	r9, r9
+ 2f0:	aa 1c       	adc	r10, r10
+ 2f2:	bb 1c       	adc	r11, r11
+ 2f4:	88 1a       	sub	r8, r24
+ 2f6:	99 0a       	sbc	r9, r25
+ 2f8:	aa 0a       	sbc	r10, r26
+ 2fa:	bb 0a       	sbc	r11, r27
+ 2fc:	88 0c       	add	r8, r8
+ 2fe:	99 1c       	adc	r9, r9
+ 300:	aa 1c       	adc	r10, r10
+ 302:	bb 1c       	adc	r11, r11
+ 304:	88 0c       	add	r8, r8
+ 306:	99 1c       	adc	r9, r9
+ 308:	aa 1c       	adc	r10, r10
+ 30a:	bb 1c       	adc	r11, r11
+ 30c:	88 0c       	add	r8, r8
+ 30e:	99 1c       	adc	r9, r9
+ 310:	aa 1c       	adc	r10, r10
+ 312:	bb 1c       	adc	r11, r11
+ 314:	88 0c       	add	r8, r8
+ 316:	99 1c       	adc	r9, r9
+ 318:	aa 1c       	adc	r10, r10
+ 31a:	bb 1c       	adc	r11, r11
 				k /= TSEN_MAX - TSEN_MIN; //Upper bound of regulation
-				m = (int16_t)k + FanMin;
- 2ee:	c7 01       	movw	r24, r14
- 2f0:	b6 01       	movw	r22, r12
- 2f2:	29 ef       	ldi	r18, 0xF9	; 249
- 2f4:	30 e0       	ldi	r19, 0x00	; 0
- 2f6:	40 e0       	ldi	r20, 0x00	; 0
- 2f8:	50 e0       	ldi	r21, 0x00	; 0
- 2fa:	bf d0       	rcall	.+382    	; 0x47a <__divmodsi4>
- 2fc:	2c 5e       	subi	r18, 0xEC	; 236
- 2fe:	3f 4f       	sbci	r19, 0xFF	; 255
- 300:	12 f4       	brpl	.+4      	; 0x306 <main+0x12c>
- 302:	20 e0       	ldi	r18, 0x00	; 0
- 304:	36 2d       	mov	r19, r6
-				if (m < 0)
-					m = 0;
-				if ((uint16_t)m > OCR1B)
- 306:	88 b5       	in	r24, 0x28	; 40
- 308:	99 b5       	in	r25, 0x29	; 41
- 30a:	82 17       	cp	r24, r18
- 30c:	93 07       	cpc	r25, r19
- 30e:	40 f4       	brcc	.+16     	; 0x320 <main+0x146>
-					OCR1B = m > FanMax ? FanMax : m;
- 310:	2d 34       	cpi	r18, 0x4D	; 77
- 312:	31 05       	cpc	r19, r1
- 314:	14 f0       	brlt	.+4      	; 0x31a <main+0x140>
- 316:	2c e4       	ldi	r18, 0x4C	; 76
- 318:	30 e0       	ldi	r19, 0x00	; 0
- 31a:	39 bd       	out	0x29, r19	; 41
- 31c:	28 bd       	out	0x28, r18	; 40
- 31e:	22 c0       	rjmp	.+68     	; 0x364 <main+0x18a>
+				m = (int16_t)k + FanMin; //A
+ 31c:	c5 01       	movw	r24, r10
+ 31e:	b4 01       	movw	r22, r8
+ 320:	25 e7       	ldi	r18, 0x75	; 117
+ 322:	31 e0       	ldi	r19, 0x01	; 1
+ 324:	40 e0       	ldi	r20, 0x00	; 0
+ 326:	50 e0       	ldi	r21, 0x00	; 0
+ 328:	b9 d0       	rcall	.+370    	; 0x49c <__divmodsi4>
+ 32a:	28 5d       	subi	r18, 0xD8	; 216
+ 32c:	3f 4f       	sbci	r19, 0xFF	; 255
+				if (m > fanLvl)
+ 32e:	ed 2e       	mov	r14, r29
+ 330:	f1 2c       	mov	r15, r1
+ 332:	e2 16       	cp	r14, r18
+ 334:	f3 06       	cpc	r15, r19
+ 336:	4c f4       	brge	.+18     	; 0x34a <main+0x15c>
+				m = adcResult[0] - TSEN_ZERO;
+				k = m * PWM_max;
+				k /= TSEN_MIN - TSEN_ZERO; //0…50°C range
+				OCR1A = (int16_t)k > PWM_max ? PWM_max : k;
+				//Cooler regulation
+				adcResult[0] -= TSEN_MIN; //dT
+ 338:	f1 01       	movw	r30, r2
+ 33a:	d1 82       	std	Z+1, r13	; 0x01
+ 33c:	c0 82       	st	Z, r12
+				k = adcResult[0] * (FanMax - FanMin);
+				k /= TSEN_MAX - TSEN_MIN; //Upper bound of regulation
+				m = (int16_t)k + FanMin; //A
+				if (m > fanLvl)
+					fanLvl = m > FanMax ? FanMax : m;
+ 33e:	29 39       	cpi	r18, 0x99	; 153
+ 340:	31 05       	cpc	r19, r1
+ 342:	0c f0       	brlt	.+2      	; 0x346 <main+0x158>
+ 344:	28 e9       	ldi	r18, 0x98	; 152
+ 346:	d2 2f       	mov	r29, r18
+ 348:	1b c0       	rjmp	.+54     	; 0x380 <main+0x192>
 				else
 				{
-					adcResult[0] -= (TSEN_MAX - TSEN_MIN) >> 3; //Add 12.5% hysteresis
- 320:	04 57       	subi	r16, 0x74	; 116
- 322:	15 40       	sbci	r17, 0x05	; 5
- 324:	f1 01       	movw	r30, r2
- 326:	11 83       	std	Z+1, r17	; 0x01
- 328:	00 83       	st	Z, r16
+					adcResult[0] += (TSEN_MAX - TSEN_MIN) >> 3; //Add 12.5% hysteresis
+ 34a:	0b 5a       	subi	r16, 0xAB	; 171
+ 34c:	14 40       	sbci	r17, 0x04	; 4
+ 34e:	f1 01       	movw	r30, r2
+ 350:	11 83       	std	Z+1, r17	; 0x01
+ 352:	00 83       	st	Z, r16
 					k = adcResult[0] * (FanMax - FanMin);
- 32a:	c7 01       	movw	r24, r14
- 32c:	b6 01       	movw	r22, r12
- 32e:	68 5c       	subi	r22, 0xC8	; 200
- 330:	76 40       	sbci	r23, 0x06	; 6
- 332:	81 09       	sbc	r24, r1
- 334:	91 09       	sbc	r25, r1
+ 354:	c5 01       	movw	r24, r10
+ 356:	b4 01       	movw	r22, r8
+ 358:	60 5e       	subi	r22, 0xE0	; 224
+ 35a:	7b 4e       	sbci	r23, 0xEB	; 235
+ 35c:	8f 4f       	sbci	r24, 0xFF	; 255
+ 35e:	9f 4f       	sbci	r25, 0xFF	; 255
 					k /= TSEN_MAX - TSEN_MIN; //Lower bound of regulation
-					m = (int16_t)k + FanMin;
- 336:	29 ef       	ldi	r18, 0xF9	; 249
- 338:	30 e0       	ldi	r19, 0x00	; 0
- 33a:	40 e0       	ldi	r20, 0x00	; 0
- 33c:	50 e0       	ldi	r21, 0x00	; 0
- 33e:	9d d0       	rcall	.+314    	; 0x47a <__divmodsi4>
- 340:	2c 5e       	subi	r18, 0xEC	; 236
- 342:	3f 4f       	sbci	r19, 0xFF	; 255
- 344:	12 f4       	brpl	.+4      	; 0x34a <main+0x170>
- 346:	20 e0       	ldi	r18, 0x00	; 0
- 348:	36 2d       	mov	r19, r6
-					if (m < 0)
-						m = 0;
-					if ((uint16_t)m < OCR1B)
- 34a:	48 b5       	in	r20, 0x28	; 40
- 34c:	59 b5       	in	r21, 0x29	; 41
- 34e:	c9 01       	movw	r24, r18
- 350:	24 17       	cp	r18, r20
- 352:	35 07       	cpc	r19, r21
- 354:	38 f4       	brcc	.+14     	; 0x364 <main+0x18a>
-						OCR1B = m < FanMin ? 0 : m;
- 356:	24 31       	cpi	r18, 0x14	; 20
- 358:	31 05       	cpc	r19, r1
- 35a:	14 f4       	brge	.+4      	; 0x360 <main+0x186>
- 35c:	80 e0       	ldi	r24, 0x00	; 0
- 35e:	96 2d       	mov	r25, r6
- 360:	99 bd       	out	0x29, r25	; 41
- 362:	88 bd       	out	0x28, r24	; 40
+					m = (int16_t)k + FanMin; //A
+ 360:	25 e7       	ldi	r18, 0x75	; 117
+ 362:	31 e0       	ldi	r19, 0x01	; 1
+ 364:	40 e0       	ldi	r20, 0x00	; 0
+ 366:	50 e0       	ldi	r21, 0x00	; 0
+ 368:	99 d0       	rcall	.+306    	; 0x49c <__divmodsi4>
+ 36a:	28 5d       	subi	r18, 0xD8	; 216
+ 36c:	3f 4f       	sbci	r19, 0xFF	; 255
+					if (m < fanLvl)
+ 36e:	2e 15       	cp	r18, r14
+ 370:	3f 05       	cpc	r19, r15
+ 372:	34 f4       	brge	.+12     	; 0x380 <main+0x192>
+						fanLvl = m < FanMin ? FanMin : m;
+ 374:	28 32       	cpi	r18, 0x28	; 40
+ 376:	31 05       	cpc	r19, r1
+ 378:	14 f4       	brge	.+4      	; 0x37e <main+0x190>
+ 37a:	28 e2       	ldi	r18, 0x28	; 40
+ 37c:	30 e0       	ldi	r19, 0x00	; 0
+ 37e:	d2 2f       	mov	r29, r18
 				}
+				if (OCR1BL > fanLvl)
+ 380:	88 b5       	in	r24, 0x28	; 40
+ 382:	d8 17       	cp	r29, r24
+ 384:	20 f4       	brcc	.+8      	; 0x38e <main+0x1a0>
+					OCR1BL--;
+ 386:	88 b5       	in	r24, 0x28	; 40
+ 388:	81 50       	subi	r24, 0x01	; 1
+ 38a:	88 bd       	out	0x28, r24	; 40
+ 38c:	06 c0       	rjmp	.+12     	; 0x39a <main+0x1ac>
+				else if (OCR1BL < fanLvl)
+ 38e:	88 b5       	in	r24, 0x28	; 40
+ 390:	8d 17       	cp	r24, r29
+ 392:	18 f4       	brcc	.+6      	; 0x39a <main+0x1ac>
+					OCR1BL++;
+ 394:	88 b5       	in	r24, 0x28	; 40
+ 396:	8f 5f       	subi	r24, 0xFF	; 255
+ 398:	88 bd       	out	0x28, r24	; 40
 
 				if (adcResult[1] < DC_MIN && We_Are_OffLine) //Check battery voltage
- 364:	f1 01       	movw	r30, r2
- 366:	82 81       	ldd	r24, Z+2	; 0x02
- 368:	93 81       	ldd	r25, Z+3	; 0x03
- 36a:	86 38       	cpi	r24, 0x86	; 134
- 36c:	97 40       	sbci	r25, 0x07	; 7
- 36e:	14 f4       	brge	.+4      	; 0x374 <main+0x19a>
- 370:	df 99       	sbic	0x1b, 7	; 27
- 372:	68 c0       	rjmp	.+208    	; 0x444 <__LOCK_REGION_LENGTH__+0x44>
+ 39a:	f1 01       	movw	r30, r2
+ 39c:	82 81       	ldd	r24, Z+2	; 0x02
+ 39e:	93 81       	ldd	r25, Z+3	; 0x03
+ 3a0:	86 38       	cpi	r24, 0x86	; 134
+ 3a2:	97 40       	sbci	r25, 0x07	; 7
+ 3a4:	14 f4       	brge	.+4      	; 0x3aa <main+0x1bc>
+ 3a6:	df 99       	sbic	0x1b, 7	; 27
+ 3a8:	6d c0       	rjmp	.+218    	; 0x484 <__LOCK_REGION_LENGTH__+0x84>
 					ICL_Active;
-					_delay_ms(5); //Maximum relay release time
+					_delay_ms(5); //ICL relay release time
 					DC_MOS_Off;
 				}
 
 				if (!(PORTA & (1 << PORTA4))) //Charger is off
- 374:	dc 99       	sbic	0x1b, 4	; 27
- 376:	23 c0       	rjmp	.+70     	; 0x3be <main+0x1e4>
+ 3aa:	dc 99       	sbic	0x1b, 4	; 27
+ 3ac:	23 c0       	rjmp	.+70     	; 0x3f4 <main+0x206>
 				{
 					if (!We_Are_OffLine)
- 378:	df 99       	sbic	0x1b, 7	; 27
- 37a:	05 c0       	rjmp	.+10     	; 0x386 <main+0x1ac>
+ 3ae:	df 99       	sbic	0x1b, 7	; 27
+ 3b0:	05 c0       	rjmp	.+10     	; 0x3bc <main+0x1ce>
 						chrgCnt--;
- 37c:	21 e0       	ldi	r18, 0x01	; 1
- 37e:	82 1a       	sub	r8, r18
- 380:	91 08       	sbc	r9, r1
- 382:	a1 08       	sbc	r10, r1
- 384:	b1 08       	sbc	r11, r1
+ 3b2:	01 e0       	ldi	r16, 0x01	; 1
+ 3b4:	40 1a       	sub	r4, r16
+ 3b6:	51 08       	sbc	r5, r1
+ 3b8:	61 08       	sbc	r6, r1
+ 3ba:	71 08       	sbc	r7, r1
 					if (chrgCnt == 1)
- 386:	81 e0       	ldi	r24, 0x01	; 1
- 388:	88 16       	cp	r8, r24
- 38a:	91 04       	cpc	r9, r1
- 38c:	a1 04       	cpc	r10, r1
- 38e:	b1 04       	cpc	r11, r1
- 390:	21 f4       	brne	.+8      	; 0x39a <main+0x1c0>
+ 3bc:	11 e0       	ldi	r17, 0x01	; 1
+ 3be:	41 16       	cp	r4, r17
+ 3c0:	51 04       	cpc	r5, r1
+ 3c2:	61 04       	cpc	r6, r1
+ 3c4:	71 04       	cpc	r7, r1
+ 3c6:	21 f4       	brne	.+8      	; 0x3d0 <main+0x1e2>
 					{
 						if (!BMS_B_Selected)
- 392:	d9 99       	sbic	0x1b, 1	; 27
- 394:	3b c0       	rjmp	.+118    	; 0x40c <__LOCK_REGION_LENGTH__+0xc>
+ 3c8:	d9 99       	sbic	0x1b, 1	; 27
+ 3ca:	3c c0       	rjmp	.+120    	; 0x444 <__LOCK_REGION_LENGTH__+0x44>
 							BMS_Sel_B;
- 396:	d9 9a       	sbi	0x1b, 1	; 27
- 398:	39 c0       	rjmp	.+114    	; 0x40c <__LOCK_REGION_LENGTH__+0xc>
+ 3cc:	d9 9a       	sbi	0x1b, 1	; 27
+ 3ce:	3a c0       	rjmp	.+116    	; 0x444 <__LOCK_REGION_LENGTH__+0x44>
 					}
 					else if (chrgCnt == 0)
- 39a:	81 14       	cp	r8, r1
- 39c:	91 04       	cpc	r9, r1
- 39e:	a1 04       	cpc	r10, r1
- 3a0:	b1 04       	cpc	r11, r1
- 3a2:	49 f4       	brne	.+18     	; 0x3b6 <main+0x1dc>
+ 3d0:	41 14       	cp	r4, r1
+ 3d2:	51 04       	cpc	r5, r1
+ 3d4:	61 04       	cpc	r6, r1
+ 3d6:	71 04       	cpc	r7, r1
+ 3d8:	49 f4       	brne	.+18     	; 0x3ec <main+0x1fe>
 					{
 						Charger_On; //Power on the charger
- 3a4:	c0 9a       	sbi	0x18, 0	; 24
+ 3da:	c0 9a       	sbi	0x18, 0	; 24
 						chrgCnt = 6;
- 3a6:	0f 2e       	mov	r0, r31
- 3a8:	f6 e0       	ldi	r31, 0x06	; 6
- 3aa:	8f 2e       	mov	r8, r31
- 3ac:	91 2c       	mov	r9, r1
- 3ae:	a1 2c       	mov	r10, r1
- 3b0:	b1 2c       	mov	r11, r1
- 3b2:	f0 2d       	mov	r31, r0
- 3b4:	2b c0       	rjmp	.+86     	; 0x40c <__LOCK_REGION_LENGTH__+0xc>
+ 3dc:	0f 2e       	mov	r0, r31
+ 3de:	f6 e0       	ldi	r31, 0x06	; 6
+ 3e0:	4f 2e       	mov	r4, r31
+ 3e2:	51 2c       	mov	r5, r1
+ 3e4:	61 2c       	mov	r6, r1
+ 3e6:	71 2c       	mov	r7, r1
+ 3e8:	f0 2d       	mov	r31, r0
+ 3ea:	2c c0       	rjmp	.+88     	; 0x444 <__LOCK_REGION_LENGTH__+0x44>
 					}
-					else if (BMS_B_Selected) //Happens when BMS 2 finished charge cycle
- 3b6:	d9 9b       	sbis	0x1b, 1	; 27
- 3b8:	29 c0       	rjmp	.+82     	; 0x40c <__LOCK_REGION_LENGTH__+0xc>
+					else if (BMS_B_Selected) //Happens when BMS 2 finishes charge cycle
+ 3ec:	d9 9b       	sbis	0x1b, 1	; 27
+ 3ee:	2a c0       	rjmp	.+84     	; 0x444 <__LOCK_REGION_LENGTH__+0x44>
 						BMS_Sel_A;
- 3ba:	d9 98       	cbi	0x1b, 1	; 27
- 3bc:	27 c0       	rjmp	.+78     	; 0x40c <__LOCK_REGION_LENGTH__+0xc>
+ 3f0:	d9 98       	cbi	0x1b, 1	; 27
+ 3f2:	28 c0       	rjmp	.+80     	; 0x444 <__LOCK_REGION_LENGTH__+0x44>
 				}
 				else if (!We_Are_OffLine)
- 3be:	df 99       	sbic	0x1b, 7	; 27
- 3c0:	25 c0       	rjmp	.+74     	; 0x40c <__LOCK_REGION_LENGTH__+0xc>
+ 3f4:	df 99       	sbic	0x1b, 7	; 27
+ 3f6:	26 c0       	rjmp	.+76     	; 0x444 <__LOCK_REGION_LENGTH__+0x44>
 				{
 					if (adcResult[1] < (DC_MIN >> 1)) //To detect continuous low level
- 3c2:	f1 01       	movw	r30, r2
- 3c4:	82 81       	ldd	r24, Z+2	; 0x02
- 3c6:	93 81       	ldd	r25, Z+3	; 0x03
- 3c8:	83 3c       	cpi	r24, 0xC3	; 195
- 3ca:	93 40       	sbci	r25, 0x03	; 3
- 3cc:	2c f4       	brge	.+10     	; 0x3d8 <main+0x1fe>
+ 3f8:	f1 01       	movw	r30, r2
+ 3fa:	82 81       	ldd	r24, Z+2	; 0x02
+ 3fc:	93 81       	ldd	r25, Z+3	; 0x03
+ 3fe:	83 3c       	cpi	r24, 0xC3	; 195
+ 400:	93 40       	sbci	r25, 0x03	; 3
+ 402:	2c f4       	brge	.+10     	; 0x40e <__LOCK_REGION_LENGTH__+0xe>
 						chrgCnt--;
- 3ce:	21 e0       	ldi	r18, 0x01	; 1
- 3d0:	82 1a       	sub	r8, r18
- 3d2:	91 08       	sbc	r9, r1
- 3d4:	a1 08       	sbc	r10, r1
- 3d6:	b1 08       	sbc	r11, r1
-					if (chrgCnt == 0) //Charge for selected BMS finished
- 3d8:	81 14       	cp	r8, r1
- 3da:	91 04       	cpc	r9, r1
- 3dc:	a1 04       	cpc	r10, r1
- 3de:	b1 04       	cpc	r11, r1
- 3e0:	a9 f4       	brne	.+42     	; 0x40c <__LOCK_REGION_LENGTH__+0xc>
+ 404:	01 e0       	ldi	r16, 0x01	; 1
+ 406:	40 1a       	sub	r4, r16
+ 408:	51 08       	sbc	r5, r1
+ 40a:	61 08       	sbc	r6, r1
+ 40c:	71 08       	sbc	r7, r1
+					if (chrgCnt == 0) //Charge for the selected BMS finished
+ 40e:	41 14       	cp	r4, r1
+ 410:	51 04       	cpc	r5, r1
+ 412:	61 04       	cpc	r6, r1
+ 414:	71 04       	cpc	r7, r1
+ 416:	b1 f4       	brne	.+44     	; 0x444 <__LOCK_REGION_LENGTH__+0x44>
 					{
 						Charger_Off;
- 3e2:	c0 98       	cbi	0x18, 0	; 24
+ 418:	c0 98       	cbi	0x18, 0	; 24
 						if (BMS_B_Selected)
- 3e4:	d9 9b       	sbis	0x1b, 1	; 27
- 3e6:	0b c0       	rjmp	.+22     	; 0x3fe <main+0x224>
+ 41a:	d9 9b       	sbis	0x1b, 1	; 27
+ 41c:	0c c0       	rjmp	.+24     	; 0x436 <__LOCK_REGION_LENGTH__+0x36>
 						{
 							chrgCnt = 135000; //1.5 days delay
-							Clear_Discharged_flag;
- 3e8:	99 98       	cbi	0x13, 1	; 19
-					if (chrgCnt == 0) //Charge for selected BMS finished
+							Discharged = false;
+ 41e:	10 92 64 00 	sts	0x0064, r1	; 0x800064 <__data_end>
+					if (chrgCnt == 0) //Charge for the selected BMS finished
 					{
 						Charger_Off;
 						if (BMS_B_Selected)
 						{
 							chrgCnt = 135000; //1.5 days delay
- 3ea:	0f 2e       	mov	r0, r31
- 3ec:	f8 e5       	ldi	r31, 0x58	; 88
- 3ee:	8f 2e       	mov	r8, r31
- 3f0:	ff e0       	ldi	r31, 0x0F	; 15
- 3f2:	9f 2e       	mov	r9, r31
- 3f4:	f2 e0       	ldi	r31, 0x02	; 2
- 3f6:	af 2e       	mov	r10, r31
- 3f8:	b1 2c       	mov	r11, r1
- 3fa:	f0 2d       	mov	r31, r0
- 3fc:	07 c0       	rjmp	.+14     	; 0x40c <__LOCK_REGION_LENGTH__+0xc>
-							Clear_Discharged_flag;
+ 422:	0f 2e       	mov	r0, r31
+ 424:	f8 e5       	ldi	r31, 0x58	; 88
+ 426:	4f 2e       	mov	r4, r31
+ 428:	ff e0       	ldi	r31, 0x0F	; 15
+ 42a:	5f 2e       	mov	r5, r31
+ 42c:	f2 e0       	ldi	r31, 0x02	; 2
+ 42e:	6f 2e       	mov	r6, r31
+ 430:	71 2c       	mov	r7, r1
+ 432:	f0 2d       	mov	r31, r0
+ 434:	07 c0       	rjmp	.+14     	; 0x444 <__LOCK_REGION_LENGTH__+0x44>
+							Discharged = false;
 						}
 						else
 							chrgCnt = 5;
- 3fe:	0f 2e       	mov	r0, r31
- 400:	f5 e0       	ldi	r31, 0x05	; 5
- 402:	8f 2e       	mov	r8, r31
- 404:	91 2c       	mov	r9, r1
- 406:	a1 2c       	mov	r10, r1
- 408:	b1 2c       	mov	r11, r1
- 40a:	f0 2d       	mov	r31, r0
+ 436:	0f 2e       	mov	r0, r31
+ 438:	f5 e0       	ldi	r31, 0x05	; 5
+ 43a:	4f 2e       	mov	r4, r31
+ 43c:	51 2c       	mov	r5, r1
+ 43e:	61 2c       	mov	r6, r1
+ 440:	71 2c       	mov	r7, r1
+ 442:	f0 2d       	mov	r31, r0
 					}
 				}
 				adcCnt = 0;
- 40c:	10 92 61 00 	sts	0x0061, r1	; 0x800061 <adcCnt>
+ 444:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <adcCnt>
 				adcResult[0] = adcResult[1] = 0;
- 410:	f1 01       	movw	r30, r2
- 412:	13 82       	std	Z+3, r1	; 0x03
- 414:	12 82       	std	Z+2, r1	; 0x02
- 416:	11 82       	std	Z+1, r1	; 0x01
- 418:	10 82       	st	Z, r1
+ 448:	f1 01       	movw	r30, r2
+ 44a:	13 82       	std	Z+3, r1	; 0x03
+ 44c:	12 82       	std	Z+2, r1	; 0x02
+ 44e:	11 82       	std	Z+1, r1	; 0x01
+ 450:	10 82       	st	Z, r1
 			}
 
-			if (Is_Charge_Required)
- 41a:	9a 9b       	sbis	0x13, 2	; 19
- 41c:	08 c0       	rjmp	.+16     	; 0x42e <__LOCK_REGION_LENGTH__+0x2e>
+			if (ChargeReq)
+ 452:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <ChargeReq>
+ 456:	88 23       	and	r24, r24
+ 458:	49 f0       	breq	.+18     	; 0x46c <__LOCK_REGION_LENGTH__+0x6c>
 			{
-				Clear_ChargeReq_flag;
- 41e:	9a 98       	cbi	0x13, 2	; 19
+				ChargeReq = false;
+ 45a:	10 92 60 00 	sts	0x0060, r1	; 0x800060 <ChargeReq>
 				chrgCnt = 6; //Set minimum delay
- 420:	0f 2e       	mov	r0, r31
- 422:	f6 e0       	ldi	r31, 0x06	; 6
- 424:	8f 2e       	mov	r8, r31
- 426:	91 2c       	mov	r9, r1
- 428:	a1 2c       	mov	r10, r1
- 42a:	b1 2c       	mov	r11, r1
- 42c:	f0 2d       	mov	r31, r0
+ 45e:	0f 2e       	mov	r0, r31
+ 460:	f6 e0       	ldi	r31, 0x06	; 6
+ 462:	4f 2e       	mov	r4, r31
+ 464:	51 2c       	mov	r5, r1
+ 466:	61 2c       	mov	r6, r1
+ 468:	71 2c       	mov	r7, r1
+ 46a:	f0 2d       	mov	r31, r0
 			}
 			//ADC conversion routine
 			if (adcCnt & 1)
- 42e:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <adcCnt>
- 432:	80 ff       	sbrs	r24, 0
- 434:	02 c0       	rjmp	.+4      	; 0x43a <__LOCK_REGION_LENGTH__+0x3a>
+ 46c:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <adcCnt>
+ 470:	80 ff       	sbrs	r24, 0
+ 472:	02 c0       	rjmp	.+4      	; 0x478 <__LOCK_REGION_LENGTH__+0x78>
 				ADMUX = 0; //ADC0 - THS0
- 436:	17 b8       	out	0x07, r1	; 7
- 438:	01 c0       	rjmp	.+2      	; 0x43c <__LOCK_REGION_LENGTH__+0x3c>
+ 474:	17 b8       	out	0x07, r1	; 7
+ 476:	02 c0       	rjmp	.+4      	; 0x47c <__LOCK_REGION_LENGTH__+0x7c>
 			else
 				ADMUX = (1 << MUX0) | (1 << MUX1); //ADC3 - battery voltage
- 43a:	77 b8       	out	0x07, r7	; 7
+ 478:	f3 e0       	ldi	r31, 0x03	; 3
+ 47a:	f7 b9       	out	0x07, r31	; 7
 			ADCSRA |= (1 << ADSC); //Start conversion
- 43c:	36 9a       	sbi	0x06, 6	; 6
+ 47c:	36 9a       	sbi	0x06, 6	; 6
 		}
 
-		if (!(sysTick & 7)) //~80ms period
-		{
-			//Heartbeat LED
-			m = hb++;
- 43e:	6d 2f       	mov	r22, r29
-			else
-				ADMUX = (1 << MUX0) | (1 << MUX1); //ADC3 - battery voltage
-			ADCSRA |= (1 << ADSC); //Start conversion
-		}
-
-		Clear_Tick_flag;
- 440:	98 98       	cbi	0x13, 0	; 19
-	int16_t m, cmax = 127;
-	uint8_t sysTick = 0;
-	int8_t hb = 0;
+		TickFlag = false;
+ 47e:	10 92 65 00 	sts	0x0065, r1	; 0x800065 <TickFlag>
+	int16_t m;
+	uint8_t sysTick = 0, fanLvl = FanMin;
+	int8_t hb;
 	mcuInit();
     /* Replace with your application code */
     while (true)
- 442:	e5 ce       	rjmp	.-566    	; 0x20e <main+0x34>
-						OCR1B = m < FanMin ? 0 : m;
-				}
+ 482:	c5 ce       	rjmp	.-630    	; 0x20e <main+0x20>
+				else if (OCR1BL < fanLvl)
+					OCR1BL++;
 
 				if (adcResult[1] < DC_MIN && We_Are_OffLine) //Check battery voltage
 				{
-					Set_Discharged_flag;
- 444:	99 9a       	sbi	0x13, 1	; 19
+					Discharged = true;
+ 484:	01 e0       	ldi	r16, 0x01	; 1
+ 486:	00 93 64 00 	sts	0x0064, r16	; 0x800064 <__data_end>
 					ICL_Active;
- 446:	c2 98       	cbi	0x18, 2	; 24
- 448:	87 e8       	ldi	r24, 0x87	; 135
- 44a:	93 e1       	ldi	r25, 0x13	; 19
- 44c:	01 97       	sbiw	r24, 0x01	; 1
- 44e:	f1 f7       	brne	.-4      	; 0x44c <__LOCK_REGION_LENGTH__+0x4c>
- 450:	00 c0       	rjmp	.+0      	; 0x452 <__LOCK_REGION_LENGTH__+0x52>
- 452:	00 00       	nop
-					_delay_ms(5); //Maximum relay release time
+ 48a:	c2 98       	cbi	0x18, 2	; 24
+ 48c:	8f e0       	ldi	r24, 0x0F	; 15
+ 48e:	97 e2       	ldi	r25, 0x27	; 39
+ 490:	01 97       	sbiw	r24, 0x01	; 1
+ 492:	f1 f7       	brne	.-4      	; 0x490 <__LOCK_REGION_LENGTH__+0x90>
+ 494:	00 c0       	rjmp	.+0      	; 0x496 <__LOCK_REGION_LENGTH__+0x96>
+ 496:	00 00       	nop
+					_delay_ms(5); //ICL relay release time
 					DC_MOS_Off;
- 454:	dc 98       	cbi	0x1b, 4	; 27
- 456:	8e cf       	rjmp	.-228    	; 0x374 <main+0x19a>
+ 498:	dc 98       	cbi	0x1b, 4	; 27
+ 49a:	87 cf       	rjmp	.-242    	; 0x3aa <main+0x1bc>
 
-00000458 <__mulhi3>:
- 458:	00 24       	eor	r0, r0
- 45a:	55 27       	eor	r21, r21
- 45c:	04 c0       	rjmp	.+8      	; 0x466 <__mulhi3+0xe>
- 45e:	08 0e       	add	r0, r24
- 460:	59 1f       	adc	r21, r25
- 462:	88 0f       	add	r24, r24
- 464:	99 1f       	adc	r25, r25
- 466:	00 97       	sbiw	r24, 0x00	; 0
- 468:	29 f0       	breq	.+10     	; 0x474 <__mulhi3+0x1c>
- 46a:	76 95       	lsr	r23
- 46c:	67 95       	ror	r22
- 46e:	b8 f3       	brcs	.-18     	; 0x45e <__mulhi3+0x6>
- 470:	71 05       	cpc	r23, r1
- 472:	b9 f7       	brne	.-18     	; 0x462 <__mulhi3+0xa>
- 474:	80 2d       	mov	r24, r0
- 476:	95 2f       	mov	r25, r21
- 478:	08 95       	ret
+0000049c <__divmodsi4>:
+ 49c:	05 2e       	mov	r0, r21
+ 49e:	97 fb       	bst	r25, 7
+ 4a0:	16 f4       	brtc	.+4      	; 0x4a6 <__divmodsi4+0xa>
+ 4a2:	00 94       	com	r0
+ 4a4:	0f d0       	rcall	.+30     	; 0x4c4 <__negsi2>
+ 4a6:	57 fd       	sbrc	r21, 7
+ 4a8:	05 d0       	rcall	.+10     	; 0x4b4 <__divmodsi4_neg2>
+ 4aa:	14 d0       	rcall	.+40     	; 0x4d4 <__udivmodsi4>
+ 4ac:	07 fc       	sbrc	r0, 7
+ 4ae:	02 d0       	rcall	.+4      	; 0x4b4 <__divmodsi4_neg2>
+ 4b0:	46 f4       	brtc	.+16     	; 0x4c2 <__divmodsi4_exit>
+ 4b2:	08 c0       	rjmp	.+16     	; 0x4c4 <__negsi2>
 
-0000047a <__divmodsi4>:
- 47a:	05 2e       	mov	r0, r21
- 47c:	97 fb       	bst	r25, 7
- 47e:	16 f4       	brtc	.+4      	; 0x484 <__divmodsi4+0xa>
- 480:	00 94       	com	r0
- 482:	0f d0       	rcall	.+30     	; 0x4a2 <__negsi2>
- 484:	57 fd       	sbrc	r21, 7
- 486:	05 d0       	rcall	.+10     	; 0x492 <__divmodsi4_neg2>
- 488:	14 d0       	rcall	.+40     	; 0x4b2 <__udivmodsi4>
- 48a:	07 fc       	sbrc	r0, 7
- 48c:	02 d0       	rcall	.+4      	; 0x492 <__divmodsi4_neg2>
- 48e:	46 f4       	brtc	.+16     	; 0x4a0 <__divmodsi4_exit>
- 490:	08 c0       	rjmp	.+16     	; 0x4a2 <__negsi2>
+000004b4 <__divmodsi4_neg2>:
+ 4b4:	50 95       	com	r21
+ 4b6:	40 95       	com	r20
+ 4b8:	30 95       	com	r19
+ 4ba:	21 95       	neg	r18
+ 4bc:	3f 4f       	sbci	r19, 0xFF	; 255
+ 4be:	4f 4f       	sbci	r20, 0xFF	; 255
+ 4c0:	5f 4f       	sbci	r21, 0xFF	; 255
 
-00000492 <__divmodsi4_neg2>:
- 492:	50 95       	com	r21
- 494:	40 95       	com	r20
- 496:	30 95       	com	r19
- 498:	21 95       	neg	r18
- 49a:	3f 4f       	sbci	r19, 0xFF	; 255
- 49c:	4f 4f       	sbci	r20, 0xFF	; 255
- 49e:	5f 4f       	sbci	r21, 0xFF	; 255
+000004c2 <__divmodsi4_exit>:
+ 4c2:	08 95       	ret
 
-000004a0 <__divmodsi4_exit>:
- 4a0:	08 95       	ret
+000004c4 <__negsi2>:
+ 4c4:	90 95       	com	r25
+ 4c6:	80 95       	com	r24
+ 4c8:	70 95       	com	r23
+ 4ca:	61 95       	neg	r22
+ 4cc:	7f 4f       	sbci	r23, 0xFF	; 255
+ 4ce:	8f 4f       	sbci	r24, 0xFF	; 255
+ 4d0:	9f 4f       	sbci	r25, 0xFF	; 255
+ 4d2:	08 95       	ret
 
-000004a2 <__negsi2>:
- 4a2:	90 95       	com	r25
- 4a4:	80 95       	com	r24
- 4a6:	70 95       	com	r23
- 4a8:	61 95       	neg	r22
- 4aa:	7f 4f       	sbci	r23, 0xFF	; 255
- 4ac:	8f 4f       	sbci	r24, 0xFF	; 255
- 4ae:	9f 4f       	sbci	r25, 0xFF	; 255
- 4b0:	08 95       	ret
+000004d4 <__udivmodsi4>:
+ 4d4:	a1 e2       	ldi	r26, 0x21	; 33
+ 4d6:	1a 2e       	mov	r1, r26
+ 4d8:	aa 1b       	sub	r26, r26
+ 4da:	bb 1b       	sub	r27, r27
+ 4dc:	fd 01       	movw	r30, r26
+ 4de:	0d c0       	rjmp	.+26     	; 0x4fa <__udivmodsi4_ep>
 
-000004b2 <__udivmodsi4>:
- 4b2:	a1 e2       	ldi	r26, 0x21	; 33
- 4b4:	1a 2e       	mov	r1, r26
- 4b6:	aa 1b       	sub	r26, r26
- 4b8:	bb 1b       	sub	r27, r27
- 4ba:	fd 01       	movw	r30, r26
- 4bc:	0d c0       	rjmp	.+26     	; 0x4d8 <__udivmodsi4_ep>
+000004e0 <__udivmodsi4_loop>:
+ 4e0:	aa 1f       	adc	r26, r26
+ 4e2:	bb 1f       	adc	r27, r27
+ 4e4:	ee 1f       	adc	r30, r30
+ 4e6:	ff 1f       	adc	r31, r31
+ 4e8:	a2 17       	cp	r26, r18
+ 4ea:	b3 07       	cpc	r27, r19
+ 4ec:	e4 07       	cpc	r30, r20
+ 4ee:	f5 07       	cpc	r31, r21
+ 4f0:	20 f0       	brcs	.+8      	; 0x4fa <__udivmodsi4_ep>
+ 4f2:	a2 1b       	sub	r26, r18
+ 4f4:	b3 0b       	sbc	r27, r19
+ 4f6:	e4 0b       	sbc	r30, r20
+ 4f8:	f5 0b       	sbc	r31, r21
 
-000004be <__udivmodsi4_loop>:
- 4be:	aa 1f       	adc	r26, r26
- 4c0:	bb 1f       	adc	r27, r27
- 4c2:	ee 1f       	adc	r30, r30
- 4c4:	ff 1f       	adc	r31, r31
- 4c6:	a2 17       	cp	r26, r18
- 4c8:	b3 07       	cpc	r27, r19
- 4ca:	e4 07       	cpc	r30, r20
- 4cc:	f5 07       	cpc	r31, r21
- 4ce:	20 f0       	brcs	.+8      	; 0x4d8 <__udivmodsi4_ep>
- 4d0:	a2 1b       	sub	r26, r18
- 4d2:	b3 0b       	sbc	r27, r19
- 4d4:	e4 0b       	sbc	r30, r20
- 4d6:	f5 0b       	sbc	r31, r21
+000004fa <__udivmodsi4_ep>:
+ 4fa:	66 1f       	adc	r22, r22
+ 4fc:	77 1f       	adc	r23, r23
+ 4fe:	88 1f       	adc	r24, r24
+ 500:	99 1f       	adc	r25, r25
+ 502:	1a 94       	dec	r1
+ 504:	69 f7       	brne	.-38     	; 0x4e0 <__udivmodsi4_loop>
+ 506:	60 95       	com	r22
+ 508:	70 95       	com	r23
+ 50a:	80 95       	com	r24
+ 50c:	90 95       	com	r25
+ 50e:	9b 01       	movw	r18, r22
+ 510:	ac 01       	movw	r20, r24
+ 512:	bd 01       	movw	r22, r26
+ 514:	cf 01       	movw	r24, r30
+ 516:	08 95       	ret
 
-000004d8 <__udivmodsi4_ep>:
- 4d8:	66 1f       	adc	r22, r22
- 4da:	77 1f       	adc	r23, r23
- 4dc:	88 1f       	adc	r24, r24
- 4de:	99 1f       	adc	r25, r25
- 4e0:	1a 94       	dec	r1
- 4e2:	69 f7       	brne	.-38     	; 0x4be <__udivmodsi4_loop>
- 4e4:	60 95       	com	r22
- 4e6:	70 95       	com	r23
- 4e8:	80 95       	com	r24
- 4ea:	90 95       	com	r25
- 4ec:	9b 01       	movw	r18, r22
- 4ee:	ac 01       	movw	r20, r24
- 4f0:	bd 01       	movw	r22, r26
- 4f2:	cf 01       	movw	r24, r30
- 4f4:	08 95       	ret
+00000518 <_exit>:
+ 518:	f8 94       	cli
 
-000004f6 <_exit>:
- 4f6:	f8 94       	cli
-
-000004f8 <__stop_program>:
- 4f8:	ff cf       	rjmp	.-2      	; 0x4f8 <__stop_program>
+0000051a <__stop_program>:
+ 51a:	ff cf       	rjmp	.-2      	; 0x51a <__stop_program>
