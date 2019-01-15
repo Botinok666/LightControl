@@ -1,6 +1,6 @@
 /* Bridge.cpp
  * Created: 26.11.2017 22:13:12
- * Version: 1.2
+ * Version: 2.0
  * Programmed version: 1.2	*/
 
 #include "Bridge.h"
@@ -78,8 +78,17 @@ inline void mcuInit()
 	//Timer 0: 57.6kHz clock
 	TCCR0B = (1 << CS01) | (1 << CS00); //~17.36µs tick
 	OCR0B = 154; //~2.66ms timeout
+	//Timer 1: 460.8kHz, phase and frequency correct, top in ICR1
+	TCCR1B = (1 << WGM13) | (1 << CS11);
+	ICR1 = 576; //400Hz output
+	TOCPMSA1 = (1 << TOCC6S0); //OC1B output to TOCC6
+	TOCPMCOE = (1 << TOCC6OE); //TOCC6 output to PA7
+	//ADC: 115.2kHz, channel 0, 2.2V reference
+	ADMUXB = (1 << REFS1);
+	ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS0);
+	DIDR0 = (1 << ADC0D);
 	//Power reduction
-	PRR = (1 << PRTWI) | (1 << PRSPI) | (1 << PRTIM1) | (1 << PRTIM2) | (1 << PRADC);
+	PRR = (1 << PRTWI) | (1 << PRSPI) | (1 << PRTIM2);
 	sei();
 }
 

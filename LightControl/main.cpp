@@ -1,6 +1,6 @@
 /* Air conditioning Mk1
  * Created: 24.11.2017 19:17:15
- * Version: 1.4
+ * Version: 1.5
  * Programmed version: 1.4	*/
 
 #include "AC.h"
@@ -18,8 +18,8 @@ uint8_t *txBuf;
 struct sysConfig
 {
 	uint8_t fanLevelOverride;
-	int16_t minDeltaRH, dDeltaRH;
-	int16_t minDeltaT, dDeltaT;
+	int16_t minRH, deltaRH;
+	int16_t minT, deltaT;
 
 	uint16_t CRC16;
 } validConf;
@@ -64,8 +64,8 @@ uint16_t CalculateCRC16(void *arr, int8_t count)
 
 int16_t FanLevel(int16_t dT, int16_t dRH)
 {
-	int16_t A = (FanMax - FanMin) * dT / validConf.dDeltaT;
-	int16_t B = (FanMax - FanMin) * dRH / validConf.dDeltaRH;
+	int16_t A = (FanMax - FanMin) * dT / validConf.deltaT;
+	int16_t B = (FanMax - FanMin) * dRH / validConf.deltaRH;
 	return A > B ? A : B;	
 }
 
@@ -74,16 +74,16 @@ void FanRegulation()
 	//Upper bounds for regulation
 	if (validConf.fanLevelOverride != 0xFF)
 		return;
-	int16_t dT = tmpStatus.insideT - tmpStatus.outsideT - validConf.minDeltaT;
-	int16_t dRH = tmpStatus.insideRH - tmpStatus.outsideRH - validConf.minDeltaRH;
+	int16_t dT = tmpStatus.insideT - validConf.minT;
+	int16_t dRH = tmpStatus.insideRH - validConf.minRH;
 	int16_t A = FanLevel(dT, dRH) + FanMin;
 	if ((fanLvl >= FanMin && A > fanLvl) || (fanLvl < FanMin && A > FanMin)) //At least one of upper bounds is above
 		fanLvl = A > FanMax ? FanMax : A; //Increase level
 	else
 	{
 		//Lower bounds for regulation
-		dT += validConf.minDeltaT >> 3;
-		dRH += validConf.minDeltaRH >> 3;
+		dT += validConf.minT >> 3;
+		dRH += validConf.minRH >> 3;
 		A = FanLevel(dT, dRH) + FanMin;
 		if (A < fanLvl) //Both lower bounds are below
 			fanLvl = A > FanMin ? A : 0; //Decrease level
@@ -177,7 +177,7 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 	uint8_t lcycle = ((uint8_t)cycles++) & 0x3F; //Range 0-63
 	if (!cycles) //~77 minutes between updates
 		eeprom_update_block(&validConf, &eConf, sizeof(sysConfig));
-	if (lcycle == 44 || lcycle == 52) //Send start signal to the sensor
+	if (lcycle == 44) //Send start signal to the sensor
 	{
 		uint8_t delayz = 0, j;
 		for (j = 0; j < 4; j++)
@@ -192,17 +192,9 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 		{
 			if (AM2302.frame.T < 0)
 				AM2302.frame.T = ~(AM2302.frame.T & 0x7FFF) + 1;
-			if (lcycle == 44)
-			{
-				tmpStatus.insideRH = AM2302.frame.RH;
-				tmpStatus.insideT = AM2302.frame.T;
-			}
-			else
-			{
-				tmpStatus.outsideRH = AM2302.frame.RH;
-				tmpStatus.outsideT = AM2302.frame.T;
-				FanRegulation();
-			}
+			tmpStatus.insideRH = AM2302.frame.RH;
+			tmpStatus.insideT = AM2302.frame.T;
+			FanRegulation();
 		}
 
 		PORTB &= ~(1 << PORTB2);

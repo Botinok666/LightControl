@@ -1,100 +1,187 @@
 /* Power.cpp
  * Created: 25.01.2018 17:00:54
- * Version: 1.0 */
+ * Version: 2.0 */
 
 #include "PC.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/power.h>
+#include <util/delay.h>
+#include "twi.h"
+#include "lcdtwi.h"
+#include <stdint-gcc.h>
 
-int16_t adcResult[2] = { 0, 0 };
-volatile int8_t adcCnt = -1;
-volatile uint8_t iclCnt = 6;
+volatile int16_t adcResult = 0, currentPWM = 24;
 volatile uint16_t toffCnt = 0;
 volatile bool TickFlag = false, Discharged = false, ChargeReq = true;
+uint8_t captOvfCtr = 0, lastOvf = 0;
+uint16_t captFirst, captCtr = 0;
+uint32_t captSum;
+uint8_t buffer[] = {
+	0x74,0x20,0x20,0x20,0x2F,0x20,0x20,0x00,0x43,0x20,0x01,0x20,0x20,0x20,0x25,0x20, //t 25/25°C  100%
+	0x20,0x20,0x20,0x20,0x20,0x20,0x72,0x70,0x6D,0x20,0x20,0x20,0x20,0x20,0x57,0x20  // 1002 rpm  118W
+};
+const uint8_t custom_chars[] = {
+	6,9,9,6,0,0,0,0,
+	14,31,19,21,21,25,31,0
+};
+
+void uint2buffer(uint8_t k_index, uint16_t k_value)
+{
+	uint8_t stx, sti, hide_zero = 0, k_data;
+	uint16_t divider = 1000;
+	for (stx = 0; stx < 4; stx++)
+	{
+		sti = k_value / divider;
+		k_value -= sti * divider;
+		if (!sti && !hide_zero && stx < 3)
+		k_data = 0x20;
+		else
+		{
+			hide_zero = 1;
+			k_data = sti + 0x30;
+		}
+		divider /= 10;
+		buffer[k_index++] = k_data;
+	}
+}
 
 ISR (ADC_vect)
 {
-	adcResult[adcCnt & 1] += ADC;
+	adcResult += ADC;
 }
 
-ISR (TIM0_COMPA_vect)
+ISR (TIMER1_CAPT_vect)
+{
+	static uint8_t ovfFirst = 0;
+	if (!captCtr++)
+	{
+		captFirst = ICR1;
+		ovfFirst = captOvfCtr;
+	}
+	else
+		captSum = ICR1;
+	lastOvf = captOvfCtr - ovfFirst;
+}
+
+ISR (TIMER1_OVF_vect)
+{
+	captOvfCtr++;
+	if (OCR0B < currentPWM)
+		OCR0B++;
+	else if (OCR0B > currentPWM)
+		OCR0B--;
+
+	if (captOvfCtr >= 16) //~1s period
+	{
+		if (captCtr > 1)
+		{
+			captSum += (uint32_t)lastOvf << 16;
+			captSum -= captFirst;
+			captSum /= 10;
+			uint32_t temp = (F_CPU * 3 / 8UL) * (captCtr - 1);
+			uint2buffer(17, (uint16_t)(temp / captSum));
+		}
+		else
+			uint2buffer(17, 0);
+		captOvfCtr = 0;
+		TickFlag = true;
+		captCtr = 0;
+		adcResult >>= 4;
+	}
+	//ADC conversion routine
+	ADCSRA |= (1 << ADSC); //Start conversion
+}
+
+ISR (TIMER2_COMPA_vect)
 {
 	if (!Discharged && !We_Are_OffLine)
 	{
-		ICL_Active;
-		_delay_ms(5); //Release time of ICL relay
-		DC_to_Load;
+		AC_MOS_Off;
+		Charger_Off;
+		_delay_us(66); //Dead time
 		DC_MOS_On;
-		iclCnt = 6;
 		ChargeReq = true;
-		TCNT0 = 0;
-		ACSR = (1 << ACBG) | (1 << ACIE) | (1 << ACI); //Prevent immediate firing of ACMP interrupt
+		TCNT2 = 0;
 	}
 	toffCnt = 0;
 
-	TIFR0 = (1 << OCF0B) | (1 << OCF0A);
-	TIMSK0 = (1 << OCIE0B); //Disable timeout and enable 10ms interrupt
+	TIFR2 = (1 << OCF2B) | (1 << OCF2A);
+	TIMSK2 = (1 << OCIE2B); //Disable timeout and enable 10ms interrupt
 }
 
-ISR (TIM0_COMPB_vect)
+ISR (TIMER2_COMPB_vect)
 {
-	TCNT0 = 0;
-	TickFlag = true;
+	TCNT2 = 0;
 }
 
-ISR (ANA_COMP_vect) //Comparator toggle
+ISR (INT0_vect) //Mains voltage sense
 {
-	if (ACSR & (1 << ACO)) //Rising edge: mains voltage below threshold
-		TIMSK0 = (1 << OCIE0A); //Disable 10ms and enable timeout interrupt
+	static bool trig = false;
+	if (PORTD & (1 << PORTD2)) //Rising edge: mains voltage below threshold
+	{
+		if (trig)
+		{
+			TCNT2 = 0; //Clear timer 2
+			_delay_us(560); //At 230VAC provides delay to hit zero crossing
+			AC_MOS_On;
+			trig = false;
+		}
+		TIMSK2 = (1 << OCIE2A); //Disable 10ms and enable timeout interrupt
+	}
 	else //Falling edge: mains voltage above threshold
 	{
-		TickFlag = true;
 		if (toffCnt < 500) //~5s delay
 			toffCnt++;
-		else
-		{
-			ICL_Active;
-			_delay_ms(5); //Release time of ICL relay
-			DC_MOS_Off;
-			AC_to_Load;
-			iclCnt = 6;
-			ACSR = (1 << ACBG) | (1 << ACIE) | (1 << ACI); //Prevent immediate firing of ACMP interrupt
-			OCR1BL = (FanMax + FanMin) >> 1;
-		}
-		TIMSK0 = 0; //Disable timeout and 10ms interrupts
+		else if (!(PORTD & ((1 << PORTD0) | (1 << PORTD1)))) //Both MOS switches are off
+			trig = true;
+		else if (!(PORTD & (1 << PORTD0))) //DC MOS should be turned off first
+			ACSR = (1 << ACBG) | (1 << ACIE); //Enable toggle interrupt
+		TIMSK2 = 0; //Disable timeout and 10ms interrupts
 	}
-	TCNT0 = 0; //Clear timer 0
-	TIFR0 = (1 << OCF0B) | (1 << OCF0A);
+	TCNT2 = 0; //Clear timer 2
+	TIFR2 = (1 << OCF2B) | (1 << OCF2A);
+}
+
+ISR (ANALOG_COMP_vect)
+{
+	ACSR = (1 << ACBG); //Disable interrupt
+	DC_MOS_Off;
+	_delay_us(66); //Dead time
+	AC_MOS_On;
 }
 
 inline void mcuInit()
 {
-	cli();
-	//Clock: 8MHz
-	clock_prescale_set(clock_div_1);
-	//Port A: pin 1 - BMS select, pin 4 - DC switch, pin 5 - cooler PWM, pin 6 - HB LED, pin 7 - main switch
-	DDRA = (1 << DDA1) | (1 << DDA4) | (1 << DDA5) | (1 << DDA6) | (1 << DDA7);
-	//Port B: pin 0 - charger switch, pin 2 - ICL switch
-	DDRB = (1 << DDB0) | (1 << DDB2);
-	//Timer 0: 7812Hz, interrupt on OC0A
-	TCCR0B = (1 << CS02) | (1 << CS00);
-	OCR0A = 13; //1.79ms timeout: ~140VAC minimum input voltage
-	OCR0B = 77; //10ms period
-	//Timer 1: 8MHz, phase and frequency correct PWM with top in ICR1
-	TCCR1A = (1 << COM1A1) | (1 << COM1B1);
-	TCCR1B = (1 << WGM13) | (1 << CS10);
-	ICR1 = PWM_max;
-	OCR1A = 0; //HB LED is off
-	OCR1B = 0; //Cooler is off
-	//Analog comparator: 1.1v on AIN0, interrupt on toggle
-	ACSR = (1 << ACBG) | (1 << ACIE);
-	//Digital input disable: THS0, AC detection, battery sense
-	DIDR0 = (1 << ADC0D) | (1 << ADC2D) | (1 << ADC3D);
-	//ADC: 3.3v reference, 125kHz, interrupt
+	//Port B: pin 1 - charger on, pin 2 - charger select
+	DDRB = (1 << DDB1) | (1 << DDB2);
+	//Port C: pin 5 - SCL
+	DDRC = (1 << DDC5);
+	//Port D: 0 - mains switch, 1 - DC switch, 5 - cooler PWM
+	DDRD = (1 << DDD0) | (1 << DDD1) | (1 << DDD5);
+	//External interrupts: INT0 enabled
+	EICRA = (1 << ISC00); //Any logical change generates an interrupt
+	EIMSK = (1 << INT0);
+	//Timer 0: 8MHz, phase and frequency correct PWM with top in OCR0A
+	TCCR0A = (1 << COM0B1) | (1 << WGM00);
+	TCCR0B = (1 << WGM02) | (1 << CS00);
+	OCR0A = FanMax; //~25kHz
+	OCR0B = 64; //40% DC at power-on
+	//Timer 1: 1MHz, input capture and overflow interrupt
+	TCCR1B = (1 << ICNC1) | (1 << CS11); //~15 overflows/s
+	TIMSK1 = (1 << TOIE1) | (1 << ICIE1);
+	//Timer 2: 7812Hz, interrupt on OC2A
+	TCCR2B = (1 << CS22) | (1 << CS21) | (1 << CS20);
+	OCR2A = 13; //1.79ms timeout: ~140VAC minimum input voltage
+	OCR2B = 77; //10ms period
+	//Analog comparator: 1.1v on AIN0
+	ACSR = (1 << ACBG);
+	//ADC: 1.1v reference, ADC6 input, 125kHz, interrupt
+	ADMUX = (1 << REFS0) | (1 << REFS1) | (1 << MUX2) | (1 << MUX1);
 	ADCSRA = (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS1);
-	//Power reduction: USI
-	PRR = (1 << PRUSI);
+	//TWI: 25kHz
+	TWBR = 117; //1 byte transfer time ~250µs
+	//Power reduction: SPI and USART
+	PRR = (1 << PRSPI) | (1 << PRUSART0);
 	sei();
 }
 
@@ -102,112 +189,139 @@ int main(void)
 {
 	uint32_t chrgCnt = 5;
 	int32_t k;
-	int16_t m;
-	uint8_t sysTick = 0, fanLvl = FanMin;
-	int8_t hb;
+	int16_t m, ths1, ths2;
 	mcuInit();
+
+	LCDInit();
+	LCDCmd(0x40);
+	LCDBuffer(custom_chars, 16);
+
+	twi_start();
+	twi_send(THS1_TWI_WR);
+	twi_send(0x00); //Temperature register
+	twi_stop();
+	twi_start();
+	twi_send(THS2_TWI_WR);
+	twi_send(0x00); //Temperature register
+	twi_stop();
+	twi_start();
+	twi_send(IOUT_TWI_WR);
+	twi_send(0x00); //Configuration
+	twi_send(0x31); //MSB: gain /4
+	twi_send(0xFD); //LSB: 128 samples, shunt voltage continuous sampling
+	twi_stop();
     /* Replace with your application code */
     while (true)
 	{
-		while (!TickFlag);
-		sysTick++; //~10ms period
-		if (iclCnt > 0)
+		while (!TickFlag); //~1s period
+		twi_start();
+		twi_send(THS1_TWI_RD);
+		ths1 = (int16_t)twi_receive(1) << 2;
+		ths1 |= twi_receive(0) >> 6;
+		twi_stop();
+		uint2buffer(3, (ths1 + 2) >> 2);
+
+		twi_start();
+		twi_send(THS2_TWI_RD);
+		ths2 = (int16_t)twi_receive(1) << 2;
+		ths2 |= twi_receive(0) >> 6;
+		twi_stop();
+		uint2buffer(0, (ths2 + 2) >> 2);
+		buffer[0] = 0x74;
+		buffer[4] = 0x2F;
+
+		twi_start();
+		twi_send(IOUT_TWI_WR);
+		twi_send(0x01); //Shunt voltage
+		twi_start();
+		twi_send(IOUT_TWI_RD);
+		k = (int16_t)twi_receive(1) << 8;
+		k |= twi_receive(0);
+		twi_stop();
+		k *= 222; //V_out
+		k /= 2500; //R_sense * 100, result: power in watts
+		uint2buffer(26, k);
+
+		k *= Bat_ESR;
+		adcResult <<= 1;
+		if (adcResult > 0) //Prevent divide by zero
+			adcResult += k / adcResult; //Corrected battery voltage (now without ESR)
+		if (adcResult > Bat_12p)
+			m = 12 + (adcResult - Bat_12p) / Charge_HDiv;
+		else
+			m = (adcResult - Bat_1p) / Charge_LDiv;
+		uint2buffer(10, m > 100 ? 100 : m < 0 ? 0 : m);
+		buffer[10] = 0x01;
+
+		if (m < 1 && We_Are_OffLine) //Check battery charge level
 		{
-			if (--iclCnt == 0)
-				ICL_Shunted;
+			Discharged = true;
+			DC_MOS_Off;
 		}
 
-		if (!(sysTick & 7)) //~80ms period
+		if (ths2 > ths1)
+			ths1 = ths2;
+		//Cooler regulation
+		k = ths1 - TSEN_MIN; //dT
+		k *= FanMax - FanMin;
+		k /= TSEN_MAX - TSEN_MIN; //Upper bound of regulation
+		m = (int16_t)k + FanMin; //A
+		if (m > currentPWM)
+			currentPWM = m > FanMax ? FanMax : m;
+		else
 		{
-			//Heartbeat LED
-			//m = hb++;
-			//OCR1A = (m * m) >> 8;
-			if (++adcCnt > 7) //Each channel has been sampled four times
+			k = ths1 - TSEN_MIN + ((TSEN_MAX - TSEN_MIN) >> 3); //Add 12.5% hysteresis
+			k *= FanMax - FanMin;
+			k /= TSEN_MAX - TSEN_MIN; //Lower bound of regulation
+			m = (int16_t)k + FanMin; //A
+			if (m < currentPWM)
+				currentPWM = m < FanMin ? FanMin : m;
+		}
+
+		if (!(PORTB & (1 << PORTB1))) //Charger is off
+		{
+			if (!We_Are_OffLine)
+				chrgCnt--;
+			if (chrgCnt == 1)
 			{
-				//Output level for LED for testing purpose
-				m = adcResult[0] - TSEN_ZERO;
-				k = m * PWM_max;
-				k /= TSEN_MIN - TSEN_ZERO; //0…50°C range
-				OCR1A = (int16_t)k > PWM_max ? PWM_max : k;
-				//Cooler regulation
-				adcResult[0] -= TSEN_MIN; //dT
-				k = adcResult[0] * (FanMax - FanMin);
-				k /= TSEN_MAX - TSEN_MIN; //Upper bound of regulation
-				m = (int16_t)k + FanMin; //A
-				if (m > fanLvl)
-					fanLvl = m > FanMax ? FanMax : m;
+				if (!BMS_B_Selected)
+					BMS_Sel_B;
+			}
+			else if (chrgCnt == 0)
+			{
+				Charger_On; //Power on the charger
+				chrgCnt = 6;
+			}
+			else if (BMS_B_Selected) //Happens when BMS 2 finishes charge cycle
+				BMS_Sel_A;
+		}
+		else if (!We_Are_OffLine)
+		{
+			if (!(PORTD & (1 << PORTD4))) //To detect continuous low level
+				chrgCnt--;
+			if (chrgCnt == 0) //Charge for the selected BMS finished
+			{
+				Charger_Off;
+				if (BMS_B_Selected)
+				{
+					chrgCnt = 135000; //1.5 days delay
+					Discharged = false;
+				}
 				else
-				{
-					adcResult[0] += (TSEN_MAX - TSEN_MIN) >> 3; //Add 12.5% hysteresis
-					k = adcResult[0] * (FanMax - FanMin);
-					k /= TSEN_MAX - TSEN_MIN; //Lower bound of regulation
-					m = (int16_t)k + FanMin; //A
-					if (m < fanLvl)
-						fanLvl = m < FanMin ? FanMin : m;
-				}
-				if (OCR1BL > fanLvl)
-					OCR1BL--;
-				else if (OCR1BL < fanLvl)
-					OCR1BL++;
-
-				if (adcResult[1] < DC_MIN && We_Are_OffLine) //Check battery voltage
-				{
-					Discharged = true;
-					ICL_Active;
-					_delay_ms(5); //ICL relay release time
-					DC_MOS_Off;
-				}
-
-				if (!(PORTA & (1 << PORTA4))) //Charger is off
-				{
-					if (!We_Are_OffLine)
-						chrgCnt--;
-					if (chrgCnt == 1)
-					{
-						if (!BMS_B_Selected)
-							BMS_Sel_B;
-					}
-					else if (chrgCnt == 0)
-					{
-						Charger_On; //Power on the charger
-						chrgCnt = 6;
-					}
-					else if (BMS_B_Selected) //Happens when BMS 2 finishes charge cycle
-						BMS_Sel_A;
-				}
-				else if (!We_Are_OffLine)
-				{
-					if (adcResult[1] < (DC_MIN >> 1)) //To detect continuous low level
-						chrgCnt--;
-					if (chrgCnt == 0) //Charge for the selected BMS finished
-					{
-						Charger_Off;
-						if (BMS_B_Selected)
-						{
-							chrgCnt = 135000; //1.5 days delay
-							Discharged = false;
-						}
-						else
-							chrgCnt = 5;
-					}
-				}
-				adcCnt = 0;
-				adcResult[0] = adcResult[1] = 0;
+					chrgCnt = 5;
 			}
-
-			if (ChargeReq)
-			{
-				ChargeReq = false;
-				chrgCnt = 6; //Set minimum delay
-			}
-			//ADC conversion routine
-			if (adcCnt & 1)
-				ADMUX = 0; //ADC0 - THS0
-			else
-				ADMUX = (1 << MUX0) | (1 << MUX1); //ADC3 - battery voltage
-			ADCSRA |= (1 << ADSC); //Start conversion
 		}
-
+			
+		if (ChargeReq)
+		{
+			ChargeReq = false;
+			chrgCnt = 6; //Set minimum delay
+		}
+		adcResult = 0;
+		LCDCmd(0x80);
+		LCDBuffer(buffer, 16);
+		LCDCmd(0xC0);
+		LCDBuffer(buffer + 16, 16);
 		TickFlag = false;
 	}
 }
