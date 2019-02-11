@@ -9,8 +9,6 @@ Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Bridge", "Bridge\Bridge.cpp
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Controller", "Controller\Controller.cppproj", "{147D646C-6F20-4CE7-84C3-945E4C0FA4D8}"
 EndProject
-Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Power", "Power\Power.cppproj", "{61C80F83-94DD-4769-97BA-8C940A23A3A4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AVR = Debug|AVR
@@ -29,10 +27,6 @@ Global
 		{147D646C-6F20-4CE7-84C3-945E4C0FA4D8}.Debug|AVR.Build.0 = Debug|AVR
 		{147D646C-6F20-4CE7-84C3-945E4C0FA4D8}.Release|AVR.ActiveCfg = Release|AVR
 		{147D646C-6F20-4CE7-84C3-945E4C0FA4D8}.Release|AVR.Build.0 = Release|AVR
-		{61C80F83-94DD-4769-97BA-8C940A23A3A4}.Debug|AVR.ActiveCfg = Debug|AVR
-		{61C80F83-94DD-4769-97BA-8C940A23A3A4}.Debug|AVR.Build.0 = Debug|AVR
-		{61C80F83-94DD-4769-97BA-8C940A23A3A4}.Release|AVR.ActiveCfg = Release|AVR
-		{61C80F83-94DD-4769-97BA-8C940A23A3A4}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
