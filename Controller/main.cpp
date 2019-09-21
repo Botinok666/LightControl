@@ -1,6 +1,6 @@
 /* Controller.cpp
  * Created: 12.01.2018 11:30:55
- * Version: 1.3 */
+ * Version: 1.4 */
 
 #include "LC.h"
 #include <avr/io.h>
@@ -26,7 +26,7 @@ struct systemConfig
 	uint8_t minLvl[8];
 	uint8_t overrideLvl, overrideCfg; //Config: bits 0-7: mask for channels 0-7
 	uint8_t fadeRate[4], linkDelay[4];
-	uint8_t msenOnTime, msenOnLvl, msenLowTime, msenLowLvl;
+	uint8_t msenOnTime, msenOnLvl, msenLowTime, msenLowLvl; //On Level not used since v1.4
 	uint8_t groupConf; //bit 4: override channel 8, bit 3: save to EEPROM
 	uint8_t rtcCorrect; //Value in ppm, sign-and-magnitude representation
 
@@ -214,7 +214,9 @@ public:
 			{
 				_linkAddr->msenCtrl = true;
 				_linkAddr->direction = level > MSEN_SEN2_TRIG;
-				_linkAddr->setLevel(validConf.msenOnLvl); //Start from max light level
+				uint8_t onLvl = MAX(sysState.linkLevels[0], sysState.linkLevels[1]); 
+				//Start from max light level from any of 2 rooms
+				_linkAddr->setLevel(onLvl < validConf.msenLowLvl ? validConf.msenLowLvl : onLvl);
 				ltEnt = cntDown = false;				
 			}
 			_lvl = level;

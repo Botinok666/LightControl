@@ -5,7 +5,7 @@
 #ifndef LC_H_
 #define LC_H_
 
-#define BOARD_A
+//#define BOARD_A
 #define F_CPU	32000000L
 #include <util/delay.h>
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
