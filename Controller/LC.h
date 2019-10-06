@@ -9,6 +9,7 @@
 #define F_CPU	32000000L
 #include <util/delay.h>
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
+#define MIN(X,Y) ((X) < (Y) ? (X) : (Y))
 
 #define LINK_VALID_MIN	5001
 #define LINK_VALID_MAX	31577

@@ -1,6 +1,6 @@
 /* Controller.cpp
  * Created: 12.01.2018 11:30:55
- * Version: 1.4 */
+ * Version: 1.4a */
 
 #include "LC.h"
 #include <avr/io.h>
@@ -26,7 +26,7 @@ struct systemConfig
 	uint8_t minLvl[8];
 	uint8_t overrideLvl, overrideCfg; //Config: bits 0-7: mask for channels 0-7
 	uint8_t fadeRate[4], linkDelay[4];
-	uint8_t msenOnTime, msenOnLvl, msenLowTime, msenLowLvl; //On Level not used since v1.4
+	uint8_t reserved1, reserved2, msenLowTime, reserved3; //On Level not used since v1.4
 	uint8_t groupConf; //bit 4: override channel 8, bit 3: save to EEPROM
 	uint8_t rtcCorrect; //Value in ppm, sign-and-magnitude representation
 
@@ -196,15 +196,15 @@ public:
 	};
 	void setParams()
 	{
-		_onTime = validConf.msenOnTime > 5 ? validConf.msenOnTime : 6;
+		_onTime = 6;
 		_fTime = _onTime + validConf.msenLowTime;
 	}
 	void setLevel(uint8_t level)
 	{
 		sysState.msenLevel = level;
-		if (level < MSEN_VALID_MIN || !validConf.msenOnTime || (sysState.linksMask & _linkMask))
+		if (level < MSEN_VALID_MIN || !validConf.msenLowTime || (sysState.linksMask & _linkMask))
 		{
-			_lvl = 0; //MSEN disconnected, disabled (by zero on time) or there is non-zero level from link
+			_lvl = 0; //MSEN disconnected, disabled (by zero low time) or there is non-zero level from link
 			_linkAddr->msenCtrl = cntDown = false;
 			return;
 		}
@@ -214,9 +214,10 @@ public:
 			{
 				_linkAddr->msenCtrl = true;
 				_linkAddr->direction = level > MSEN_SEN2_TRIG;
-				uint8_t onLvl = MAX(sysState.linkLevels[0], sysState.linkLevels[1]); 
+				uint8_t onLvl = MAX(sysState.linkLevels[0], sysState.linkLevels[1]); //Hard coded
+				uint8_t lowLvl = MAX(validConf.minLvl[1], validConf.minLvl[0]);
 				//Start from max light level from any of 2 rooms
-				_linkAddr->setLevel(onLvl < validConf.msenLowLvl ? validConf.msenLowLvl : onLvl);
+				_linkAddr->setLevel(onLvl < lowLvl ? lowLvl : onLvl);
 				ltEnt = cntDown = false;				
 			}
 			_lvl = level;
@@ -245,7 +246,8 @@ public:
 			{
 				ltEnt = true;
 				_linkAddr->direction ^= true;
-				_linkAddr->setLevel(validConf.msenLowLvl);
+				uint8_t lowLvl = MIN(validConf.minLvl[1], validConf.minLvl[0]);
+				_linkAddr->setLevel(lowLvl);
 			}
 		}
 	}
@@ -295,8 +297,6 @@ void ApplyConfig()
 	for (uint8_t i = 0; i < 4; i++)
 		links[i].setParams();
 	msenCh.setParams();
-	if (validConf.groupConf & (1 << 3)) //Bit 3 is set: save config to EEPROM
-		eeprom_update_block(&validConf, &savedConfig, sizeof(systemConfig));
 	RTC.CALIB = validConf.rtcCorrect;
 }
 
@@ -346,7 +346,10 @@ ISR(RTC_OVF_vect)
 		PORTC.OUTTGL = PIN0_bm; //Heartbeat LED
 
 	if (((uint32_t)sysState.sysTick & 0x7FFFF) == 0) //Save state to EEPROM every 4.5 hrs
+	{
 		eeprom_update_block(&channelOT, &savedCOT, sizeof(channelsOnTime));
+		eeprom_update_block(&validConf, &savedConfig, sizeof(systemConfig));
+	}
 
 	if (rxMode == SetConfig && 2 < ++rxMark) //We are currently receiving data packet
 	{
