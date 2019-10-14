@@ -172,6 +172,12 @@
     <Compile Include="AC.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="i2csoft.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="i2csoft.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.cpp">
       <SubType>compile</SubType>
     </Compile>

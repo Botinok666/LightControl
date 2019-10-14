@@ -1,13 +1,13 @@
 /* Air conditioning Mk1
  * Created: 24.11.2017 19:17:15
- * Version: 1.5
- * Programmed version: 1.4	*/
+ * Version: 1.6	*/
 
 #include "AC.h"
 #include <avr/io.h>
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include <string.h>
+#include "i2csoft.h"
 #include <util/crc16.h>
 
 volatile uint8_t tachCnt, tachOvf, txCnt, rxMode = 0, rxMark, amCnt, fanLvl;
@@ -29,20 +29,19 @@ struct sysStatus
 	uint8_t fanLevel;
 	uint16_t rpmFront, rpmRear;
 	uint16_t currentDraw;
-	int16_t insideRH, outsideRH;
-	int16_t insideT, outsideT;
+	int16_t RH, reserved1;
+	int16_t T, reserved2;
 
 	uint16_t CRC16;
 } tmpStatus;
 
-union am2302 {
+union hih {
 	struct Frame {
-		int16_t RH;
 		int16_t T;
-		uint8_t checksum;
+		uint16_t RH;
 	} frame;
 	uint8_t arr[sizeof(Frame)];
-} AM2302;
+} HIH6121;
 
 sysConfig EEMEM eConf = { 0xFF, 100, 300, 40, 50, 0 };
 uint8_t iobuf[MAX(sizeof(sysConfig), sizeof(sysStatus))];
@@ -51,6 +50,32 @@ void inline U0TXen()
 {
 	PORTA |= (1 << PORTA5);
 	_delay_us(39);
+}
+
+void inline HIH6121Request()
+{
+	SoftI2CStart();
+	SoftI2CWriteByte(0x4E);
+	SoftI2CStop();
+}
+
+void inline HIH6121Read()
+{
+	SoftI2CStart();
+	SoftI2CWriteByte(0x4F);
+	HIH6121.arr[3] = SoftI2CReadByte(1);
+	HIH6121.arr[2] = SoftI2CReadByte(1);
+	HIH6121.arr[1] = SoftI2CReadByte(1);
+	HIH6121.arr[0] = SoftI2CReadByte(0);
+	SoftI2CStop();
+	HIH6121.frame.RH <<= 2;
+	uint32_t temp = 1000;
+	temp *= HIH6121.frame.RH;
+	HIH6121.frame.RH = temp >> 16;
+	temp = 1650;
+	temp *= (uint16_t)HIH6121.frame.T;
+	HIH6121.frame.T = temp >> 16;
+	HIH6121.frame.T -= 400;
 }
 
 uint16_t CalculateCRC16(void *arr, int8_t count)
@@ -74,8 +99,8 @@ void FanRegulation()
 	//Upper bounds for regulation
 	if (validConf.fanLevelOverride != 0xFF)
 		return;
-	int16_t dT = tmpStatus.insideT - validConf.minT;
-	int16_t dRH = tmpStatus.insideRH - validConf.minRH;
+	int16_t dT = tmpStatus.T - validConf.minT;
+	int16_t dRH = tmpStatus.RH - validConf.minRH;
 	int16_t A = FanLevel(dT, dRH) + FanMin;
 	if ((fanLvl >= FanMin && A > fanLvl) || (fanLvl < FanMin && A > FanMin)) //At least one of upper bounds is above
 		fanLvl = A > FanMax ? FanMax : A; //Increase level
@@ -177,34 +202,16 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 	uint8_t lcycle = ((uint8_t)cycles++) & 0x3F; //Range 0-63
 	if (!cycles) //~77 minutes between updates
 		eeprom_update_block(&validConf, &eConf, sizeof(sysConfig));
-	if (lcycle == 44) //Send start signal to the sensor
+	if (lcycle == 44) //Read humidity and temperature
 	{
-		uint8_t delayz = 0, j;
-		for (j = 0; j < 4; j++)
-			delayz += AM2302.arr[j];
-		j = AM2302.arr[1]; //Big endian to little endian conversion
-		AM2302.arr[1] = AM2302.arr[0];
-		AM2302.arr[0] = j;
-		j = AM2302.arr[3];
-		AM2302.arr[3] = AM2302.arr[2];
-		AM2302.arr[2] = j;
-		if (delayz == AM2302.arr[4] && AM2302.frame.RH != 0)
+		HIH6121Read();
+		if (HIH6121.frame.RH != 0)
 		{
-			if (AM2302.frame.T < 0)
-				AM2302.frame.T = ~(AM2302.frame.T & 0x7FFF) + 1;
-			tmpStatus.insideRH = AM2302.frame.RH;
-			tmpStatus.insideT = AM2302.frame.T;
+			tmpStatus.RH = HIH6121.frame.RH;
+			tmpStatus.T = HIH6121.frame.T;
 			FanRegulation();
 		}
-
-		PORTB &= ~(1 << PORTB2);
-		DDRB |= (1 << DDB2); //Interface pulled low
-		TCCR0B = (1 << CS02); //28.8kHz, 34.72µs tick
-		TCNT0 = 0;
-		OCR0B = 48; //~1.666ms delay
-		TIFR0 = (1 << TOV0) | (1 << OCF0B);
-		TIMSK0 = (1 << OCIE0B); //Enable interrupt
-		amCnt = -2; //Skip response signal
+		HIH6121Request();
 	}
 	lcycle &= 0xF; //Range 0-15
 	if (!lcycle)
@@ -247,47 +254,6 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 				OCR2AL = FanMin;
 		}
 		tmpStatus.fanLevel = OCR2AL;
-		OCR2BL = ICR2L - OCR2AL;
-	}
-}
-
-ISR	(TIMER0_COMPB_vect)
-{
-	DDRB &= ~(1 << DDB2); //Interface released
-	TCCR0B = (1 << CS01); //921.6kHz clock, 1 tick = 1.08µs
-	TCNT0 = 0;
-	TIMSK0 = (1 << TOIE0); //Now enable overflow interrupt, timeout 278µs
-	PCMSK1 = (1 << PCINT10); //PINB2 as pin change interrupt source
-	GIFR = (1 << PCIF1);
-	GIMSK = (1 << PCIE1); //Enable pin change interrupt
-}
-
-ISR (TIMER0_OVF_vect)
-{
-	TIMSK0 = 0; //Disable overflow interrupt
-	GIMSK = 0; //Disable pin change interrupt
-	memset(&AM2302, 0, sizeof(am2302));
-}
-
-ISR (PCINT1_vect)
-{
-	static uint8_t temp;
-	uint8_t delayz = TCNT0;
-	TCNT0 = 0; //Clear counter
-	if (PINB & (1 << PINB2))
-		return; //Skip rising edge interrupt
-	if (0 <= amCnt && amCnt < 40)
-	{
-		temp <<= 1;
-		if (delayz > 46) //High level held more than 48µs - logic one received
-			temp |= 1;
-		if ((amCnt & 7) == 7)
-			AM2302.arr[amCnt >> 3] = temp;
-	}
-	if (++amCnt == 40)
-	{
-		TIMSK0 = 0; //Disable overflow interrupt
-		GIMSK = 0; //Disable pin change interrupt
 	}
 }
 
@@ -307,12 +273,13 @@ ISR (ADC_vect)
 	adcSum += ADC;
 }
 
-
 void inline mcuInit()
 {
 	cli();
-	//Port A outputs: U0TX, PWMA, PWMB, U0EN, SEL
-	DDRA = (1 << DDA1) | (1 << DDA3) | (1 << DDA4) | (1 << DDA5) | (1 << DDA6);
+	//Port A outputs: U0TX, PWM, U0EN
+	DDRA = (1 << DDA1) | (1 << DDA3) | (1 << DDA5);
+	//Port B output: TSEL
+	DDRB = (1 << DDB2);
 	//USART 0: 76.8kbps, frame bits: start / 9 data / 2 stop, multi-processor communication
 	UBRR0 = 5; //Actual maximum transfer rate: 6400Bps
 	UCSR0B = (1 << RXCIE0) | (1 << TXCIE0) | (1 << RXEN0) | (1 << TXEN0) | (1 << UCSZ02);
@@ -324,16 +291,15 @@ void inline mcuInit()
 	//Timer 2: 7.3728MHz clock, phase and frequency correct PWM, top in ICR2
 	ICR2 = PWM_max; //25kHz PWM frequency
 	OCR2A = 0; //Non-inverting output: off
-	OCR2B = PWM_max; //Inverting output: off
-	TCCR2A = (1 << COM2A1) | (1 << COM2B1) | (1 << COM2B0);
+	TCCR2A = (1 << COM2A1);
 	TCCR2B = (1 << WGM23) | (1 << CS20);
-	TOCPMSA0 |= (1 << TOCC2S1) | (1 << TOCC3S1); //OC2A non-inverting (TOCC3), OC2B inverting (TOCC2)
-	TOCPMCOE |= (1 << TOCC2OE) | (1 << TOCC3OE);
+	TOCPMSA0 |= (1 << TOCC3S1); //OC2A non-inverting (TOCC3)
+	TOCPMCOE |= (1 << TOCC3OE);
 	//ADC: 1.1V reference, 230.4kHz clock, ADC0 input, interrupt
 	ADMUXB = (1 << REFS0);
 	ADCSRA = (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS0);
 	DIDR0 = (1 << ADC0D);
-	//Power reduction: I²C, USART1 and SPI are not used in this project
+	//Power reduction: TWI slave, USART1 and SPI are not used in this project
 	PRR = (1 << PRTWI) | (1 << PRUSART1) | (1 << PRSPI);
 	sei();
 }
@@ -341,10 +307,12 @@ void inline mcuInit()
 int main(void)
 {
 	mcuInit();
-
+	SoftI2CInit();
 	eeprom_read_block(&validConf, &eConf, sizeof(sysConfig));
 	validConf.fanLevelOverride = 0xFF; //No override at startup
 	validConf.CRC16 = CalculateCRC16(&validConf, sizeof(sysConfig) - 2);
+	HIH6121Request();
+	
     /* Replace with your application code */
     while (1) { }
 }
