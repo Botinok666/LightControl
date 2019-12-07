@@ -1,6 +1,6 @@
 /* Controller.cpp
  * Created: 12.01.2018 11:30:55
- * Version: 1.4a */
+ * Version: 1.4b */
 
 #include "LC.h"
 #include <avr/io.h>
@@ -8,9 +8,9 @@
 #include <avr/interrupt.h>
 #include <string.h>
 
-volatile int16_t gLevels[9] = {0};
+int16_t gLevels[9] = {255, 255, 255, 255, 255, 255, 255, 255, 80};
 volatile uint8_t gLevelChg = 0, rxMode = 0, rxMark;
-volatile uint8_t DSI8xFrames[19];
+uint8_t DSI8xFrames[19];
 volatile uint8_t *framePtr;
 
 union i16i8
@@ -173,7 +173,7 @@ public:
 	}
 } links[4] = { LCport(0, 3, 7, 6, 5), LCport(1, 3, 4, 3, 2),
 #ifdef BOARD_A
-LCport(2, 1, 1, 0, 0),
+LCport(2, 1, 0, 0, 0),
 #else
 LCport(2, 2, 1, 0, 0),
 #endif
