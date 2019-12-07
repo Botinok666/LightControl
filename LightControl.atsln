@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Atmel Studio Solution File, Format Version 11.00
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "AirConditioning", "LightControl\AirConditioning.cppproj", "{DCE6C7E3-EE26-4D79-826B-08594B9AD897}"
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Bridge", "Bridge\Bridge.cppproj", "{76F2C791-2BBD-490C-B208-767CBE833845}"
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Controller", "Controller\Controller.cppproj", "{147D646C-6F20-4CE7-84C3-945E4C0FA4D8}"
+EndProject
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "DCUPS", "DCUPS\DCUPS.cproj", "{6E826706-8E66-4D62-9546-2D7951A6CEDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{147D646C-6F20-4CE7-84C3-945E4C0FA4D8}.Debug|AVR.Build.0 = Debug|AVR
 		{147D646C-6F20-4CE7-84C3-945E4C0FA4D8}.Release|AVR.ActiveCfg = Release|AVR
 		{147D646C-6F20-4CE7-84C3-945E4C0FA4D8}.Release|AVR.Build.0 = Release|AVR
+		{6E826706-8E66-4D62-9546-2D7951A6CEDA}.Debug|AVR.ActiveCfg = Debug|AVR
+		{6E826706-8E66-4D62-9546-2D7951A6CEDA}.Debug|AVR.Build.0 = Debug|AVR
+		{6E826706-8E66-4D62-9546-2D7951A6CEDA}.Release|AVR.ActiveCfg = Release|AVR
+		{6E826706-8E66-4D62-9546-2D7951A6CEDA}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
