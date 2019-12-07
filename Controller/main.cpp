@@ -1,6 +1,6 @@
 /* Controller.cpp
  * Created: 12.01.2018 11:30:55
- * Version: 1.4b */
+ * Version: 1.4d */
 
 #include "LC.h"
 #include <avr/io.h>
@@ -8,10 +8,11 @@
 #include <avr/interrupt.h>
 #include <string.h>
 
-int16_t gLevels[9] = {255, 255, 255, 255, 255, 255, 255, 255, 80};
+int16_t gLevels[9] = {5, 5, 5, 5, 5, 5, 5, 5, 5};
 volatile uint8_t gLevelChg = 0, rxMode = 0, rxMark;
 uint8_t DSI8xFrames[19];
 volatile uint8_t *framePtr;
+volatile bool newConfig = false;
 
 union i16i8
 {
@@ -213,7 +214,7 @@ public:
 			if (_lvl < MSEN_SEN1_TRIG) //Off to on transition
 			{
 				_linkAddr->msenCtrl = true;
-				_linkAddr->direction = level > MSEN_SEN2_TRIG;
+				_linkAddr->direction = level < MSEN_SEN2_TRIG;
 				uint8_t onLvl = MAX(sysState.linkLevels[0], sysState.linkLevels[1]); //Hard coded
 				uint8_t lowLvl = MAX(validConf.minLvl[1], validConf.minLvl[0]);
 				//Start from max light level from any of 2 rooms
@@ -297,7 +298,8 @@ void ApplyConfig()
 	for (uint8_t i = 0; i < 4; i++)
 		links[i].setParams();
 	msenCh.setParams();
-	RTC.CALIB = validConf.rtcCorrect;
+	newConfig = true;
+	//RTC.CALIB = validConf.rtcCorrect;
 }
 
 ISR(RTC_OVF_vect)
@@ -345,10 +347,14 @@ ISR(RTC_OVF_vect)
 	if (!((uint8_t)sysState.sysTick & 0x1F))
 		PORTC.OUTTGL = PIN0_bm; //Heartbeat LED
 
-	if (((uint32_t)sysState.sysTick & 0x7FFFF) == 0) //Save state to EEPROM every 4.5 hrs
+	if (((uint32_t)sysState.sysTick & 0xFFFFF) == 0) //Save state to EEPROM every 9 hrs
 	{
-		eeprom_update_block(&channelOT, &savedCOT, sizeof(channelsOnTime));
-		eeprom_update_block(&validConf, &savedConfig, sizeof(systemConfig));
+		eeprom_write_block(&channelOT, &savedCOT, sizeof(channelsOnTime));
+		if (newConfig)
+		{
+			eeprom_write_block(&validConf, &savedConfig, sizeof(systemConfig));
+			newConfig = false;
+		}
 	}
 
 	if (rxMode == SetConfig && 2 < ++rxMark) //We are currently receiving data packet

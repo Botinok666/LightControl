@@ -5,7 +5,7 @@
 #ifndef LC_H_
 #define LC_H_
 
-#define BOARD_A
+//#define BOARD_A
 #define F_CPU	32000000L
 #include <util/delay.h>
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
@@ -18,8 +18,8 @@
 #define LINK_SCALE		84
 
 #define MSEN_VALID_MIN	20
-#define MSEN_SEN1_TRIG	75
-#define MSEN_SEN2_TRIG	100
+#define MSEN_SEN1_TRIG	99
+#define MSEN_SEN2_TRIG	121
 
 #ifdef BOARD_A
 #define CmdLC		0x21

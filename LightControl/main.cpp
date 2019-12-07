@@ -1,6 +1,6 @@
 /* Air conditioning Mk1
  * Created: 24.11.2017 19:17:15
- * Version: 1.6	*/
+ * Version: 1.7b	*/
 
 #include "AC.h"
 #include <avr/io.h>
@@ -18,8 +18,8 @@ uint8_t *txBuf;
 struct sysConfig
 {
 	uint8_t fanLevelOverride;
-	int16_t minRH, deltaRH;
-	int16_t minT, deltaT;
+	int16_t minRH, reserved1;
+	int16_t reserved2, reserved3;
 
 	uint16_t CRC16;
 } validConf;
@@ -52,46 +52,47 @@ void inline U0TXen()
 	_delay_us(39);
 }
 
-void inline HIH6121Request()
+bool HIH6121Request()
 {
-	SoftI2CStart();
-	SoftI2CWriteByte(0x4E);
-	SoftI2CStop();
+	SoftI2CStartNonBlocking();
+	bool res = SoftI2CWriteByteNonBlocking(0x4E);
+	SoftI2CStopNonBlocking();
+	return res;
 }
 
-void inline HIH6121Read()
+void HIH6121Read()
 {
-	SoftI2CStart();
-	SoftI2CWriteByte(0x4F);
-	HIH6121.arr[3] = SoftI2CReadByte(1);
-	HIH6121.arr[2] = SoftI2CReadByte(1);
-	HIH6121.arr[1] = SoftI2CReadByte(1);
-	HIH6121.arr[0] = SoftI2CReadByte(0);
-	SoftI2CStop();
-	HIH6121.frame.RH <<= 2;
+	SoftI2CStartNonBlocking();
+	SoftI2CWriteByteNonBlocking(0x4F);
+	HIH6121.arr[3] = SoftI2CReadByteNonBlocking(true);
+	HIH6121.arr[2] = SoftI2CReadByteNonBlocking(true);
+	HIH6121.arr[1] = SoftI2CReadByteNonBlocking(true);
+	HIH6121.arr[0] = SoftI2CReadByteNonBlocking(false);
+	SoftI2CStopNonBlocking();
+	
 	uint32_t temp = 1000;
+	HIH6121.frame.RH <<= 2;
 	temp *= HIH6121.frame.RH;
 	HIH6121.frame.RH = temp >> 16;
+	
 	temp = 1650;
 	temp *= (uint16_t)HIH6121.frame.T;
-	HIH6121.frame.T = temp >> 16;
+	HIH6121.frame.T = (int16_t)(temp >> 16);
 	HIH6121.frame.T -= 400;
 }
 
 uint16_t CalculateCRC16(void *arr, int8_t count)
 {
 	uint8_t *ptr = (uint8_t*)arr;
-	uint16_t CRC16 = 0xffff;
+	uint16_t CRC16 = 0xFFFF;
 	while (--count >= 0)
 		CRC16 = _crc_xmodem_update(CRC16, *ptr++);
 	return CRC16;
 }
 
-int16_t FanLevel(int16_t dT, int16_t dRH)
+int16_t FanLevel(int16_t dRH)
 {
-	int16_t A = (FanMax - FanMin) * dT / validConf.deltaT;
-	int16_t B = (FanMax - FanMin) * dRH / validConf.deltaRH;
-	return A > B ? A : B;	
+	return (FanMax - FanMin) * dRH / (1000 - validConf.minRH);
 }
 
 void FanRegulation()
@@ -99,17 +100,15 @@ void FanRegulation()
 	//Upper bounds for regulation
 	if (validConf.fanLevelOverride != 0xFF)
 		return;
-	int16_t dT = tmpStatus.T - validConf.minT;
 	int16_t dRH = tmpStatus.RH - validConf.minRH;
-	int16_t A = FanLevel(dT, dRH) + FanMin;
+	int16_t A = FanLevel(dRH) + FanMin;
 	if ((fanLvl >= FanMin && A > fanLvl) || (fanLvl < FanMin && A > FanMin)) //At least one of upper bounds is above
 		fanLvl = A > FanMax ? FanMax : A; //Increase level
 	else
 	{
 		//Lower bounds for regulation
-		dT += validConf.minT >> 3;
-		dRH += validConf.minRH >> 3;
-		A = FanLevel(dT, dRH) + FanMin;
+		dRH += 25; //Hysteresis 2.5%
+		A = FanLevel(dRH) + FanMin;
 		if (A < fanLvl) //Both lower bounds are below
 			fanLvl = A > FanMin ? A : 0; //Decrease level
 	}
@@ -120,7 +119,7 @@ uint16_t GetRPM()
 	while (tachOvf--)
 		tachSum += 0xffff;
 	tachSum -= tachPrev;
-	uint32_t temp = (F_CPU * 60 / 8) * (tachCnt - 1);
+	uint32_t temp = (F_CPU * 30 / 8) * (tachCnt - 1);
 	return (uint16_t)(temp / tachSum);
 }
 
@@ -219,6 +218,7 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 		tmpStatus.rpmFront = tachCnt > 1 ? GetRPM() : 0;
 		SelChA();
 		tachCnt = 0;
+		tachSum = 0;
 		TIMSK1 |= (1 << ICIE1);
 	}
 	else if (lcycle == 8)
@@ -226,6 +226,7 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 		tmpStatus.rpmRear = tachCnt > 1 ? GetRPM() : 0;
 		SelChB();
 		tachCnt = 0;
+		tachSum = 0;
 		TIMSK1 |= (1 << ICIE1);
 		tmpStatus.currentDraw = (adcSum << 3) / Idiv_x1mA;
 		adcSum = 0;
@@ -241,19 +242,19 @@ ISR (TIMER1_OVF_vect) //Occurs every 71.1ms
 		ADCSRA |= (1 << ADSC);
 	if ((lcycle & 3) == 3)
 	{
-		if (OCR2AL > fanLvl)
+		if (OCR2BL > fanLvl)
 		{
-			OCR2AL--;
-			if (OCR2AL < FanMin)
-				OCR2AL = 0;
+			OCR2BL--;
+			if (OCR2BL < FanMin)
+				OCR2BL = 0;
 		}
-		else if (OCR2AL < fanLvl)
+		else if (OCR2BL < fanLvl)
 		{
-			OCR2AL++;
-			if (OCR2AL < FanMin)
-				OCR2AL = FanMin;
+			OCR2BL++;
+			if (OCR2BL < FanMin)
+				OCR2BL = FanMin;
 		}
-		tmpStatus.fanLevel = OCR2AL;
+		tmpStatus.fanLevel = OCR2BL;
 	}
 }
 
@@ -285,16 +286,18 @@ void inline mcuInit()
 	UCSR0B = (1 << RXCIE0) | (1 << TXCIE0) | (1 << RXEN0) | (1 << TXEN0) | (1 << UCSZ02);
 	UCSR0C = (1 << USBS0) | (1 << UCSZ01) | (1 << UCSZ00);
 	UCSR0A = (1 << MPCM0);
+	//Timer 0: 7.3728MHz clock
+	TCCR0B = (1 << CS00);
 	//Timer 1: 921.6kHz clock, input capture on leading edge, noise filtering, OVF interrupt
 	TCCR1B = (1 << ICNC1) | (1 << ICES1) | (1 << CS11);
 	TIMSK1 = (1 << TOIE1);
 	//Timer 2: 7.3728MHz clock, phase and frequency correct PWM, top in ICR2
 	ICR2 = PWM_max; //25kHz PWM frequency
-	OCR2A = 0; //Non-inverting output: off
-	TCCR2A = (1 << COM2A1);
+	OCR2B = 0; //Non-inverting output: off
+	TCCR2A = (1 << COM2B1);
 	TCCR2B = (1 << WGM23) | (1 << CS20);
-	TOCPMSA0 |= (1 << TOCC3S1); //OC2A non-inverting (TOCC3)
-	TOCPMCOE |= (1 << TOCC3OE);
+	TOCPMSA0 |= (1 << TOCC2S1); //OC2B non-inverting (TOCC2)
+	TOCPMCOE |= (1 << TOCC2OE);
 	//ADC: 1.1V reference, 230.4kHz clock, ADC0 input, interrupt
 	ADMUXB = (1 << REFS0);
 	ADCSRA = (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS0);

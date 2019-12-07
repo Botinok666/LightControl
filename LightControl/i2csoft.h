@@ -34,6 +34,7 @@ I/O Configuration
 #define SOFT_I2C_SCL_LOW	SCLDDR|=((1<<SCL))
 #define SOFT_I2C_SCL_HIGH	SCLDDR&=(~(1<<SCL))
 
+#define DELAY_TCNT	TCNT0
 
 /**********************************************************
 SoftI2CInit()
@@ -67,7 +68,7 @@ Returns:
 
 **********************************************************/
 void SoftI2CStart();
-
+void SoftI2CStartNonBlocking();
 /**********************************************************
 SoftI2CStop()
 
@@ -84,7 +85,7 @@ Returns:
 
 **********************************************************/
 void SoftI2CStop();
-
+void SoftI2CStopNonBlocking();
 /**********************************************************
 SoftI2CWriteByte()
 
@@ -100,7 +101,7 @@ Returns:
 
 **********************************************************/
 uint8_t SoftI2CWriteByte(uint8_t data);
-
+bool SoftI2CWriteByteNonBlocking(uint8_t data);
 /**********************************************************
 SoftI2CReadByte()
 
@@ -116,6 +117,6 @@ Returns:
 
 **********************************************************/
 uint8_t SoftI2CReadByte(uint8_t ack);
-
+uint8_t SoftI2CReadByteNonBlocking(bool ack);
 
 #endif 

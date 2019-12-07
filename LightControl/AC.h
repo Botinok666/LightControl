@@ -21,8 +21,8 @@
 #define CmdUC		0x13
 
 #define U0RXen()	PORTA &= ~(1 << PORTA5)
-#define SelChA()	PORTA |= (1 << PORTA6)
-#define SelChB()	PORTA &= ~(1 << PORTA6)
+#define SelChA()	PORTB |= (1 << PORTB2)
+#define SelChB()	PORTB &= ~(1 << PORTB2)
 
 #define Idiv_x1mA	33
 
