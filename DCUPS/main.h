@@ -5,8 +5,8 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
-#define AD7416_wr		0x9E
-#define AD7416_rd		0x9F
+#define AD7416_wr		0x90
+#define AD7416_rd		0x91
 #define INA219_wr		0x8A
 #define INA219_rd		0x8B
 #define MCP3421_wr		0xD0

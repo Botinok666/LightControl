@@ -1,6 +1,6 @@
 /* Controller.cpp
  * Created: 12.01.2018 11:30:55
- * Version: 1.4d */
+ * Version: 1.4e */
 
 #include "LC.h"
 #include <avr/io.h>
@@ -8,7 +8,7 @@
 #include <avr/interrupt.h>
 #include <string.h>
 
-int16_t gLevels[9] = {5, 5, 5, 5, 5, 5, 5, 5, 5};
+int16_t gLevels[9] = { 0 };
 volatile uint8_t gLevelChg = 0, rxMode = 0, rxMark;
 uint8_t DSI8xFrames[19];
 volatile uint8_t *framePtr;
@@ -27,9 +27,9 @@ struct systemConfig
 	uint8_t minLvl[8];
 	uint8_t overrideLvl, overrideCfg; //Config: bits 0-7: mask for channels 0-7
 	uint8_t fadeRate[4], linkDelay[4];
-	uint8_t reserved1, reserved2, msenLowTime, reserved3; //On Level not used since v1.4
-	uint8_t groupConf; //bit 4: override channel 8, bit 3: save to EEPROM
-	uint8_t rtcCorrect; //Value in ppm, sign-and-magnitude representation
+	uint8_t reserved1, reserved2, msenLowTime, reserved3;
+	uint8_t groupConf; //bit 4: override channel 8
+	uint8_t reserved4;
 
 	uint16_t CRC16;
 } validConf;
@@ -58,6 +58,7 @@ uint8_t iobuf[MAX(sizeof(systemConfig), MAX(sizeof(systemState), sizeof(channels
 class LCport
 {
 private:
+	uint8_t _isAfterReset;
 	uint8_t _linkCnt, _linkNum, _link[3]; //Positions in common array for light levels
 	uint8_t _lvl[3]; //Actual light levels, range: 0…255
 	uint8_t _fadeRate; //Steps per second, range: 32…160 (settling time 0…100%: 8…1.6s)
@@ -75,6 +76,7 @@ public:
 		_link[2] = posC;
 		_linkNum = num;
 		_chActMask = 0x10 << num;
+		_isAfterReset = 8;
 	};
 
 	void setParams()
@@ -139,6 +141,11 @@ public:
 				_lvl[s] = 0;
 			int16_t tempLvl = gLevels[j] - _lvl[s]; //Difference between actual and set levels
 			bool changed = false;
+			if (_isAfterReset && !_lvl[s])
+			{
+				gLevelChg |= 1 << j;
+				PORTC.OUTSET = _chActMask; //Switch on activity LED
+			}
 			if (tempLvl && ticksEl >= i * _linkDelay)
 			{
 				if (tempLvl > 0) //Level needs to be lowered
@@ -171,6 +178,8 @@ public:
 				}
 			}
 		}
+		if (_isAfterReset)
+			_isAfterReset--;
 	}
 } links[4] = { LCport(0, 3, 7, 6, 5), LCport(1, 3, 4, 3, 2),
 #ifdef BOARD_A
@@ -299,7 +308,6 @@ void ApplyConfig()
 		links[i].setParams();
 	msenCh.setParams();
 	newConfig = true;
-	//RTC.CALIB = validConf.rtcCorrect;
 }
 
 ISR(RTC_OVF_vect)
