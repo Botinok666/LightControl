@@ -19,8 +19,18 @@
 #define T_DELTA			((T_UPPER - T_LOWER) >> 6)
 #define FAN_min			(255 * 25 / 100)
 
-#define VSEN_div		3049
-#define V_SLA_FAIL		90	//9V for single battery
+#define V_SLA_FAIL_D	5	//.5V delta for single battery
+#define K_VCUT_a		343436 //1/a
+#define K_VCUT_b		16 //-b
+#define K_VCUT_c		2128
+#define K_VDELTA_a		1152498 //-1/a
+#define K_VDELTA_b		28
+#define K_VDELTA_c		426
+#define K_VSOC_a		2155 //1/a
+#define K_VSOC_b		124965 //-(b>16)
+#define K_VSOC_c		1952
+#define VCUT_REF		2171
+#define VDELTA_REF		373
 
 #define WE_ARE_ONLINE	(PORTC & (1 << PORTC3))
 #define WE_ARE_OFFLINE	(!WE_ARE_ONLINE)
@@ -28,9 +38,9 @@
 #define SHDN_THRESHOLD	(105 * 20) //10.5V for single battery
 
 #define IS_CHARGE_END	((PIND & (1 << PIND7)) == 0)
-#define CHARGE_RESTART	64800	//Approx. 18 hours
-#define CHARGE_CYCLE	3600	//Approx. 1 hour
-#define CHARGE_DELAY	5		//Approx. 5 seconds
+#define CHARGE_RESTART	64800	//64800
+#define CHARGE_CYCLE	3600	//3600
+#define CHARGE_DELAY	15		//25
 
 #define DC_IGBT_on		(PORTC |= (1 << PORTC2))
 #define DC_IGBT_off		(PORTC &= ~(1 << PORTC2))

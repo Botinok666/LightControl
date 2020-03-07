@@ -5,12 +5,14 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
+#include <string.h>
 #include "main.h"
 #include "twi.h"
 #include "lcdtwi.h"
 #include <util/delay.h>
 
-#define TEST_VI
+//#define TEST_VI
+//#define TEST_VB
 
 volatile uint8_t captOvfCtr = 0, lastOvf = 0, fanLvl = 0, safeWait = 0, acTrState = 0, slaIdxRam = 20;
 volatile uint16_t captFirst, captCtr = 0, captCS, timeout = 333, chargeRestartCounter = 0;
@@ -21,21 +23,25 @@ uint8_t EEMEM slaFailIdx = 20;
 const uint8_t accuVSSel[20] = { 
 	0x30,0x31,0x32,0x37,0x36,0x34,0x28,0x29,0x2A,0x2D,
 	0x2F,0x2E,0x2C,0x18,0x19,0x1A,0x1D,0x1F,0x1E,0x1C };
-uint16_t accuVS[20];
+const uint16_t vSenDiv[20] = {
+	3037,3043,3037,3040,3066,3043,3044,3048,3042,3048,
+	3061,3050,3041,3055,3051,3053,3054,3060,3061,3054 };
+uint16_t accuVS[20], accuVSValid[20];
 
 //Placement of the information on the LCD
 //0  3   7   B   F
 //000.0v      00°C| <- test version
 // 0.000A 0000 rpm|
 //000W A13.7v 00°C| <- normal version
-//T B 00% 0000 rpm|
+//T B 00% 0000 rpm| (2nd row on battery)
+//T B P I 0000 rpm| (2nd row on line)
 uint8_t back_buffer[32] = {
 #ifdef TEST_VI
-	0x20,0x20,0x20,0x20,0x20,0x76,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x00,0x43,
+	0x20,0x20,0x20,0x57,0x20,0x76,0x20,0x20,0x20,0x20,0x76,0x20,0x20,0x20,0x00,0x43,
 	0x20,0x20,0x20,0x20,0x20,0x20,0x41,0x20,0x20,0x20,0x20,0x20,0x20,0x72,0x70,0x6D
 #else
 	0x20,0x20,0x20,0x57,0x20,0x20,0x20,0x20,0x20,0x20,0x76,0x20,0x20,0x20,0x00,0x43,
-	0x20,0x20,0x01,0x20,0x20,0x20,0x25,0x20,0x20,0x20,0x20,0x20,0x20,0x72,0x70,0x6D
+	0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x72,0x70,0x6D
 #endif
 	};
 
@@ -52,8 +58,8 @@ void i2c_init(void)
 	twi_send(0x88); //Initiate one-shot conversion
 	twi_stop();
 	//Load custom characters into LCD
-	uint8_t custom_chars[16] = {
-		0b00110,
+	uint8_t custom_chars[] = {
+		0b00110, //0x00
 		0b01001,
 		0b01001,
 		0b00110,
@@ -61,13 +67,32 @@ void i2c_init(void)
 		0b00000,
 		0b00000,
 		0b00000,
+		
+		0b01110, //0x01
+		0b11111,
+		0b10001,
+		0b10101,
+		0b11111,
+		0b10101,
+		0b11111,
+		0b00000,
+		
+		0b01110, //0x02
+		0b11111,
+		0b10001,
+		0b10001,
+		0b10001,
+		0b10001,
+		0b11111,
+		0b00000,
+		
+		0b01010, //0x03
+		0b01010,
+		0b11111,
+		0b10001,
+		0b10001,
 		0b01110,
-		0b11111,
-		0b10001,
-		0b10001,
-		0b10001,
-		0b10001,
-		0b11111,
+		0b00100,
 		0b00000 };
 	lcd_send_byte(0x40, 0);
 	lcd_send_buffer(custom_chars, sizeof(custom_chars));
@@ -251,12 +276,10 @@ int main(void)
 {
 #ifndef TEST_VI
 	char isBCharged = 0, isACharged = 0;
-	uint8_t dispIdx = 0;
-#else
-	unsigned char dx = 0;
 #endif
 	char bmsSelB = 0, bmsOn = 0; //CHON - bit 6, CHSEL - bit 7
-	uint8_t vsenIdx = 0;
+	uint8_t vsenIdx = 0, dispIdx = 0, countdown = 5;
+	uint16_t vSlaFail = 90;
 	mcu_init();
 	lcd_init();
 	i2c_init();
@@ -273,10 +296,6 @@ int main(void)
 		uint16_t current;
 		uint16_t temp16, tDelta;
 		uint32_t temp32;
-	#ifndef TEST_VI
-		uint32_t chargeLvl;
-	#endif	
-		
 		//Read temperature of the IGBT array heat sink
 		twi_set_register(AD7416_wr, 0);
 		twi_start();
@@ -298,7 +317,7 @@ int main(void)
 		twi_send(0x79); //Shunt voltage one-shot, 320mV range, 128 samples averaging
 		twi_stop();
 		
-		current = (int16_t)current + 43; //Offset 17.17mA
+		current = (int16_t)current + 2; //Offset ~1mA
 		if ((int16_t)current < 0)
 			current = 0;
 		temp32 = (uint32_t)current << 8;
@@ -307,10 +326,6 @@ int main(void)
 		
 	#ifdef TEST_VI
 		uint2buffer(back_buffer + 17, 1, 5, current); //I * 1000
-		if (++dx > 3)
-			dx = 0;
-		for (uint8_t j = 0; j < 4; j++)
-			back_buffer[7 + j] = (dx == j) ? 0x2A : 0x20;
 	#endif
 		//Read battery voltages: 7 at a time
 		for (uint8_t j = 0; j < 7; j++)
@@ -331,34 +346,6 @@ int main(void)
 			twi_send(0x88); //16 bit, one shot
 			twi_stop();
 			_delay_ms(91);
-			/*//91ms delay
-			temp32 = 91000;
-			temp16 = TCNT1;
-			while (TCNT1 >= temp16);
-			temp32 -= 0xFFFF - temp16;
-			temp16 = TCNT1;
-			while (TCNT1 == temp16);
-			if (temp32 > 0xFFFF)
-			{
-				while (TCNT1 > temp16);
-				temp32 -= 0xFFFF - temp16;
-			}
-			temp16 = temp32;
-			while (TCNT1 < temp16);
-				*/
-			/*//Read RDY bit
-			twi_start();
-			twi_send(MCP3421_rd);
-			twi_receive(1);
-			twi_receive(1);	//Skip two bytes of data
-			safeWait = 0;
-			while (safeWait < 3) //Timeout: 130-200ms
-			{
-				if ((twi_receive(1) & (1 << 7)) == 0) //Check RDY bit (0 means that data is ready)
-					break;
-			}
-			twi_receive(0); //Send NACK
-			twi_stop();*/
 			//Read conversion data
 			twi_start();
 			twi_send(MCP3421_rd);
@@ -369,25 +356,26 @@ int main(void)
 				temp16 = 0;
 			temp32 = (uint32_t)temp16 << 8;
 			//Store battery voltage
-			temp32 += VSEN_div / 2;
-			accuVS[vsenIdx] = temp32 / VSEN_div; //Rounded voltage
+			temp32 += vSenDiv[vsenIdx] / 2;
+			temp32 /= vSenDiv[vsenIdx]; //Rounded voltage
+			accuVS[vsenIdx] = temp32;
 			if (++vsenIdx > 19) //All battery voltages has been read
 			{
 			#ifdef TEST_VI
 				uint2buffer(back_buffer, 3, 5, accuVS[14]); //V * 10
 			#endif
 				temp8 = 20;
-				if (accuVS[0] < V_SLA_FAIL)
+				if (accuVS[0] < vSlaFail)
 					temp8 = 0;
 				for (uint8_t k = 0; k < 19; k++)
 				{
-					if (accuVS[k + 1] - accuVS[k] < V_SLA_FAIL)
+					if (accuVS[k + 1] - accuVS[k] < vSlaFail)
 					{
 						temp8 = k + 1;
 						break;
 					}
 				}
-				if (WE_ARE_OFFLINE && temp8 < 20)
+				if (WE_ARE_OFFLINE && (temp8 < 20 || current > 7200))
 				{
 					if (current > 750) //Shutdown immediately
 					{
@@ -402,41 +390,29 @@ int main(void)
 						ALERT_on;
 					}
 				}
-				
+				memcpy(accuVSValid, accuVS, 20 * sizeof(uint16_t));
 				vsenIdx = 0;
 				break;
 			}
 		}
-	#ifndef TEST_VI
 		temp32 = accuVS[19];
 		temp32 *= current;
 		temp32 += 5000;
 		uint2buffer(back_buffer, 3, 3, temp32 / 10000); //P, rounded
+		temp8 = dispIdx >> 1;
+		temp16 = accuVSValid[temp8];
+	#ifndef TEST_VB	
 		//Show single battery voltage
-		back_buffer[5] = 'A' + dispIdx;
-		temp16 = accuVS[dispIdx];
-		if (dispIdx > 0)
-			temp16 -= accuVS[dispIdx - 1];
+		back_buffer[5] = 'A' + temp8;
+		if (temp8 > 0)
+			temp16 -= accuVSValid[temp8 - 1];
 		uint2buffer(back_buffer + 6, 2, 4, temp16);
-		if (++dispIdx > 19)
+	#else
+		uint2buffer(back_buffer + 5, 3, 5, temp16);
+	#endif
+		if (++dispIdx > 39)
 			dispIdx = 0;
-		//Calculate charge level
-		uint16_t voltage = accuVS[19]; //V * 10
-		voltage += current / 223; //ESR correction
-		if (voltage < SHDN_THRESHOLD)
-		{
-			eeprom_write_byte(&slaFailIdx, slaIdxRam);
-			DC_IGBT_off;
-			_delay_us(66);
-			DC_MOS_off;
-		}
-		temp32 = voltage; //x
-		chargeLvl = 80 - ((temp32 * 26483) >> 16); //a + b*x
-		temp32 *= voltage;
-		chargeLvl += temp32 / 6152; //a + b*x + c*x²
-		if (chargeLvl > 99)
-			chargeLvl = 99;
-		uint2buffer(back_buffer + 19, 2, 2, chargeLvl); //Charge in %
+	#ifndef TEST_VI
 		//If DC to AC transition succeeded
 		if (acTrState)
 		{
@@ -453,25 +429,25 @@ int main(void)
 				bmsSelB = 0; //Relay off (group A selected)
 				isACharged = isBCharged = 0; //Assume that groups are not charged
 			}
-			else if (chargeRestartCounter < CHARGE_CYCLE)
+			else if (chargeRestartCounter < CHARGE_CYCLE + CHARGE_DELAY)
 			{
 				bmsOn = 1; //Chargers on for 1 hour (after delay)
 			}
-			else if (chargeRestartCounter < CHARGE_CYCLE + CHARGE_DELAY)
+			else if (chargeRestartCounter < CHARGE_CYCLE + 2 * CHARGE_DELAY)
 			{
 				if (bmsOn && IS_CHARGE_END) //Detect if charging of group A is ended
 					isACharged = 1;
 				bmsOn = 0; //Chargers off
 			}
-			else if (chargeRestartCounter < CHARGE_CYCLE + 2 * CHARGE_DELAY)
+			else if (chargeRestartCounter < CHARGE_CYCLE + 3 * CHARGE_DELAY)
 			{
 				bmsSelB = 1; //Select group B (after delay)
 			}
-			else if (chargeRestartCounter < 2 * CHARGE_CYCLE)
+			else if (chargeRestartCounter < 2 * CHARGE_CYCLE + 3 * CHARGE_DELAY)
 			{
 				bmsOn = 1; //Chargers on for 1 hour (after delay)
 			}
-			else if (chargeRestartCounter < 2 * CHARGE_CYCLE + CHARGE_DELAY)
+			else if (chargeRestartCounter < 2 * CHARGE_CYCLE + 4 * CHARGE_DELAY)
 			{
 				if (bmsOn && IS_CHARGE_END) //Detect if charging of group B is ended
 					isBCharged = 1;
@@ -485,24 +461,84 @@ int main(void)
 			}
 			else
 				chargeRestartCounter = 0; //Restart timeout reached (18 hrs)
+				
+			back_buffer[20] = bmsOn ? 0x03 : 0x20; //Show "plug" sign if chargers are on
+			back_buffer[21] = 0x20;
+			if (bmsOn)
+				back_buffer[22] = bmsSelB ? 0xE2 : 0xE0; //Show "alpha" or "  beta" sign
+			else
+				back_buffer[22] = 0x20;
+			back_buffer[18] = IS_CHARGE_END ? 0x02 : 0x01; //Show "empty" or "full" battery sign
 		}
-		else
+		else //On battery
 		{
 			bmsOn = 0;
-			bmsSelB = 0;
+			bmsSelB = 0;		
+			
+			temp32 = current; //x
+			temp32 *= temp32; //x^2
+			//Calculate voltage cut-off
+			temp16 = temp32 / K_VCUT_a; //ax^2
+			temp16 -= current / K_VCUT_b; //ax^2 - bx
+			temp16 += K_VCUT_c; //V_cut = ax^2 - bx + c
+			vSlaFail = (temp16 + 10) / 20;
+			uint16_t voltage = accuVS[19]; //V_accu
+			if (voltage <= temp16)
+			{
+				if (!countdown)
+				{
+					eeprom_write_byte(&slaFailIdx, slaIdxRam);
+					DC_IGBT_off;
+					_delay_us(66);
+					DC_MOS_off;
+				}
+				else
+					countdown--;
+				temp16 = 0;
+			}
+			else
+			{
+				countdown = 5;
+				voltage -= temp16; //V_accu - V_cut
+				//Calculate voltage delta
+				temp16 = current / K_VDELTA_b; //bx
+				temp16 -= temp32 / K_VDELTA_a; //-ax^2 + bx
+				//Voltage correction
+				temp32 = voltage; //V_delta_curr
+				temp32 *= VDELTA_REF; //V_delta_curr * V_delta_ref
+				temp32 /= temp16 + K_VDELTA_c; //V_delta_corr
+				temp32 += VCUT_REF;
+				voltage = temp32; //Corrected battery voltage
+				//Charge level approximation
+				temp32 *= temp32; //x^2
+				temp16 = temp32 / K_VSOC_a; //ax^2
+				temp16 += K_VSOC_c; //ax^2 + c
+				temp32 = voltage;
+				temp32 *= K_VSOC_b; //bx<<16
+				temp16 -= temp32 >> 16; //Charge level = ax^2 - bx + c
+				if (temp16 > 99)
+					temp16 = 99;	
+			}
+			back_buffer[18] = 0x02; //"Empty" battery sign
+			uint2buffer(back_buffer + 20, 2, 2, temp16); //Charge in %
+			back_buffer[22] = 0x25; //Percent sign
 		}
 	#endif
-		//Calculate fan RPM
-		if (captCS > 1)
+		if (!(dispIdx & 3))
 		{
-			captSS /= 10;
-			temp32 = F_CPU * 3 / 8UL;
-			temp32 *= captCS - 1;
-			temp16 = temp32 / captSS;
+			//Calculate fan RPM
+			if (captCS > 1)
+			{
+				captSS /= 10;
+				temp32 = F_CPU * 3 / 8UL;
+				temp32 *= captCS - 1;
+				temp16 = temp32 / captSS;
+			}
+			else
+				temp16 = 0;
+			uint2buffer(back_buffer + 24, 4, 4, temp16); //Fan RPM			
 		}
-		else
-			temp16 = 0;
-		uint2buffer(back_buffer + 24, 4, 4, temp16); //Fan RPM
+
 		//Send buffer to the display
 		lcd_send_byte(0x80, 0); //First row
 		lcd_send_buffer(back_buffer, 16);
@@ -513,16 +549,16 @@ int main(void)
 		if (tDelta > T_DELTA)
 			tDelta = T_DELTA;
 	#ifndef TEST_VI
-		if (bmsOn && tDelta < 5)
-			tDelta = 5;
+		if (bmsOn && !IS_CHARGE_END && tDelta < 10)
+			tDelta = 10;
 	#endif
 		temp16 = (255 - FAN_min) * tDelta / T_DELTA + FAN_min;
 		if ((fanLvl >= FAN_min && temp16 > fanLvl) || (fanLvl < FAN_min && temp16 > FAN_min))
 			fanLvl = temp16; //Increase level
 		else {
 			tDelta += T_DELTA >> 4; //Lower bound for stepping down
-			temp16 = (255 - FAN_min) * tDelta / T_DELTA + FAN_min;
-			if (temp16 < fanLvl) //Both lower bounds are below
+			tDelta = (255 - FAN_min) * tDelta / T_DELTA + FAN_min;
+			if (tDelta < fanLvl) //Both lower bounds are below
 				fanLvl = temp16 > FAN_min ? temp16 : 0; //Decrease level
 		}
     }
