@@ -38,9 +38,11 @@
 #define SHDN_THRESHOLD	(105 * 20) //10.5V for single battery
 
 #define IS_CHARGE_END	((PIND & (1 << PIND7)) == 0)
-#define CHARGE_RESTART	64800	//64800
+#define CHARGE_RESTART	32400	//64800
 #define CHARGE_CYCLE	3600	//3600
 #define CHARGE_DELAY	15		//25
+#define CHARGE_OT_MIN	5
+#define CHARGE_MIN_CURRENT	30
 
 #define DC_IGBT_on		(PORTC |= (1 << PORTC2))
 #define DC_IGBT_off		(PORTC &= ~(1 << PORTC2))

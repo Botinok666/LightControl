@@ -11,12 +11,12 @@
 #include "lcdtwi.h"
 #include <util/delay.h>
 
-//#define TEST_VI
-//#define TEST_VB
+#define TEST_VI
+#define TEST_VB
+#define FCHRG_INSTALLED
 
-volatile uint8_t captOvfCtr = 0, lastOvf = 0, fanLvl = 0, safeWait = 0, acTrState = 0, slaIdxRam = 20;
-volatile uint16_t captFirst, captCtr = 0, captCS, timeout = 333, chargeRestartCounter = 0;
-volatile uint32_t captSum, captSS;
+volatile uint8_t lastOvf = 0, fanLvl = 0, safeWait = 0, acTrState = 0, slaIdxRam = 20, swCounter = 0;
+volatile uint16_t timeout = 333, chargeRestartCounter = 0;
 
 uint8_t EEMEM slaFailIdx = 20;
 
@@ -24,24 +24,24 @@ const uint8_t accuVSSel[20] = {
 	0x30,0x31,0x32,0x37,0x36,0x34,0x28,0x29,0x2A,0x2D,
 	0x2F,0x2E,0x2C,0x18,0x19,0x1A,0x1D,0x1F,0x1E,0x1C };
 const uint16_t vSenDiv[20] = {
-	3037,3043,3037,3040,3066,3043,3044,3048,3042,3048,
-	3061,3050,3041,3055,3051,3053,3054,3060,3061,3054 };
+	19436,19475,19436,19456,19622,19475,19481,19507,19468,19507,
+	19590,19520,19462,19552,19526,19539,19545,19584,19590,19545 };
 uint16_t accuVS[20], accuVSValid[20];
 
 //Placement of the information on the LCD
 //0  3   7   B   F
-//000.0v      00°C| <- test version
-// 0.000A 0000 rpm|
-//000W A13.7v 00°C| <- normal version
-//T B 00% 0000 rpm| (2nd row on battery)
-//T B P I 0000 rpm| (2nd row on line)
+//000.00v     00°C| <- test version
+//+0.000A   SC 000|
+
+//A13.63v 00% 00°C| <- normal version
+//+000.0W   SC 000|
 uint8_t back_buffer[32] = {
 #ifdef TEST_VI
-	0x20,0x20,0x20,0x57,0x20,0x76,0x20,0x20,0x20,0x20,0x76,0x20,0x20,0x20,0x00,0x43,
-	0x20,0x20,0x20,0x20,0x20,0x20,0x41,0x20,0x20,0x20,0x20,0x20,0x20,0x72,0x70,0x6D
+	0x20,0x20,0x20,0x20,0x20,0x76,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x00,0x43,
+	0x20,0x20,0x20,0x20,0x20,0x20,0x41,0x20,0x20,0x20,0x53,0x43,0x20,0x20,0x20,0x20
 #else
-	0x20,0x20,0x20,0x57,0x20,0x20,0x20,0x20,0x20,0x20,0x76,0x20,0x20,0x20,0x00,0x43,
-	0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x72,0x70,0x6D
+	0x20,0x20,0x20,0x20,0x20,0x20,0x76,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x00,0x43,
+	0x20,0x20,0x20,0x20,0x20,0x20,0x57,0x20,0x20,0x20,0x53,0x43,0x20,0x20,0x20,0x20
 #endif
 	};
 
@@ -66,33 +66,6 @@ void i2c_init(void)
 		0b00000,
 		0b00000,
 		0b00000,
-		0b00000,
-		
-		0b01110, //0x01
-		0b11111,
-		0b10001,
-		0b10101,
-		0b11111,
-		0b10101,
-		0b11111,
-		0b00000,
-		
-		0b01110, //0x02
-		0b11111,
-		0b10001,
-		0b10001,
-		0b10001,
-		0b10001,
-		0b11111,
-		0b00000,
-		
-		0b01010, //0x03
-		0b01010,
-		0b11111,
-		0b10001,
-		0b10001,
-		0b01110,
-		0b00100,
 		0b00000 };
 	lcd_send_byte(0x40, 0);
 	lcd_send_buffer(custom_chars, sizeof(custom_chars));
@@ -127,33 +100,55 @@ void uint2buffer(uint8_t *buffer_index, uint8_t dot_position, uint8_t length, ui
 	}
 }
 
-ISR (TIMER1_CAPT_vect)
-{
-	static uint8_t ovfFirst = 0;
-	if (!captCtr++)
+void int2buffer(uint8_t *buffer_index, uint8_t dot_position, uint8_t length, uint16_t value, uint8_t sign) {
+	uint8_t stx, sti, hide_zero = 0, k_data;
+	uint16_t divider = 1;
+	sti = length - 2;
+	if (dot_position < length)
+		sti--;
+	for (stx = 0; stx < sti; stx++)
+		divider *= 10;
+	for (stx = 1; stx < length; stx++)
 	{
-		captFirst = ICR1;
-		ovfFirst = captOvfCtr;
+		if (stx != dot_position)
+		{
+			sti = value / divider;
+			value -= sti * divider;
+			if ((stx < dot_position) && !sti && !hide_zero && (divider > 1))
+				k_data = 0x20;
+			else
+			{
+				if (sign && !hide_zero)
+					buffer_index[stx - 1] = 0x2D;
+				hide_zero = 1;
+				k_data = sti + 0x30;
+			}
+			divider /= 10;
+		}
+		else
+			k_data = 0x2E;
+		buffer_index[stx] = k_data;
 	}
-	else
-		captSum = ICR1;
-	lastOvf = captOvfCtr - ovfFirst;
-	TIFR1 = (1 << ICF1);
 }
 
 ISR (TIMER1_OVF_vect)
 {
+	static uint8_t ovfCtr = 0;
 	uint8_t temp = OCR0A;
-	if (temp < fanLvl) {
-		if (temp < FAN_min) {
+	if (temp < fanLvl) 
+	{
+		if (temp < FAN_min) 
+		{
 			PORTD |= (1 << PORTD5); //Turn on fan power
 			temp = FAN_min;
 		}
 		else
 			temp++;
 	}
-	else if (temp > fanLvl) {
-		if (fanLvl < FAN_min) {
+	else if (temp > fanLvl) 
+	{
+		if (fanLvl < FAN_min) 
+		{
 			PORTD &= ~(1 << PORTD5); //Turn off fan power
 			temp = 0;
 		}
@@ -162,14 +157,9 @@ ISR (TIMER1_OVF_vect)
 	}
 	OCR0A = temp;
 	safeWait++;
-	if (captOvfCtr++ >= 15) //~1s period
+	if (ovfCtr++ >= 15) //~1s period
 	{
-		captOvfCtr = 0;
-		captCS = captCtr;
-		captCtr = 0;
-		captSum += (uint32_t)lastOvf << 16;
-		captSS = captSum - captFirst;
-		
+		ovfCtr = 0;
 		chargeRestartCounter++;
 	}
 }
@@ -218,6 +208,7 @@ ISR (TIMER2_COMPA_vect) //AC loss detect
 		TIMSK2 = (1 << OCIE2B);
 		slaIdxRam = 20;
 		back_buffer[16] = 0x20;
+		swCounter++;
 		ALERT_off;
 	}
 	timeout = 666; //6.66s
@@ -241,6 +232,7 @@ ISR (TIMER2_COMPB_vect) //10ms period
 		TIMSK2 = (1 << OCIE2B);
 		slaIdxRam = 20;
 		back_buffer[16] = 0x20;
+		swCounter++;
 		ALERT_off;
 	}
 	timeout = 666; //6.66s
@@ -260,9 +252,9 @@ void inline mcu_init(void)
 	//Timer 0: 8MHz, OC0A fast PWM 31.25kHz
 	TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1);
 	TCCR0B = (1 << CS00);
-	//Timer 1: 1MHz, input capture and overflow interrupt
+	//Timer 1: 1MHz, overflow interrupt
 	TCCR1B = (1 << ICNC1) | (1 << CS11); //~15 overflows/s
-	TIMSK1 = (1 << TOIE1) | (1 << ICIE1);
+	TIMSK1 = (1 << TOIE1);
 	//Timer 2: 7.812kHz, 1 tick = 128µs
 	TCCR2B = (1 << CS22) | (1 << CS21) | (1 << CS20);
 	OCR2A = 15; //Maximum t_high (Vin = 150VAC) is 1.92ms (15 ticks)
@@ -275,24 +267,28 @@ void inline mcu_init(void)
 int main(void)
 {
 #ifndef TEST_VI
-	char isBCharged = 0, isACharged = 0;
+	uint8_t countdown = 5;
 #endif
-	char bmsSelB = 0, bmsOn = 0; //CHON - bit 6, CHSEL - bit 7
-	uint8_t vsenIdx = 0, dispIdx = 0, countdown = 5;
-	uint16_t vSlaFail = 90;
+#ifndef FCHRG_INSTALLED
+	char isBCharged = 0, isACharged = 0, bmsSelB = 0; //CHON - bit 6, CHSEL - bit 7
+#else
+	uint8_t cThreshold = 45;
+#endif
+	uint8_t vsenIdx = 0, dispIdx = 0, bmsOn = 0; 
+	uint16_t vSlaFail = 900;
 	mcu_init();
 	lcd_init();
 	i2c_init();
 	if (eeprom_read_byte(&slaFailIdx) < 20)
 	{
-		back_buffer[16] = 'A' + eeprom_read_byte(&slaFailIdx);
+		back_buffer[25] = 'A' + eeprom_read_byte(&slaFailIdx);
 		ALERT_on;
 	}
 	sei();
 	
     while (1) 
     {	
-		uint8_t temp8;
+		uint8_t temp8, cSign = 0;
 		uint16_t current;
 		uint16_t temp16, tDelta;
 		uint32_t temp32;
@@ -316,16 +312,18 @@ int main(void)
 		twi_send(0x38);
 		twi_send(0x79); //Shunt voltage one-shot, 320mV range, 128 samples averaging
 		twi_stop();
-		
-		current = (int16_t)current + 2; //Offset ~1mA
-		if ((int16_t)current < 0)
-			current = 0;
+		if (current >= 0x8000)
+		{
+			cSign = 1;
+			current = ~current;
+			current++;
+		}
 		temp32 = (uint32_t)current << 8;
 		temp32 += 547 / 2;
 		current = temp32 / 547; //K = 2.5 with gain error -1.1698
 		
 	#ifdef TEST_VI
-		uint2buffer(back_buffer + 17, 1, 5, current); //I * 1000
+		int2buffer(back_buffer + 17, 2, 6, current, cSign); //I * 1000
 	#endif
 		//Read battery voltages: 7 at a time
 		for (uint8_t j = 0; j < 7; j++)
@@ -336,8 +334,10 @@ int main(void)
 			temp8 = accuVSSel[vsenIdx];
 			if (bmsOn)
 				temp8 |= (1 << 6);
+		#ifndef FCHRG_INSTALLED
 			if (bmsSelB)
 				temp8 |= (1 << 7);
+		#endif
 			twi_send(temp8); //Write value to external port
 			twi_stop();
 			//Start ADC conversion
@@ -352,18 +352,13 @@ int main(void)
 			temp16 = (uint16_t)twi_receive(1) << 8;
 			temp16 |= (uint16_t)twi_receive(0);
 			twi_stop();
-			if ((int16_t)temp16 < 0)
-				temp16 = 0;
-			temp32 = (uint32_t)temp16 << 8;
+			temp32 = (uint32_t)temp16 << 14;
 			//Store battery voltage
-			temp32 += vSenDiv[vsenIdx] / 2;
+			temp32 += vSenDiv[vsenIdx] >> 1;
 			temp32 /= vSenDiv[vsenIdx]; //Rounded voltage
 			accuVS[vsenIdx] = temp32;
 			if (++vsenIdx > 19) //All battery voltages has been read
 			{
-			#ifdef TEST_VI
-				uint2buffer(back_buffer, 3, 5, accuVS[14]); //V * 10
-			#endif
 				temp8 = 20;
 				if (accuVS[0] < vSlaFail)
 					temp8 = 0;
@@ -386,7 +381,7 @@ int main(void)
 					}
 					else //Low current consumption? Only alert
 					{
-						back_buffer[16] = 'A' + temp8;
+						back_buffer[25] = 'A' + temp8;
 						ALERT_on;
 					}
 				}
@@ -398,28 +393,30 @@ int main(void)
 		temp32 = accuVS[19];
 		temp32 *= current;
 		temp32 += 5000;
-		uint2buffer(back_buffer, 3, 3, temp32 / 10000); //P, rounded
+		int2buffer(back_buffer + 17, 4, 6, temp32 / 10000, cSign); //P, rounded
 		temp8 = dispIdx >> 1;
 		temp16 = accuVSValid[temp8];
 	#ifndef TEST_VB	
 		//Show single battery voltage
-		back_buffer[5] = 'A' + temp8;
+		back_buffer[0] = 'A' + temp8;
 		if (temp8 > 0)
 			temp16 -= accuVSValid[temp8 - 1];
-		uint2buffer(back_buffer + 6, 2, 4, temp16);
+		uint2buffer(back_buffer + 1, 2, 5, temp16);
 	#else
-		uint2buffer(back_buffer + 5, 3, 5, temp16);
+		uint2buffer(back_buffer, 4, 6, temp16);
 	#endif
 		if (++dispIdx > 39)
 			dispIdx = 0;
-	#ifndef TEST_VI
+#ifndef TEST_VI
 		//If DC to AC transition succeeded
 		if (acTrState)
 		{
 			acTrState = 0;
-			back_buffer[16] = 0x20; //Clear failed battery index
+			back_buffer[25] = 0x20; //Clear failed battery index
+			chargeRestartCounter = 0;
 			ALERT_off;
 		}
+	#ifndef FCHRG_INSTALLED
 		//Battery charging routine
 		if (WE_ARE_ONLINE)
 		{
@@ -474,7 +471,23 @@ int main(void)
 		{
 			bmsOn = 0;
 			bmsSelB = 0;		
-			
+	#else
+		//Battery charging routine
+		if (WE_ARE_ONLINE)
+		{
+			if (chargeRestartCounter < CHARGE_DELAY)
+				bmsOn = 0; //Charger off
+			else if (chargeRestartCounter < CHARGE_DELAY + CHARGE_OT_MIN)
+				bmsOn = 1; //Charger on for 5 seconds
+			else if (current < CHARGE_MIN_CURRENT)
+				bmsOn = 0; //Charger off
+			if (chargeRestartCounter > CHARGE_RESTART)
+				chargeRestartCounter = 0;
+		}
+		else //On battery
+		{
+			bmsOn = 0;
+	#endif
 			temp32 = current; //x
 			temp32 *= temp32; //x^2
 			//Calculate voltage cut-off
@@ -482,7 +495,7 @@ int main(void)
 			temp16 -= current / K_VCUT_b; //ax^2 - bx
 			temp16 += K_VCUT_c; //V_cut = ax^2 - bx + c
 			vSlaFail = (temp16 + 10) / 20;
-			uint16_t voltage = accuVS[19]; //V_accu
+			uint16_t voltage = accuVS[19] / 10; //V_accu
 			if (voltage <= temp16)
 			{
 				if (!countdown)
@@ -519,26 +532,19 @@ int main(void)
 				if (temp16 > 99)
 					temp16 = 99;	
 			}
-			back_buffer[18] = 0x02; //"Empty" battery sign
-			uint2buffer(back_buffer + 20, 2, 2, temp16); //Charge in %
-			back_buffer[22] = 0x25; //Percent sign
+			uint2buffer(back_buffer + 8, 2, 2, temp16); //Charge in %
+			back_buffer[10] = 0x25; //Percent sign
+		}
+	#ifdef FCHRG_INSTALLED
+		else
+		{
+			back_buffer[8] = 0x20;
+			back_buffer[9] = 0x20;
+			back_buffer[10] = 0x20;
 		}
 	#endif
-		if (!(dispIdx & 3))
-		{
-			//Calculate fan RPM
-			if (captCS > 1)
-			{
-				captSS /= 10;
-				temp32 = F_CPU * 3 / 8UL;
-				temp32 *= captCS - 1;
-				temp16 = temp32 / captSS;
-			}
-			else
-				temp16 = 0;
-			uint2buffer(back_buffer + 24, 4, 4, temp16); //Fan RPM			
-		}
-
+#endif
+		uint2buffer(back_buffer + 27, 3, 3, swCounter);
 		//Send buffer to the display
 		lcd_send_byte(0x80, 0); //First row
 		lcd_send_buffer(back_buffer, 16);
@@ -548,10 +554,26 @@ int main(void)
 		tDelta >>= 6; //Range 0…120, if delta T = 30°C
 		if (tDelta > T_DELTA)
 			tDelta = T_DELTA;
-	#ifndef TEST_VI
+#ifndef TEST_VI
+	#ifndef FCHRG_INSTALLED
 		if (bmsOn && !IS_CHARGE_END && tDelta < 10)
 			tDelta = 10;
+	#else
+		if (cSign)
+		{
+			if (current > cThreshold)
+			{
+				cThreshold = 35;
+				temp16 = current * 6;
+				temp16 /= 55; //Range 4…60, if charging current <= 550mA
+				if (tDelta < temp16)
+					tDelta = temp16;				
+			}
+			else
+				cThreshold = 45;
+		}
 	#endif
+#endif
 		temp16 = (255 - FAN_min) * tDelta / T_DELTA + FAN_min;
 		if ((fanLvl >= FAN_min && temp16 > fanLvl) || (fanLvl < FAN_min && temp16 > FAN_min))
 			fanLvl = temp16; //Increase level
