@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.4.0/cerulean/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <script src="js/index.js"></script>
+  <title>IoT control system</title>
+</head>
+<body onload="roomSelect('Kitchen')">
+   
+<div class="container-fluid">
+  <h2>IoT control system</h2>
+  <ul class="nav nav-tabs" id="tab">
+	<li class="active"><a href="#tab_light" data-toggle="tab">Light</a></li>
+	<li><a href="#tab_vent" data-toggle="tab">Ventilation</a></li>
+	<li><a href="#tab_configuration" data-toggle="tab">Information</a></li>
+  </ul>  
+  <div class="tab-content">
+	<div class="tab-pane fade in active" id="tab_light">
+	  <h3>Lighting configuration</h3>
+	  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with groups">
+		<div class="btn-group" role="group" aria-label="First group">
+		  <div class="dropdown">
+			<button class="btn btn-default dropdown-toggle dropdown-toggle-split" type="button" id="menuRooms" data-toggle="dropdown">Rooms
+			  <span class="caret"></span></button>
+			<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+			  <li class="dropdown-header">1st floor</li>
+			  <li role="presentation"><a role="menuitem" href="#" onclick="return roomSelect('Kitchen')">Kitchen</a></li>
+			  <li role="presentation"><a role="menuitem" href="#" onclick="return roomSelect('Table')">Table</a></li>
+			  <li role="presentation"><a role="menuitem" href="#" onclick="return roomSelect('Room A')">Room A</a></li>
+			  <li role="presentation"><a role="menuitem" href="#" onclick="return roomSelect('Shower')">Shower</a></li>
+			  <li role="presentation"><a role="menuitem" href="#" onclick="return roomSelect('Toilet')">Toilet</a></li>
+			  <li role="presentation" class="divider"></li>
+			  <li class="dropdown-header">2nd floor</li>
+			  <li role="presentation"><a role="menuitem" href="#" onclick="return roomSelect('Room B')">Room B</a></li>
+			  <li role="presentation"><a role="menuitem" href="#" onclick="return roomSelect('Room C')">Room C</a></li>
+			  <li role="presentation"><a role="menuitem" href="#" onclick="return roomSelect('Stairs')">Stairs</a></li>
+			</ul>
+		  </div>
+		</div>
+		<div class="btn-group" role="group" aria-label="Second group">      
+		  <div class="dropdown">
+			<button class="btn btn-default dropdown-toggle dropdown-toggle-split" type="button" id="menuLamps" data-toggle="dropdown">Areas
+			  <span class="caret"></span></button>
+			<ul class="dropdown-menu" role="menu" aria-labelledby="menu2">
+			  <li role="presentation" id="m2gr"><a role="menuitem" href="#" onclick="return areaSelect('Group')">Group</a></li>
+			  <li role="presentation" id="m2la"><a role="menuitem" href="#" onclick="return areaSelect('Lamp A')">Lamp A</a></li>
+			  <li role="presentation" id="m2lb"><a role="menuitem" href="#" onclick="return areaSelect('Lamp B')">Lamp B</a></li>
+			  <li role="presentation" id="m2lc"><a role="menuitem" href="#" onclick="return areaSelect('Lamp C')">Lamp C</a></li>
+			</ul>
+		  </div>
+		</div>
+	  </div>
+	  <button type="button" class="btn btn-secondary" id="btnSwitch">ON</button>
+	  <form class="range-field" id="slidersForm">
+		<label for="lightLvl">Light level</label>
+		<input type="range" class="custom-range" min="0" max="100" id="lightLvl">
+		<label for="minLightLvl">Minimum light level</label>
+		<input type="range" class="custom-range" min="1" max="50" id="minLightLvl">
+		<label for="fadeRate">Fade rate</label>
+		<input type="range" class="custom-range" min="32" max="160" id="fadeRate">
+		<label for="fadeDelay">Fade delay</label>
+		<input type="range" class="custom-range" min="1" max="64" id="fadeDelay">
+		<label for="msllt">Motion sensor low light level time</label>
+		<input type="range" class="custom-range" min="5" max="50" id="msllt">
+	  </form>
+	  <div class="row" id="infoLight">
+		<div class="col-xs-6" id="lampOT"></div>
+		<div class="col-xs-6" id="lampCycles"></div>
+	  </div>
+	  <div class="row" id="infoMsen">
+		<div class="col-xs-6" id="msenState"></div>
+	  </div>
+	  <div id="deletionForm">
+		<label for="delText">Operation phrase</label>
+		<input type="text" id="delText"/>
+		<button class="btn btn-default" id="delTextButton">Submit</button>
+	  </div>
+	  <div class="alert alert-success">Operation completed successfully</div>
+	</div>
+	<div class="tab-pane fade" id="tab_vent">
+      <h3>Shower ventilation</h3>
+	  <form class="range-field" id="slidersForm2">
+		<label for="minRH">Minimum RH</label>
+		<input type="range" class="custom-range" min="50" max="85" id="minRH">
+		<label for="fanLvl">Fan level</label>
+		<input type="range" class="custom-range" min="0" max="100" id="fanLvl">
+	  </form>
+	  <h4>Fan state</h4>
+	  <div class="row">
+		<div class="col-sm-4" id="ventFRPM"></div>
+		<div class="col-sm-4" id="ventRRPM"></div>
+		<div class="col-sm-4" id="ventI"></div>
+	  </div>
+	  <h4>Air state</h4>
+	  <div class="row">
+		<div class="col-xs-6" id="ventT"></div>
+		<div class="col-xs-6" id="ventRH"></div>
+	  </div>
+    </div>
+	<div class="tab-pane fade" id="tab_configuration">
+	  <h4>Controllers on-time</h4>
+	  <div class="row">
+		<div class="col-xs-6" id="contr1OT"></div>
+		<div class="col-xs-6" id="contr2OT"></div>
+	  </div>
+    </div>
+</div>
+<div class="alert alert-warning">Operation not completed</div>
+</div>
+</body>
+</html>

@@ -483,6 +483,7 @@ int main(void)
 			}
 			uint2buffer(back_buffer + 8, 2, 2, temp16); //Charge in %
 			back_buffer[10] = 0x25; //Percent sign
+			back_buffer[24] = 0x20;
 		}
 #endif
 		uint2buffer(back_buffer + 29, 3, 3, swCounter);
