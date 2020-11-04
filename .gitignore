@@ -1,6 +1,4 @@
 Debug/
 Release/
-.*/
-!/.gitignore
-.atsuo
-.vs/LightControl/v14/.atsuo
+.*
+!.gitignore
