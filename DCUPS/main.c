@@ -11,9 +11,8 @@
 #include "lcdtwi.h"
 #include <util/delay.h>
 
-#define TEST_VI
-#define TEST_VB
-#define FCHRG_INSTALLED
+//#define TEST_VI
+//#define TEST_VB
 
 volatile uint8_t lastOvf = 0, fanLvl = 0, safeWait = 0, acTrState = 0, slaIdxRam = 20, swCounter = 0;
 volatile uint16_t timeout = 333, chargeRestartCounter = 0;
@@ -24,8 +23,14 @@ const uint8_t accuVSSel[20] = {
 	0x30,0x31,0x32,0x37,0x36,0x34,0x28,0x29,0x2A,0x2D,
 	0x2F,0x2E,0x2C,0x18,0x19,0x1A,0x1D,0x1F,0x1E,0x1C };
 const uint16_t vSenDiv[20] = {
-	19436,19475,19436,19456,19622,19475,19481,19507,19468,19507,
-	19590,19520,19462,19552,19526,19539,19545,19584,19590,19545 };
+#ifdef TEST_VB
+	19500,19500,19500,19500,19500,19500,19500,19500,19500,19500,
+	19500,19500,19500,19500,19500,19500,19500,19500,19500,19500
+#else
+	19492,19580,19563,19551,19662,19511,19508,19529,19504,19511,
+	19613,19527,19467,19560,19533,19548,19554,19595,19595,19550
+#endif
+	};
 uint16_t accuVS[20], accuVSValid[20];
 
 //Placement of the information on the LCD
@@ -97,37 +102,6 @@ void uint2buffer(uint8_t *buffer_index, uint8_t dot_position, uint8_t length, ui
 		else
 			k_data = 0x2E;
 		*buffer_index++ = k_data;
-	}
-}
-
-void int2buffer(uint8_t *buffer_index, uint8_t dot_position, uint8_t length, uint16_t value, uint8_t sign) {
-	uint8_t stx, sti, hide_zero = 0, k_data;
-	uint16_t divider = 1;
-	sti = length - 2;
-	if (dot_position < length)
-		sti--;
-	for (stx = 0; stx < sti; stx++)
-		divider *= 10;
-	for (stx = 1; stx < length; stx++)
-	{
-		if (stx != dot_position)
-		{
-			sti = value / divider;
-			value -= sti * divider;
-			if ((stx < dot_position) && !sti && !hide_zero && (divider > 1))
-				k_data = 0x20;
-			else
-			{
-				if (sign && !hide_zero)
-					buffer_index[stx - 1] = 0x2D;
-				hide_zero = 1;
-				k_data = sti + 0x30;
-			}
-			divider /= 10;
-		}
-		else
-			k_data = 0x2E;
-		buffer_index[stx] = k_data;
 	}
 }
 
@@ -268,13 +242,9 @@ int main(void)
 {
 #ifndef TEST_VI
 	uint8_t countdown = 5;
+	char isBCharged = 0, isACharged = 0;
 #endif
-#ifndef FCHRG_INSTALLED
-	char isBCharged = 0, isACharged = 0, bmsSelB = 0; //CHON - bit 6, CHSEL - bit 7
-#else
-	uint8_t cThreshold = 45;
-#endif
-	uint8_t vsenIdx = 0, dispIdx = 0, bmsOn = 0; 
+	uint8_t vsenIdx = 0, dispIdx = 0, bmsSelB = 0, bmsOn = 0; 
 	uint16_t vSlaFail = 900;
 	mcu_init();
 	lcd_init();
@@ -288,7 +258,7 @@ int main(void)
 	
     while (1) 
     {	
-		uint8_t temp8, cSign = 0;
+		uint8_t temp8;
 		uint16_t current;
 		uint16_t temp16, tDelta;
 		uint32_t temp32;
@@ -312,19 +282,16 @@ int main(void)
 		twi_send(0x38);
 		twi_send(0x79); //Shunt voltage one-shot, 320mV range, 128 samples averaging
 		twi_stop();
-		if (current >= 0x8000)
-		{
-			cSign = 1;
-			current = ~current;
-			current++;
-		}
-		temp32 = (uint32_t)current << 8;
-		temp32 += 547 / 2;
-		current = temp32 / 547; //K = 2.5 with gain error -1.1698
-		
 	#ifdef TEST_VI
-		int2buffer(back_buffer + 17, 2, 6, current, cSign); //I * 1000
+		uint2buffer(back_buffer + 17, 1, 5, current); //I * 1000
 	#endif
+		current -= 8;
+		if (current >= 0x8000)
+			current = 0;
+		temp32 = (uint32_t)current << 8;
+		temp32 += 640 / 2;
+		current = temp32 / 640; //K = 2.5
+		
 		//Read battery voltages: 7 at a time
 		for (uint8_t j = 0; j < 7; j++)
 		{
@@ -332,12 +299,10 @@ int main(void)
 			twi_start();
 			twi_send(PCF8574_wr);
 			temp8 = accuVSSel[vsenIdx];
-			if (bmsOn)
-				temp8 |= (1 << 6);
-		#ifndef FCHRG_INSTALLED
 			if (bmsSelB)
 				temp8 |= (1 << 7);
-		#endif
+			if (bmsOn)
+				temp8 |= (1 << 6);
 			twi_send(temp8); //Write value to external port
 			twi_stop();
 			//Start ADC conversion
@@ -393,7 +358,9 @@ int main(void)
 		temp32 = accuVS[19];
 		temp32 *= current;
 		temp32 += 5000;
-		int2buffer(back_buffer + 17, 4, 6, temp32 / 10000, cSign); //P, rounded
+	#ifndef TEST_VI
+		uint2buffer(back_buffer + 17, 3, 5, temp32 / 10000); //P, rounded
+	#endif
 		temp8 = dispIdx >> 1;
 		temp16 = accuVSValid[temp8];
 	#ifndef TEST_VB	
@@ -416,7 +383,6 @@ int main(void)
 			chargeRestartCounter = 0;
 			ALERT_off;
 		}
-	#ifndef FCHRG_INSTALLED
 		//Battery charging routine
 		if (WE_ARE_ONLINE)
 		{
@@ -458,36 +424,19 @@ int main(void)
 			}
 			else
 				chargeRestartCounter = 0; //Restart timeout reached (18 hrs)
-				
-			back_buffer[20] = bmsOn ? 0x03 : 0x20; //Show "plug" sign if chargers are on
-			back_buffer[21] = 0x20;
+
 			if (bmsOn)
-				back_buffer[22] = bmsSelB ? 0xE2 : 0xE0; //Show "alpha" or "  beta" sign
+				back_buffer[24] = bmsSelB ? 0xE2 : 0xE0; //Show "alpha" or "beta" sign
 			else
-				back_buffer[22] = 0x20;
-			back_buffer[18] = IS_CHARGE_END ? 0x02 : 0x01; //Show "empty" or "full" battery sign
+				back_buffer[24] = 0x20;
+			back_buffer[8] = 0x20;
+			back_buffer[9] = 0x20;
+			back_buffer[10] = 0x20;
 		}
 		else //On battery
 		{
 			bmsOn = 0;
-			bmsSelB = 0;		
-	#else
-		//Battery charging routine
-		if (WE_ARE_ONLINE)
-		{
-			if (chargeRestartCounter < CHARGE_DELAY)
-				bmsOn = 0; //Charger off
-			else if (chargeRestartCounter < CHARGE_DELAY + CHARGE_OT_MIN)
-				bmsOn = 1; //Charger on for 5 seconds
-			else if (current < CHARGE_MIN_CURRENT)
-				bmsOn = 0; //Charger off
-			if (chargeRestartCounter > CHARGE_RESTART)
-				chargeRestartCounter = 0;
-		}
-		else //On battery
-		{
-			bmsOn = 0;
-	#endif
+			bmsSelB = 0;
 			temp32 = current; //x
 			temp32 *= temp32; //x^2
 			//Calculate voltage cut-off
@@ -534,17 +483,10 @@ int main(void)
 			}
 			uint2buffer(back_buffer + 8, 2, 2, temp16); //Charge in %
 			back_buffer[10] = 0x25; //Percent sign
+			back_buffer[24] = 0x20;
 		}
-	#ifdef FCHRG_INSTALLED
-		else
-		{
-			back_buffer[8] = 0x20;
-			back_buffer[9] = 0x20;
-			back_buffer[10] = 0x20;
-		}
-	#endif
 #endif
-		uint2buffer(back_buffer + 27, 3, 3, swCounter);
+		uint2buffer(back_buffer + 29, 3, 3, swCounter);
 		//Send buffer to the display
 		lcd_send_byte(0x80, 0); //First row
 		lcd_send_buffer(back_buffer, 16);
@@ -555,24 +497,8 @@ int main(void)
 		if (tDelta > T_DELTA)
 			tDelta = T_DELTA;
 #ifndef TEST_VI
-	#ifndef FCHRG_INSTALLED
 		if (bmsOn && !IS_CHARGE_END && tDelta < 10)
 			tDelta = 10;
-	#else
-		if (cSign)
-		{
-			if (current > cThreshold)
-			{
-				cThreshold = 35;
-				temp16 = current * 6;
-				temp16 /= 55; //Range 4…60, if charging current <= 550mA
-				if (tDelta < temp16)
-					tDelta = temp16;				
-			}
-			else
-				cThreshold = 45;
-		}
-	#endif
 #endif
 		temp16 = (255 - FAN_min) * tDelta / T_DELTA + FAN_min;
 		if ((fanLvl >= FAN_min && temp16 > fanLvl) || (fanLvl < FAN_min && temp16 > FAN_min))
