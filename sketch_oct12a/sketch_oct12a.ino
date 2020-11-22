@@ -437,11 +437,13 @@ void setup() {
 
   server.begin();
   MDNS.addService("http", "tcp", 80);
+ 
+  wifi_set_sleep_type(MODEM_SLEEP_T); 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  MDNS.update();
+  //MDNS.update();
   server.handleClient();
   delay(33);
 }
