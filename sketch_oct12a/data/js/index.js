@@ -1,5 +1,7 @@
 const refreshInterval = 2000;
 var funcInterval = null;
+var globalRoomReq = '';
+var globalAreaReq = '';
 function getLightData(room, area) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
@@ -65,9 +67,11 @@ function getLightData(room, area) {
 			$('div[class="alert alert-warning"]').show();
 			$('div[class="alert alert-warning"]').text(this.responseText);
 		}
-		if (funcInterval != null)
-			clearTimeout(funcInterval);
-		funcInterval = setTimeout(getLightData, refreshInterval, room, area);
+		if (globalRoomReq == room && globalAreaReq == area) {
+			if (funcInterval != null)
+				clearTimeout(funcInterval);
+			funcInterval = setTimeout(getLightData, refreshInterval, room, area);
+		};
 	};
 	xhttp.open('POST', 'getl', true);
 	xhttp.setRequestHeader('Content-type', 'application/json');
@@ -89,7 +93,8 @@ function setLightData(room, area, dtype, dval, ltext) {
 			$('div[class="alert alert-warning"]').show();
 			$('div[class="alert alert-warning"]').text(this.responseText);
 		}
-		funcInterval = setTimeout(getLightData, refreshInterval, room, area);
+		if (globalRoomReq == room && globalAreaReq == area)
+			funcInterval = setTimeout(getLightData, refreshInterval, room, area);
 	};
 	xhttp.open('POST', 'setl', true);
 	xhttp.setRequestHeader('Content-type', 'application/json');
@@ -115,9 +120,11 @@ function getVentData() {
 			$('div[class="alert alert-warning"]').show();
 			$('div[class="alert alert-warning"]').text(this.responseText);
 		}
-		if (funcInterval != null)
-			clearTimeout(funcInterval);
-		funcInterval = setTimeout(getVentData, refreshInterval);
+		if (globalRoomReq == 'vent') {
+			if (funcInterval != null)
+				clearTimeout(funcInterval);
+			funcInterval = setTimeout(getVentData, refreshInterval);
+		}
 	};
 	xhttp.open('GET', 'getv', true);		
 	xhttp.send();
@@ -135,7 +142,8 @@ function setVentData(dtype, dval, ltext) {
 			$('div[class="alert alert-warning"]').show();
 			$('div[class="alert alert-warning"]').text(this.responseText);
 		}
-		funcInterval = setTimeout(getVentData, refreshInterval);
+		if (globalRoomReq == 'vent')
+			funcInterval = setTimeout(getVentData, refreshInterval);
 	};
 	xhttp.open('POST', 'setv', true);
 	xhttp.setRequestHeader('Content-type', 'application/json');
@@ -153,9 +161,11 @@ function getStats() {
 			$('div[class="alert alert-warning"]').show();
 			$('div[class="alert alert-warning"]').text(this.responseText);
 		}
-		if (funcInterval != null)
-			clearTimeout(funcInterval);
-		funcInterval = setTimeout(getStats, refreshInterval);
+		if (globalRoomReq == 'stats') {
+			if (funcInterval != null)
+				clearTimeout(funcInterval);
+			funcInterval = setTimeout(getStats, refreshInterval);
+		}
 	};
 	xhttp.open('GET', 'getc', true);		
 	xhttp.send();	
@@ -169,6 +179,7 @@ function areaSelect(area) {
 	if (funcInterval != null)
 		clearTimeout(funcInterval);
 	getLightData($('#menuRooms').text(), area);
+	globalAreaReq = area;
 }
 function roomSelect(room) {
 	$('#slidersForm').hide();
@@ -197,6 +208,7 @@ function roomSelect(room) {
 	}
 	$('#menuRooms').text(room);
 	areaSelect('Group');
+	globalRoomReq = room;
 }
 function lightLvlFormatter(value) {
 	return 'Light level: ' + (value < 1 ? 'Off' : (value + '%'));
@@ -278,11 +290,13 @@ $(document).ready(function(){
 	$('.nav-tabs a[href="#tab_vent"]').on('shown.bs.tab', function(){
 		$('#slidersForm2').hide();
 		getVentData();
+		globalRoomReq = 'vent';
 	});
 	$('.nav-tabs a[href="#tab_configuration"]').on('shown.bs.tab', function(){
 		getStats();
+		globalRoomReq = 'stats';
 	});
-	$('.custom-range').input(function() {
+	$('.custom-range').change(function() {
 		if (funcInterval != null)
 			clearTimeout(funcInterval);
 	});

@@ -1,5 +1,4 @@
 #include <ESP8266WebServer.h>
-#include <ESP8266mDNS.h>
 #include <WiFiManager.h>
 #include <ArduinoJson.h>
 #include <FS.h>
@@ -422,7 +421,7 @@ void setup() {
   digitalWrite(D0, LOW);
   
   SPIFFS.begin();
-  MDNS.begin("iot");
+  //MDNS.begin("iot");
 
   server.on("/getl", sendLight);
   server.on("/setl", updateLight);
@@ -436,14 +435,12 @@ void setup() {
   server.serveStatic("/", SPIFFS, "/index.html");
 
   server.begin();
-  MDNS.addService("http", "tcp", 80);
  
   wifi_set_sleep_type(MODEM_SLEEP_T); 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  //MDNS.update();
   server.handleClient();
   delay(33);
 }
